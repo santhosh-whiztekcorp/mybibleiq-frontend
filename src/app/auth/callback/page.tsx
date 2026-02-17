@@ -23,6 +23,7 @@ function OAuthCallbackContent() {
     if (!ephemeralCode || !clientState) {
       console.log("Missing parameters");
       hasCalledRef.current = true;
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       setError("Missing authentication parameters. Please try logging in again.");
       setTimeout(() => {
         router.replace("/auth/login");

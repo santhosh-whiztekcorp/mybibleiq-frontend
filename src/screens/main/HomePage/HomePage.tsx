@@ -17,41 +17,9 @@ export function HomePage() {
 
   const isAdmin = user?.role === "admin" || (user?.roles && user.roles.includes("admin"));
 
-  // S3 Fallback Prevention:
-  // If the server returns index.html for a deeper route (e.g. /spirit-food-manager),
-  // this component will mount. We must stop it from redirecting, otherwise it loops.
-  if (typeof window !== 'undefined' && window.location.pathname !== '/' && window.location.pathname !== '/index.html') {
-    // If we are on a route like /auth/callback, HomePage should NOT take over.
-    console.warn("[HomePage] Loaded on non-root path:", window.location.pathname, "- Stopping execution context.");
-    
-    // Attempt to fix trailing slash issue for S3/CloudFront (directory/index.html resolution)
-    if (!window.location.pathname.endsWith('/')) {
-        console.log("[HomePage] Attempting trailing slash redirect fix...");
-        const newUrl = window.location.pathname + '/' + window.location.search + window.location.hash;
-        window.location.replace(newUrl);
-        return null;
-    }
-    
-    // If already has slash or fix failed, show nothing to avoid hydration mismatch loops
-    return null; 
-  }
-
   useEffect(() => {
     if (!isLoading && isAuthenticated && isAdmin) {
-      console.log("HomePage: Redirecting to SPIRIT_FOOD", {
-        path: window.location.pathname,
-        isAuthenticated,
-        isAdmin,
-        isLoading
-      });
       router.push(ROUTES.SPIRIT_FOOD);
-    } else {
-      console.log("HomePage: Did NOT redirect", {
-        path: window.location.pathname,
-        isAuthenticated,
-        isAdmin,
-        isLoading
-      });
     }
   }, [isAuthenticated, isAdmin, router, isLoading]);
 

@@ -78,7 +78,7 @@ export function AdminSidebar() {
             <SidebarMenu className="overflow-visible!">
               {menuItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = pathname === item.url;
+                const isActive = pathname === item.url || pathname?.startsWith(item.url + "/");
                 return (
                   <SidebarMenuItem key={item.url} className="overflow-visible!">
                     <SidebarMenuButton

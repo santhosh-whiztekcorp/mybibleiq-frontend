@@ -21,17 +21,8 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     }
 
     const isAdmin = user?.role === "admin" || (user?.roles && user.roles.includes("admin"));
-    
-    console.log("[ProtectedRoute] Check:", { 
-       path: typeof window !== 'undefined' ? window.location.pathname : 'server',
-       isAuthenticated, 
-       isLoading, 
-       isAdmin, 
-       user 
-    });
 
     if (!isAdmin) {
-      console.warn("[ProtectedRoute] Access Denied. Redirecting to HOME in 100ms.");
       const timer = setTimeout(() => {
         router.push(ROUTES.HOME);
       }, 100);

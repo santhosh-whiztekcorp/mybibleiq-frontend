@@ -1,0 +1,17 @@
+export const PREDEFINED_BIBLE_VERSIONS = [
+  { value: "NIV", label: "NIV (New International Version)" },
+  { value: "ESV", label: "ESV (English Standard Version)" },
+  { value: "KJV", label: "KJV (King James Version)" },
+  { value: "NASB", label: "NASB (New American Standard Bible)" },
+  { value: "NLT", label: "NLT (New Living Translation)" },
+  { value: "NKJV", label: "NKJV (New King James Version)" },
+  { value: "CSB", label: "CSB (Christian Standard Bible)" },
+  { value: "AMP", label: "AMP (Amplified Bible)" },
+  { value: "MSG", label: "MSG (The Message)" },
+  { value: "RSV", label: "RSV (Revised Standard Version)" },
+  { value: "NRSV", label: "NRSV (New Revised Standard Version)" },
+  { value: "CEV", label: "CEV (Contemporary English Version)" },
+  { value: "GNV", label: "GNV (Geneva Bible)" },
+  { value: "ASV", label: "ASV (American Standard Version)" },
+  { value: "YLT", label: "YLT (Young's Literal Translation)" },
+];

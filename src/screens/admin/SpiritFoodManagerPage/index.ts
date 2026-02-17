@@ -1,0 +1,1 @@
+export { SpiritFoodManagerPage } from "./SpiritFoodManagerPage";

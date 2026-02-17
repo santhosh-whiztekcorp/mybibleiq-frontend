@@ -1,0 +1,1 @@
+export { BadgeManagerPage } from "./BadgeManagerPage";

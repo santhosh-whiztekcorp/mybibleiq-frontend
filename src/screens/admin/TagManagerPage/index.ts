@@ -1,0 +1,1 @@
+export { TagManagerPage } from "./TagManagerPage";

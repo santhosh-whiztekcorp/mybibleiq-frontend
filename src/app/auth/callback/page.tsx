@@ -4,38 +4,44 @@ import { useEffect, useState, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useFinalizeOAuth } from "@/resources/auth/auth.hooks";
 import { ROUTES } from "@/constants/routes";
+import Toast from "@/lib/toast";
 
 function OAuthCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const finalizeOAuth = useFinalizeOAuth();
-  const [error, setError] = useState<string | null>(null);
+
+  const ephemeralCode = searchParams.get("ephemeralCode");
+  const clientState = searchParams.get("clientState");
+  const missingParams = !ephemeralCode || !clientState;
+
+  const [apiError, setApiError] = useState<string | null>(null);
+
+  const error = missingParams ? "Missing authentication parameters. Please try logging in again." : apiError;
+
   const hasCalledRef = useRef(false);
 
+  // Handle redirect for missing parameters
   useEffect(() => {
-    const ephemeralCode = searchParams.get("ephemeralCode");
-    const clientState = searchParams.get("clientState");
-
-    console.log("OAuthCallbackContent mounted", { ephemeralCode, clientState });
-
-    if (hasCalledRef.current) return;
-
-    if (!ephemeralCode || !clientState) {
-      console.log("Missing parameters");
-      hasCalledRef.current = true;
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      setError("Missing authentication parameters. Please try logging in again.");
-      setTimeout(() => {
+    if (missingParams) {
+      const timer = setTimeout(() => {
         router.replace("/auth/login");
+        Toast.show({
+          type: "error",
+          text1: "Missing authentication parameters. Please try logging in again.",
+        });
       }, 3000);
-      return;
+      return () => clearTimeout(timer);
     }
+  }, [missingParams, router]);
 
-    console.log("Initiating finalizeOAuth");
+  useEffect(() => {
+    if (missingParams || hasCalledRef.current) return;
+
     hasCalledRef.current = true;
 
     finalizeOAuth.mutate(
-      { ephemeralCode, clientState },
+      { ephemeralCode: ephemeralCode!, clientState: clientState! },
       {
         onSuccess: () => {
           console.log("finalizeOAuth success");
@@ -47,14 +53,14 @@ function OAuthCallbackContent() {
             (err as { response?: { data?: { message?: string }; message?: string } })?.response?.data?.message ||
             (err as Error)?.message ||
             "Authentication failed. Please try logging in again.";
-          setError(errorMessage);
+          setApiError(errorMessage);
           setTimeout(() => {
             router.replace("/auth/login");
           }, 3000);
         },
       }
     );
-  }, [searchParams, finalizeOAuth, router]);
+  }, [ephemeralCode, clientState, finalizeOAuth, router, missingParams]);
 
   if (error) {
     return (

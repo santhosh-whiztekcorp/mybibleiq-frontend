@@ -1,5 +1,6 @@
 /* ---- Admin Routes ---- */
 export const ADMIN_ROUTES = {
+  DASHBOARD: "/dashboard",
   SPIRIT_FOOD: "/spirit-food-manager",
   USER_MANAGER: "/user-manager",
   USER_MANAGER_DETAIL: (userId: string) => `/user-manager/user?userId=${userId}`,

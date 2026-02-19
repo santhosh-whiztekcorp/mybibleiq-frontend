@@ -1,14 +1,19 @@
 import * as React from "react";
 import { useAdminTagList } from "@/resources/admin-tag";
 import { useDebounce } from "@/hooks/useDebounce";
-import { AdminTagSummary } from "@/resources/admin-tag";
+import { AdminTagSummary, AdminTagListInput } from "@/resources/admin-tag";
 
-export const useAdminTagSelector = (value: string[], onChange: (value: string[]) => void) => {
+export const useAdminTagSelector = (
+  value: string[],
+  onChange: (value: string[]) => void,
+  filters: Omit<AdminTagListInput, "page" | "pageSize" | "sort"> = {}
+) => {
   const [searchValue, setSearchValue] = React.useState("");
   const debouncedSearch = useDebounce(searchValue, 300);
 
   // Fetch tags with infinite scroll support
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useAdminTagList({
+    ...filters,
     q: debouncedSearch || undefined,
     pageSize: 20,
   });

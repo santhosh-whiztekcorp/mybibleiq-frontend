@@ -63,8 +63,8 @@ export const FEEDBACK_STATUS_SELECT_OPTIONS: SelectOption[] = [
 
 /* ---- Feedback Category Labels ---- */
 export const FEEDBACK_CATEGORY_LABELS: Record<string, string> = {
-  bug: "Bug Report",
-  feature: "Feature Request",
+  bug_report: "Bug Report",
+  feature_request: "Feature Request",
   general: "General Feedback",
   other: "Other",
 };

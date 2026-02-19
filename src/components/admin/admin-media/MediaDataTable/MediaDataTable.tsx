@@ -13,6 +13,8 @@ export function MediaDataTable({
   total = 0,
   pagination,
   onPaginationChange,
+  sorting,
+  onSortingChange,
   onEdit,
   onDelete,
   onPublish,
@@ -46,6 +48,8 @@ export function MediaDataTable({
         total,
       }}
       onPaginationChange={onPaginationChange}
+      sorting={sorting}
+      onSortingChange={onSortingChange}
       showSearch={false}
       showPagination={true}
       entriesCount={items.length}

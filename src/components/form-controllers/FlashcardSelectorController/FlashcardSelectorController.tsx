@@ -1,16 +1,8 @@
 "use client";
 
-import { Controller, FieldValues, Path, Control } from "react-hook-form";
+import { Controller, FieldValues } from "react-hook-form";
 import { AdminFlashcardSelector } from "@/components/admin/admin-shared/AdminFlashcardSelector";
-
-export type FlashcardSelectorControllerProps<T extends FieldValues> = {
-  control: Control<T>;
-  name: Path<T>;
-  label?: string;
-  placeholder?: string;
-  error?: string;
-  disabled?: boolean;
-};
+import { FlashcardSelectorControllerProps } from "./FlashcardSelectorController.types";
 
 export function FlashcardSelectorController<T extends FieldValues>({
   control,
@@ -19,6 +11,7 @@ export function FlashcardSelectorController<T extends FieldValues>({
   placeholder,
   error,
   disabled,
+  filters = { status: "Published" },
 }: FlashcardSelectorControllerProps<T>) {
   return (
     <Controller
@@ -32,6 +25,7 @@ export function FlashcardSelectorController<T extends FieldValues>({
           placeholder={placeholder}
           error={error || fieldState.error?.message}
           disabled={disabled}
+          filters={filters}
         />
       )}
     />

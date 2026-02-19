@@ -18,6 +18,7 @@ export function AdminTagSelector({
   error,
   label,
   disabled,
+  filters,
 }: AdminTagSelectorProps) {
   const [open, setOpen] = React.useState(false);
   const {
@@ -31,7 +32,7 @@ export function AdminTagSelector({
     fetchNextPage,
     handleToggleTag,
     handleRemoveTag,
-  } = useAdminTagSelector(value, onChange);
+  } = useAdminTagSelector(value, onChange, filters);
 
   const { ref: loadMoreRef, inView } = useInView({
     threshold: 0,

@@ -11,6 +11,7 @@ export function TagSelectorController<T extends FieldValues>({
   placeholder,
   error,
   disabled,
+  filters,
 }: TagSelectorControllerProps<T>) {
   return (
     <Controller
@@ -24,6 +25,7 @@ export function TagSelectorController<T extends FieldValues>({
           placeholder={placeholder}
           error={error || fieldState.error?.message}
           disabled={disabled}
+          filters={filters}
         />
       )}
     />

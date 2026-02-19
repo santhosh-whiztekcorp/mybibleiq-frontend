@@ -15,22 +15,11 @@ import { ContentStep } from "./ContentStep";
 import { SuccessCompletionStep } from "./SuccessCompletionStep";
 import { useQuestStageForm } from "./QuestStageForm.hooks";
 import { useStepManager } from "@/hooks/useStepManager";
-import type { QuestStageFormProps } from "./QuestStageForm.types";
+import type { QuestStageFormContentProps, QuestStageFormProps } from "./QuestStageForm.types";
 import type { CreateAdminQuestStageInput } from "@/resources/admin-quest";
 import { cn } from "@/lib/utils";
 
 const STEP_LABELS = ["Basic Details", "Verse", "Content", "Success Completion", "Failure Completion"];
-
-type QuestStageFormContentProps = {
-  step: number;
-  isFirst: boolean;
-  isLast: boolean;
-  isEditMode: boolean;
-  isMutationLoading: boolean;
-  onNext: () => void;
-  onPrev: () => void;
-  onCancel: () => void;
-};
 
 function QuestStageFormContent({
   step,

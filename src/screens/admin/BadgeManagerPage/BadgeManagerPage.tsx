@@ -238,6 +238,7 @@ export function BadgeManagerPage() {
         isOpen={!!actionBadge}
         onClose={() => setActionBadge(null)}
         badgeId={actionBadge?.id}
+        badgeName={actionBadge?.name}
         action={actionBadge?.action || null}
       />
     </div>

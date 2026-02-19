@@ -14,7 +14,7 @@ import { BadgeStatusActionModalProps } from "./BadgeStatusActionModal.types";
 import { useBadgeStatusActionModal } from "./BadgeStatusActionModal.hooks";
 
 export function BadgeStatusActionModal(props: BadgeStatusActionModalProps) {
-  const { badgeId, action, isOpen, onClose } = props;
+  const { badgeId, badgeName, action, isOpen, onClose } = props;
   const { handleAction, isPending } = useBadgeStatusActionModal(props);
 
   const confirmAction = () => {
@@ -28,21 +28,30 @@ export function BadgeStatusActionModal(props: BadgeStatusActionModalProps) {
       case "Publish":
         return {
           title: "Publish Badge",
-          description: "This badge will determine visible on the platform. Users can start earning it immediately.",
+          description: "This badge will become visible on the platform. Users can start earning it immediately.",
           confirmText: "Publish",
+          variant: "actionPublish" as const,
         };
       case "Archive":
         return {
           title: "Archive Badge",
-          description:
-            "This badge will no longer be attainable. Existing earners will keep it, but it will be hidden from new discovery.",
+          description: `Are you sure you want to archive the badge ${badgeName ? `"${badgeName}"` : ""}? This badge will no longer be attainable. Existing earners will keep it, but it will be hidden from new discovery.`,
           confirmText: "Archive",
+          variant: "actionArchive" as const,
+        };
+      case "Clone":
+        return {
+          title: "Clone Badge",
+          description: `Are you sure you want to clone the badge ${badgeName ? `"${badgeName}"` : ""}? This will create a new draft copy of the badge.`,
+          confirmText: "Clone",
+          variant: "actionClone" as const,
         };
       default:
         return {
           title: "Confirm Action",
           description: "Are you sure you want to proceed?",
           confirmText: "Confirm",
+          variant: "default" as const,
         };
     }
   };
@@ -60,13 +69,7 @@ export function BadgeStatusActionModal(props: BadgeStatusActionModalProps) {
           <Button type="button" variant="outline" onClick={onClose} disabled={isPending}>
             Cancel
           </Button>
-          <Button
-            type="button"
-            variant="default" // Using default mostly, or I could use a specific variant if defined
-            onClick={confirmAction}
-            disabled={isPending}
-            className={action === "Archive" ? "bg-orange-600 hover:bg-orange-700" : ""}
-          >
+          <Button type="button" variant={details.variant} onClick={confirmAction} disabled={isPending}>
             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {details.confirmText}
           </Button>

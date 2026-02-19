@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
+import { SortingState } from "@tanstack/react-table";
 import {
   useAdminMediaFilterStore,
   useAdminMediaList,
@@ -104,6 +105,18 @@ export const useMediaLibraryManagerPage = () => {
     [setFilters]
   );
 
+  const handleDataTableSortChange = useCallback(
+    (sorting: SortingState) => {
+      if (sorting.length > 0) {
+        const { id, desc } = sorting[0];
+        setFilters({ sort: desc ? `-${id}` : id });
+      } else {
+        setFilters({ sort: "-createdAt" }); // Default sort
+      }
+    },
+    [setFilters]
+  );
+
   const sortOptions = useMemo(
     () => [
       { label: "Newest First", value: "-createdAt" },
@@ -199,6 +212,7 @@ export const useMediaLibraryManagerPage = () => {
     handleTypeFilterChange,
     handlePaginationChange,
     handleSortChange,
+    handleDataTableSortChange,
     sortOptions,
     handleCreate,
     handleEdit,

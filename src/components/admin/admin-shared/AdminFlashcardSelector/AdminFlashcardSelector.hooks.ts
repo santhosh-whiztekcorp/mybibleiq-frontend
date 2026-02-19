@@ -1,13 +1,18 @@
 import * as React from "react";
-import { useAdminFlashcardList } from "@/resources/admin-flashcard";
+import { AdminFlashcardListInput, useAdminFlashcardList } from "@/resources/admin-flashcard";
 import { useDebounce } from "@/hooks/useDebounce";
 import { AdminFlashcardSummary } from "@/resources/admin-flashcard";
 
-export const useAdminFlashcardSelector = (value: string[], onChange: (value: string[]) => void) => {
+export const useAdminFlashcardSelector = (
+  value: string[],
+  onChange: (value: string[]) => void,
+  filters: Omit<AdminFlashcardListInput, "page" | "pageSize" | "sort"> = {}
+) => {
   const [searchValue, setSearchValue] = React.useState("");
   const debouncedSearch = useDebounce(searchValue, 300);
 
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useAdminFlashcardList({
+    ...filters,
     q: debouncedSearch || undefined,
     pageSize: 20,
   });

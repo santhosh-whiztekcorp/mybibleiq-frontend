@@ -70,6 +70,13 @@ export const QUESTION_DIFFICULTY_LABELS: Record<QuestionDifficulty, string> = {
   HARD: "Hard",
 };
 
+/* ---- Question Difficulty Points Range ---- */
+export const QUESTION_DIFFICULTY_POINTS_RANGE: Record<QuestionDifficulty, { min: number; max: number }> = {
+  EASY: { min: 5, max: 10 },
+  MEDIUM: { min: 10, max: 15 },
+  HARD: { min: 15, max: 20 },
+};
+
 /* ---- Quiz Status Actions ---- */
 export const QUIZ_STATUS_ACTIONS = QuizStatusActionEnum.options;
 export const QUIZ_STATUS_ACTION_LABELS: Record<QuizStatusAction, string> = {

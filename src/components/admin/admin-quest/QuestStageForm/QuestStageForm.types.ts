@@ -8,3 +8,14 @@ export type QuestStageFormProps = {
   onSuccess?: () => void;
   onClose?: () => void;
 };
+
+export type QuestStageFormContentProps = {
+  step: number;
+  isFirst: boolean;
+  isLast: boolean;
+  isEditMode: boolean;
+  isMutationLoading: boolean;
+  onNext: () => void;
+  onPrev: () => void;
+  onCancel: () => void;
+};

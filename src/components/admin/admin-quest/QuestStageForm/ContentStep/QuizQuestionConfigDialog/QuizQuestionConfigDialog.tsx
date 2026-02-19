@@ -1,12 +1,15 @@
 "use client";
 
-import * as React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
-import { QUESTION_DIFFICULTY_LABELS, QUESTION_KIND_LABELS } from "@/resources/admin-quiz/admin-quiz.constants";
+import {
+  QUESTION_DIFFICULTY_LABELS,
+  QUESTION_KIND_LABELS,
+  QUESTION_DIFFICULTY_POINTS_RANGE,
+} from "@/resources/admin-quiz/admin-quiz.constants";
 import { SliderController } from "@/components/form-controllers/SliderController";
 import { useQuizQuestionConfigDialog } from "./QuizQuestionConfigDialog.hooks";
 import type { QuizQuestionConfigDialogProps } from "./QuizQuestionConfigDialog.types";
@@ -102,6 +105,12 @@ export function QuizQuestionConfigDialog(props: QuizQuestionConfigDialogProps) {
                             className="flex-1"
                             onClick={() => {
                               setValue(`questionOverrides.${index}.difficultyOverride`, "EASY");
+                              const range = QUESTION_DIFFICULTY_POINTS_RANGE.EASY;
+                              const currentPoints = watch(`questionOverrides.${index}.pointsOverride`) ?? defaultPoints;
+                              let newPoints = currentPoints;
+                              if (newPoints > range.max) newPoints = range.max;
+                              if (newPoints < range.min) newPoints = range.min;
+                              setValue(`questionOverrides.${index}.pointsOverride`, newPoints);
                             }}
                           >
                             {QUESTION_DIFFICULTY_LABELS.EASY}
@@ -113,6 +122,12 @@ export function QuizQuestionConfigDialog(props: QuizQuestionConfigDialogProps) {
                             className="flex-1"
                             onClick={() => {
                               setValue(`questionOverrides.${index}.difficultyOverride`, "MEDIUM");
+                              const range = QUESTION_DIFFICULTY_POINTS_RANGE.MEDIUM;
+                              const currentPoints = watch(`questionOverrides.${index}.pointsOverride`) ?? defaultPoints;
+                              let newPoints = currentPoints;
+                              if (newPoints > range.max) newPoints = range.max;
+                              if (newPoints < range.min) newPoints = range.min;
+                              setValue(`questionOverrides.${index}.pointsOverride`, newPoints);
                             }}
                           >
                             {QUESTION_DIFFICULTY_LABELS.MEDIUM}
@@ -124,6 +139,12 @@ export function QuizQuestionConfigDialog(props: QuizQuestionConfigDialogProps) {
                             className="flex-1"
                             onClick={() => {
                               setValue(`questionOverrides.${index}.difficultyOverride`, "HARD");
+                              const range = QUESTION_DIFFICULTY_POINTS_RANGE.HARD;
+                              const currentPoints = watch(`questionOverrides.${index}.pointsOverride`) ?? defaultPoints;
+                              let newPoints = currentPoints;
+                              if (newPoints > range.max) newPoints = range.max;
+                              if (newPoints < range.min) newPoints = range.min;
+                              setValue(`questionOverrides.${index}.pointsOverride`, newPoints);
                             }}
                           >
                             {QUESTION_DIFFICULTY_LABELS.HARD}
@@ -138,8 +159,8 @@ export function QuizQuestionConfigDialog(props: QuizQuestionConfigDialogProps) {
                           name={`questionOverrides.${index}.pointsOverride`}
                           label={`Points${hasPointsOverride ? " (Override)" : ` (Default: ${defaultPoints})`}`}
                           variant="adminPrimary"
-                          min={0}
-                          max={20}
+                          min={QUESTION_DIFFICULTY_POINTS_RANGE[currentDifficulty]?.min || 5}
+                          max={QUESTION_DIFFICULTY_POINTS_RANGE[currentDifficulty]?.max || 10}
                           step={1}
                         />
                       </div>

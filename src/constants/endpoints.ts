@@ -268,6 +268,41 @@ export const endpoints = {
     /* ---- DELETE ---- */
     delete: (userId: string) => `/admin/users/${userId}`,
   },
+  groupManagementAdmin: {
+    /* ---- GET ---- */
+    getStats: "/admin/groups/stats",
+    getAll: "/admin/groups",
+    getById: (groupId: string) => `/admin/groups/${groupId}`,
+    getReports: (groupId: string) => `/admin/groups/${groupId}/reports`,
+    getAnnouncements: (groupId: string) => `/admin/groups/${groupId}/announcements`,
+    getAnnouncementById: (groupId: string, announcementId: string) =>
+      `/admin/groups/${groupId}/announcements/${announcementId}`,
+    getAnnouncementReports: (groupId: string, announcementId: string) =>
+      `/admin/groups/${groupId}/announcements/${announcementId}/reports`,
+    getActivityLog: (groupId: string) => `/admin/groups/${groupId}/activity-log`,
+    getMembers: (groupId: string) => `/admin/groups/${groupId}/members`,
+    getMemberById: (groupId: string, memberId: string) => `/admin/groups/${groupId}/members/${memberId}`,
+    getAssignments: (groupId: string) => `/admin/groups/${groupId}/assignments`,
+    getLeaderboard: (groupId: string) => `/admin/groups/${groupId}/leaderboard`,
+
+    /* ---- POST ---- */
+    warnLeader: (groupId: string) => `/admin/groups/${groupId}/warn`,
+    dismissReport: (groupId: string, reportId: string) => `/admin/groups/${groupId}/reports/${reportId}/dismiss`,
+    rejectAnnouncement: (groupId: string, announcementId: string) =>
+      `/admin/groups/${groupId}/announcements/${announcementId}/reject`,
+    exportActivityLog: (groupId: string) => `/admin/groups/${groupId}/activity-log/export`,
+    removeMember: (groupId: string, memberId: string) => `/admin/groups/${groupId}/members/${memberId}/remove`,
+    banMember: (groupId: string, memberId: string) => `/admin/groups/${groupId}/members/${memberId}/ban`,
+    banGroup: (groupId: string) => `/admin/groups/${groupId}/ban`,
+    unbanGroup: (groupId: string) => `/admin/groups/${groupId}/unban`,
+
+    /* ---- PUT ---- */
+    updateSettings: (groupId: string) => `/admin/groups/${groupId}/settings`,
+    changeRole: (groupId: string, userId: string) => `/admin/groups/${groupId}/members/${userId}/role`,
+
+    /* ---- DELETE ---- */
+    deleteGroup: (groupId: string) => `/admin/groups/${groupId}`,
+  },
   entitlementAdmin: {
     roles: {
       /* ---- GET ---- */
@@ -317,7 +352,7 @@ export const endpoints = {
     /* ---- GET ---- */
     get: "/profile",
     getBadges: "/profile/badges",
-    getTotalPoints: "/profile/total-points",
+    getBasic: "/profile/basic",
 
     /* ---- PUT ---- */
     update: "/profile",
@@ -392,6 +427,11 @@ export const endpoints = {
 
     /* ---- DELETE ---- */
     deleteGroup: (groupId: string) => `/groups/${groupId}`,
+    report: (groupId: string) => `/groups/${groupId}/report`,
+    reportAnnouncement: (groupId: string, announcementId: string) =>
+      `/groups/${groupId}/announcements/${announcementId}/report`,
+    markAnnouncementViewed: (groupId: string, announcementId: string) =>
+      `/groups/${groupId}/announcements/${announcementId}/view`,
   },
   leaderboardUser: {
     /* ---- GET ---- */
@@ -433,9 +473,70 @@ export const endpoints = {
     /* ---- DELETE ---- */
     deleteFriend: (friendshipId: string) => `/user/friends/${friendshipId}`,
   },
-  chatbotUser: {
+  lobby: {
+    /* ---- POST ---- */
+    create: "/lobbies",
+    getById: (lobbyId: string) => `/lobbies/${lobbyId}`,
+    invite: (lobbyId: string) => `/lobbies/${lobbyId}/invite`,
+    rejectInvitation: (lobbyId: string, invitationId: string) =>
+      `/lobbies/${lobbyId}/invitations/${invitationId}/reject`,
+    leave: (lobbyId: string) => `/lobbies/${lobbyId}/leave`,
+    start: (lobbyId: string) => `/lobbies/${lobbyId}/games`,
+    close: (lobbyId: string) => `/lobbies/${lobbyId}/close`,
+    getInvitations: "/lobbies/invitations",
+    acceptInvitation: (lobbyId: string, invitationId: string) =>
+      `/lobbies/${lobbyId}/invitations/${invitationId}/accept`,
+
+    /* ---- DELETE ---- */
+    delete: (lobbyId: string) => `/lobbies/${lobbyId}`,
+  },
+  matchmaking: {
+    /* ---- POST ---- */
+    join: "/matchmaking",
+    cancel: "/matchmaking/cancel",
+
     /* ---- GET ---- */
+    getStatus: "/matchmaking",
+  },
+  game: {
+    /* ---- POST ---- */
+    submit: (gameId: string) => `/games/${gameId}/submit`,
+
+    /* ---- GET ---- */
+    getStatus: (lobbyId: string, gameId: string) => `/lobbies/${lobbyId}/games/${gameId}`,
+    getResults: (gameId: string) => `/games/${gameId}/results`,
+    getLobbyGameResults: (lobbyId: string, gameId: string) => `/lobbies/${lobbyId}/games/${gameId}/results`,
+  },
+  chatbotUser: {
+    /* ---- Quick Actions ---- */
+    quickActions: "/chatbot/quick-actions",
+
+    /* ---- Conversations ---- */
+    createConversation: "/chatbot/conversations",
+    getConversation: (id: string) => `/chatbot/conversations/${id}`,
+    endConversation: (id: string) => `/chatbot/conversations/${id}/end`,
+
+    /* ---- FAQ Matching ---- */
+    faqMatch: "/chatbot/faq-match",
+
+    /* ---- Config ---- */
+    config: "/chatbot/config",
+
+    /* ---- Legacy Bible RAG ---- */
     bibleRag: "/search/bible/rag",
+  },
+  solo: {
+    /* ---- GET ---- */
+    getQuiz: (quizTypeId: string) => `/solo/quiz-types/${quizTypeId}/quiz`,
+
+    /* ---- POST ---- */
+    answerQuestion: (quizTypeId: string, questionId: string) =>
+      `/solo/quiz-types/${quizTypeId}/questions/${questionId}/answer`,
+    submit: (quizTypeId: string) => `/solo/quiz-types/${quizTypeId}/submit`,
+  },
+  presence: {
+    /* ---- POST ---- */
+    heartbeat: "/presence/heartbeat",
   },
   tagsAdmin: {
     /* ---- GET ---- */
@@ -459,6 +560,70 @@ export const endpoints = {
       create: "/admin/tags/categories",
       updateById: (id: string) => `/admin/tags/categories/${id}`,
       deleteById: (id: string) => `/admin/tags/categories/${id}`,
+    },
+  },
+  globalUpdatesAdmin: {
+    /* ---- GET ---- */
+    getAll: "/admin/global-updates",
+    getStats: "/admin/global-updates/stats",
+    getById: (id: string) => `/admin/global-updates/${id}`,
+
+    /* ---- POST ---- */
+    create: "/admin/global-updates",
+    deliver: (id: string) => `/admin/global-updates/${id}/deliver`,
+
+    /* ---- PUT ---- */
+    updateById: (id: string) => `/admin/global-updates/${id}`,
+
+    /* ---- DELETE ---- */
+    deleteById: (id: string) => `/admin/global-updates/${id}`,
+  },
+  globalUpdatesUser: {
+    /* ---- GET ---- */
+    getAll: "/user/global-updates",
+    getUnreadCount: "/user/global-updates/unread-count",
+
+    /* ---- POST ---- */
+    markAllAsRead: "/user/global-updates/mark-all-read",
+    markAsRead: (id: string) => `/user/global-updates/${id}/read`,
+    dismiss: (id: string) => `/user/global-updates/${id}/dismiss`,
+  },
+  userNotifications: {
+    /* ---- GET ---- */
+    getAll: "/user/invitations",
+    getUnreadCount: "/user/invitations/unread-count",
+
+    /* ---- POST ---- */
+    markAllRead: "/user/invitations/mark-all-read",
+    markAsRead: (id: string) => `/user/invitations/${id}/mark-read`,
+    dismiss: (id: string) => `/user/invitations/${id}/dismiss`,
+  },
+  adminAnalytics: {
+    /* ---- User Activity ---- */
+    userActivity: {
+      summary: "/admin/analytics/user-activity/summary",
+      registrationsAndGrowth: "/admin/analytics/user-activity/registrations-and-growth",
+      topScorers: "/admin/analytics/user-activity/top-scorers",
+      usersByLocation: "/admin/analytics/user-activity/users-by-location",
+    },
+
+    /* ---- Group Engagement ---- */
+    groupEngagement: {
+      mostActiveGroups: "/admin/analytics/group-engagement/most-active-groups",
+    },
+
+    /* ---- Content Performance ---- */
+    contentPerformance: {
+      mostPopularQuizzes: "/admin/analytics/content-performance/most-popular-quizzes",
+      mostPopularQuests: "/admin/analytics/content-performance/most-popular-quests",
+      highAbandonRate: "/admin/analytics/content-performance/high-abandon-rate",
+    },
+
+    /* ---- Feedback ---- */
+    feedback: {
+      summary: "/admin/analytics/feedback/summary",
+      categoryBreakdown: "/admin/analytics/feedback/category-breakdown",
+      recent: "/admin/analytics/feedback/recent",
     },
   },
 };

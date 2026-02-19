@@ -10,8 +10,8 @@ import Image from "next/image";
 export const useBadgeDataTableColumns = (
   onEdit?: (item: AdminBadgeSummary) => void,
   onDelete?: (item: AdminBadgeSummary) => void,
-  onPublish?: (badgeId: string) => void,
-  onArchive?: (badgeId: string) => void,
+  onPublish?: (item: AdminBadgeSummary) => void,
+  onArchive?: (item: AdminBadgeSummary) => void,
   onClone?: (item: AdminBadgeSummary) => void
 ): ColumnDef<AdminBadgeSummary>[] => {
   return useMemo(
@@ -101,7 +101,7 @@ export const useBadgeDataTableColumns = (
                     <Edit className="h-3 w-3" />
                     <span className="sr-only">Edit</span>
                   </Button>
-                  <Button variant="actionPublish" size="xs" onClick={() => onPublish?.(item.id)}>
+                  <Button variant="actionPublish" size="xs" onClick={() => onPublish?.(item)}>
                     <Send className="h-3 w-3" />
                     <span className="sr-only">Publish</span>
                   </Button>
@@ -113,7 +113,7 @@ export const useBadgeDataTableColumns = (
               )}
               {item.status === "Published" && (
                 <>
-                  <Button variant="actionArchive" size="xs" onClick={() => onArchive?.(item.id)}>
+                  <Button variant="actionArchive" size="xs" onClick={() => onArchive?.(item)}>
                     <Archive className="h-3 w-3" />
                     <span className="sr-only">Archive</span>
                   </Button>

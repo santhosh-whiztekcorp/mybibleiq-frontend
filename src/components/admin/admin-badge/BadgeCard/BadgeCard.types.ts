@@ -4,7 +4,7 @@ export type BadgeCardProps = {
   item: AdminBadgeSummary;
   onEdit?: (item: AdminBadgeSummary) => void;
   onDelete?: (item: AdminBadgeSummary) => void;
-  onPublish?: (badgeId: string) => void;
-  onArchive?: (badgeId: string) => void;
+  onPublish?: (item: AdminBadgeSummary) => void;
+  onArchive?: (item: AdminBadgeSummary) => void;
   onClone?: (item: AdminBadgeSummary) => void;
 };

@@ -35,6 +35,7 @@ export function MediaLibraryManagerPage() {
     handleTypeFilterChange,
     handlePaginationChange,
     handleSortChange,
+    handleDataTableSortChange,
     sortOptions,
     handleCreate,
     handleEdit,
@@ -171,6 +172,17 @@ export function MediaLibraryManagerPage() {
               pageSize: filterStore.pageSize || 10,
             }}
             onPaginationChange={handlePaginationChange}
+            sorting={
+              filterStore.sort
+                ? [
+                    {
+                      id: filterStore.sort.replace("-", ""),
+                      desc: filterStore.sort.startsWith("-"),
+                    },
+                  ]
+                : []
+            }
+            onSortingChange={handleDataTableSortChange}
             onEdit={handleEdit}
             onDelete={handleDelete}
             onPublish={handlePublish}

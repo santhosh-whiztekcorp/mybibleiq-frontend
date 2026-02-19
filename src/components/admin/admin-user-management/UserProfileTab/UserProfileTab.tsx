@@ -95,7 +95,7 @@ export function UserProfileTab({ userId }: UserProfileTabProps) {
             ) : (
               <div className="w-16 h-16 rounded-full bg-[#E2E8F0] flex items-center justify-center border-2 border-[#E2E8F0]">
                 <span className="text-xl font-bold text-[#656A73]">
-                  {profile.name
+                  {(profile.name || profile.username || "U")
                     .split(" ")
                     .map((n) => n.charAt(0))
                     .join("")
@@ -138,7 +138,7 @@ export function UserProfileTab({ userId }: UserProfileTabProps) {
 
       {/* Stats Section */}
       {stats && (
-        <div className="grid grid-cols-3 md:grid-cols-1 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <Card>
             <CardContent className="pt-6">
               <div className="flex flex-col items-center gap-2">

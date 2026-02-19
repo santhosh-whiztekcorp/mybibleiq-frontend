@@ -106,7 +106,7 @@ export function QuestForm(props: QuestFormProps) {
                           label="Theme"
                           placeholder="Select theme (optional)"
                           options={QUEST_THEME_KEYS.map((t) => ({
-                            label: t.charAt(0).toUpperCase() + t.slice(1),
+                            label: (t || "").charAt(0).toUpperCase() + (t || "").slice(1),
                             value: t,
                           }))}
                         />

@@ -1,4 +1,5 @@
 import { AdminMediaSummary } from "@/resources/admin-media/admin-media.types";
+import { SortingState } from "@tanstack/react-table";
 
 export type MediaDataTableProps = {
   items: AdminMediaSummary[];
@@ -9,6 +10,8 @@ export type MediaDataTableProps = {
     pageSize: number;
   };
   onPaginationChange: (pagination: { pageIndex: number; pageSize: number }) => void;
+  sorting?: SortingState;
+  onSortingChange?: (sorting: SortingState) => void;
   onEdit?: (item: AdminMediaSummary) => void;
   onDelete?: (item: AdminMediaSummary) => void;
   onPublish?: (item: AdminMediaSummary) => void;

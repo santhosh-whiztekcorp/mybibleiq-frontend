@@ -30,7 +30,9 @@ export const useUserDataTableColumns = (onView?: (item: AdminUserListItem) => vo
                 />
               ) : (
                 <div className="w-10 h-10 rounded-full bg-[#E2E8F0] flex items-center justify-center border-2 border-[#E2E8F0] shrink-0">
-                  <span className="text-sm font-bold text-[#656A73]">{item.name.charAt(0).toUpperCase()}</span>
+                  <span className="text-sm font-bold text-[#656A73]">
+                    {(item.name || item.username || "U").charAt(0).toUpperCase()}
+                  </span>
                 </div>
               )}
               <div className="flex flex-col min-w-0">

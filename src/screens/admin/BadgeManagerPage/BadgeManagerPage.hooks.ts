@@ -6,14 +6,13 @@ import {
   AdminBadgeSummary,
   BadgeStatusAction,
 } from "@/resources/admin-badge";
-import Toast from "@/lib/toast";
 
 export const useBadgeManagerPage = () => {
   // Modal States
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingBadge, setEditingBadge] = useState<AdminBadgeSummary | undefined>(undefined);
   const [deletingBadge, setDeletingBadge] = useState<AdminBadgeSummary | undefined>(undefined);
-  const [actionBadge, setActionBadge] = useState<{ id: string; action: BadgeStatusAction } | null>(null);
+  const [actionBadge, setActionBadge] = useState<{ id: string; name: string; action: BadgeStatusAction } | null>(null);
 
   // Data Fetching
   const filters = useAdminBadgeFilterStore();
@@ -34,16 +33,16 @@ export const useBadgeManagerPage = () => {
     setDeletingBadge(badge);
   };
 
-  const handlePublish = (id: string) => {
-    setActionBadge({ id, action: "Publish" });
+  const handlePublish = (badge: AdminBadgeSummary) => {
+    setActionBadge({ id: badge.id, name: badge.name, action: "Publish" });
   };
 
-  const handleArchive = (id: string) => {
-    setActionBadge({ id, action: "Archive" });
+  const handleArchive = (badge: AdminBadgeSummary) => {
+    setActionBadge({ id: badge.id, name: badge.name, action: "Archive" });
   };
 
-  const handleClone = async () => {
-    Toast.show({ type: "info", text1: "Cloning feature coming soon", text2: "Please recreate manually for now." });
+  const handleClone = async (badge: AdminBadgeSummary) => {
+    setActionBadge({ id: badge.id, name: badge.name, action: "Clone" });
   };
 
   const handleSearch = (value: string) => {

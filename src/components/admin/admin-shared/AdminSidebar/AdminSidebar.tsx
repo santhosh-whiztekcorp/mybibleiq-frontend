@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
-import { TaskListIcon, BookOpenIcon, TrophyIcon, CircleQuestionIcon } from "@/assets";
+import { TaskListIcon, BookOpenIcon, TrophyIcon, CircleQuestionIcon, DashboardIcon } from "@/assets";
 import { pngIcons } from "@/assets";
 import {
   Sidebar,
@@ -22,6 +22,11 @@ import { cn } from "@/lib/utils";
 import { ROUTES } from "@/constants/routes";
 
 const menuItems = [
+  {
+    title: "Dashboard",
+    url: ROUTES.DASHBOARD,
+    icon: DashboardIcon,
+  },
   {
     title: "Spirit Food Manager",
     url: ROUTES.SPIRIT_FOOD,
@@ -78,7 +83,7 @@ export function AdminSidebar() {
             <SidebarMenu className="overflow-visible!">
               {menuItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = pathname === item.url || pathname?.startsWith(item.url + "/");
+                const isActive = pathname === item.url || pathname?.startsWith(item.url);
                 return (
                   <SidebarMenuItem key={item.url} className="overflow-visible!">
                     <SidebarMenuButton

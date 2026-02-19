@@ -31,7 +31,9 @@ const UserCardComponent = (props: UserCardProps) => {
           />
         ) : (
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#F3F4F6] border border-[#E9EAEC]">
-            <span className="text-xl font-bold text-[#656A73]">{item.name.charAt(0).toUpperCase()}</span>
+            <span className="text-xl font-bold text-[#656A73]">
+              {(item.name || item.username || "U").charAt(0).toUpperCase()}
+            </span>
           </div>
         )}
       </div>

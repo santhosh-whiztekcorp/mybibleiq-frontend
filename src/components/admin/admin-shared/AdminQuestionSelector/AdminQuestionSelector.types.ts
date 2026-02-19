@@ -1,3 +1,5 @@
+import { AdminQuestionListInput } from "@/resources/admin-question";
+
 export type AdminQuestionSelectorProps = {
   value: string[]; // array of question IDs
   onChange: (value: string[]) => void;
@@ -6,4 +8,5 @@ export type AdminQuestionSelectorProps = {
   label?: string;
   disabled?: boolean;
   trigger?: React.ReactNode;
+  filters?: Omit<AdminQuestionListInput, "page" | "pageSize" | "sort">;
 };

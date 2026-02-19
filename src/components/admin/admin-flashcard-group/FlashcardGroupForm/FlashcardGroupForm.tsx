@@ -78,6 +78,9 @@ export function FlashcardGroupForm(props: FlashcardGroupFormProps) {
                   label="Flashcards"
                   placeholder="Select flashcards..."
                   error={errors.selectedFlashcardIds?.message}
+                  filters={{
+                    status: "Published",
+                  }}
                 />
               </div>
             </ScrollArea>

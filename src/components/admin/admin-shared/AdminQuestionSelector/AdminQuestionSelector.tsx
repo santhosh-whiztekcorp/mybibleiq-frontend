@@ -21,6 +21,7 @@ export function AdminQuestionSelector({
   label,
   disabled,
   trigger,
+  filters,
 }: AdminQuestionSelectorProps) {
   const [open, setOpen] = React.useState(false);
   const {
@@ -32,7 +33,7 @@ export function AdminQuestionSelector({
     isFetchingNextPage,
     fetchNextPage,
     handleToggleQuestion,
-  } = useAdminQuestionSelector(value, onChange);
+  } = useAdminQuestionSelector(value, onChange, filters);
 
   const { ref: loadMoreRef, inView } = useInView({
     threshold: 0,

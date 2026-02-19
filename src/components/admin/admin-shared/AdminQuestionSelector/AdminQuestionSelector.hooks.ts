@@ -1,10 +1,14 @@
 "use client";
 
 import { useMemo, useState, useCallback } from "react";
-import { useAdminQuestionList } from "@/resources/admin-question";
+import { AdminQuestionListInput, useAdminQuestionList } from "@/resources/admin-question";
 import { useDebounce } from "@/hooks/useDebounce";
 
-export const useAdminQuestionSelector = (value: string[], onChange: (value: string[]) => void) => {
+export const useAdminQuestionSelector = (
+  value: string[],
+  onChange: (value: string[]) => void,
+  filters?: Omit<AdminQuestionListInput, "page" | "pageSize" | "sort">
+) => {
   const [searchValue, setSearchValue] = useState("");
   const debouncedSearch = useDebounce(searchValue, 300);
 
@@ -15,9 +19,9 @@ export const useAdminQuestionSelector = (value: string[], onChange: (value: stri
     isFetchingNextPage,
     fetchNextPage,
   } = useAdminQuestionList({
+    ...filters,
     q: debouncedSearch || undefined,
     pageSize: 20,
-    status: "Published",
   });
 
   const allQuestions = useMemo(() => listData?.pages.flatMap((page) => page?.items ?? []) ?? [], [listData]);

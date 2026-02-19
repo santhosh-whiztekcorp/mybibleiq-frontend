@@ -24,7 +24,7 @@ export const useMediaStats = (stats?: AdminMediaTypeStatsResponse) => {
         }
 
         return {
-          label: stat.type.charAt(0) + stat.type.slice(1).toLowerCase(),
+          label: (stat.type || "").charAt(0) + (stat.type || "").slice(1).toLowerCase(),
           value: stat.count,
           className,
           Icon,

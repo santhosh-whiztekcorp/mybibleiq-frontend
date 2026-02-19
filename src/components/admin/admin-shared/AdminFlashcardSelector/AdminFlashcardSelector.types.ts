@@ -1,3 +1,5 @@
+import { AdminFlashcardListInput } from "@/resources/admin-flashcard";
+
 export type AdminFlashcardSelectorProps = {
   value: string[];
   onChange: (value: string[]) => void;
@@ -5,6 +7,7 @@ export type AdminFlashcardSelectorProps = {
   error?: string;
   label?: string;
   disabled?: boolean;
+  filters?: Omit<AdminFlashcardListInput, "page" | "pageSize" | "sort">;
 };
 
 export type SelectedFlashcard = {

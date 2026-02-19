@@ -88,7 +88,7 @@ export function BadgeCard({ item, onEdit, onDelete, onPublish, onArchive, onClon
                 variant="actionPublish"
                 size="sm"
                 className="flex-1 h-8 text-[10px] px-2"
-                onClick={() => onPublish?.(item.id)}
+                onClick={() => onPublish?.(item)}
               >
                 <Send className="size-3" />
                 Publish
@@ -110,7 +110,7 @@ export function BadgeCard({ item, onEdit, onDelete, onPublish, onArchive, onClon
                 variant="actionArchive"
                 size="sm"
                 className="flex-1 h-8 text-[10px]"
-                onClick={() => onArchive?.(item.id)}
+                onClick={() => onArchive?.(item)}
               >
                 <Archive className="size-3" />
                 Archive

@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { DataTable } from "@/components/shared/DataTable";
 import { useBadgeDataTableColumns } from "./BadgeDataTable.hooks";
 import { BadgeDataTableProps } from "./BadgeDataTable.types";

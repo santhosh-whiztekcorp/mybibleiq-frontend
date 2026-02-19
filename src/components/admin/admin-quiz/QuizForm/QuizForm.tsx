@@ -18,7 +18,11 @@ import {
   SliderController,
 } from "@/components/form-controllers";
 import { AdminQuestionSelector } from "@/components/admin/admin-shared/AdminQuestionSelector";
-import { QUIZ_DIFFICULTY_OPTIONS, QUIZ_DIFFICULTY_LABELS } from "@/resources/admin-quiz/admin-quiz.constants";
+import {
+  QUIZ_DIFFICULTY_OPTIONS,
+  QUIZ_DIFFICULTY_LABELS,
+  QUESTION_DIFFICULTY_POINTS_RANGE,
+} from "@/resources/admin-quiz/admin-quiz.constants";
 import { useQuizForm } from "./QuizForm.hooks";
 import type { QuizFormProps, RadioOptionProps, GameModeCardProps } from "./QuizForm.types";
 import type { QuizRandomization, TimeLimitType, QuestionDifficulty } from "@/resources/admin-quiz/admin-quiz.types";
@@ -307,9 +311,20 @@ export function QuizForm(props: QuizFormProps) {
                                       size="xs"
                                       variant={variant}
                                       className="flex-1 h-8 text-[10px] font-bold transition-all"
-                                      onClick={() =>
-                                        form.setValue(`questions.${index}.difficulty`, diff as QuestionDifficulty)
-                                      }
+                                      onClick={() => {
+                                        const difficulty = diff as QuestionDifficulty;
+                                        form.setValue(`questions.${index}.difficulty`, difficulty);
+
+                                        // Adjust points to fit within new difficulty range
+                                        const currentPoints = form.getValues(`questions.${index}.points`) || 10;
+                                        const range = QUESTION_DIFFICULTY_POINTS_RANGE[difficulty];
+                                        let newPoints = currentPoints;
+
+                                        if (newPoints > range.max) newPoints = range.max;
+                                        if (newPoints < range.min) newPoints = range.min;
+
+                                        form.setValue(`questions.${index}.points`, newPoints);
+                                      }}
                                     >
                                       {diff}
                                     </Button>
@@ -323,8 +338,16 @@ export function QuizForm(props: QuizFormProps) {
                                 control={form.control}
                                 name={`questions.${index}.points`}
                                 label={`Points: ${form.watch(`questions.${index}.points`) || 10}`}
-                                min={5}
-                                max={20}
+                                min={
+                                  QUESTION_DIFFICULTY_POINTS_RANGE[
+                                    form.watch(`questions.${index}.difficulty`) as QuestionDifficulty
+                                  ]?.min || 5
+                                }
+                                max={
+                                  QUESTION_DIFFICULTY_POINTS_RANGE[
+                                    form.watch(`questions.${index}.difficulty`) as QuestionDifficulty
+                                  ]?.max || 10
+                                }
                                 step={1}
                               />
                             </div>
@@ -339,6 +362,9 @@ export function QuizForm(props: QuizFormProps) {
                     onChange={handleAddQuestions}
                     label=""
                     placeholder="Add Question"
+                    filters={{
+                      status: "Published",
+                    }}
                     trigger={
                       <Button
                         variant="outline"

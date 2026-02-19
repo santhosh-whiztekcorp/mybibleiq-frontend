@@ -17,6 +17,7 @@ export function AdminFlashcardSelector({
   error,
   label,
   disabled,
+  filters,
 }: AdminFlashcardSelectorProps) {
   const [open, setOpen] = React.useState(false);
   const {
@@ -30,7 +31,7 @@ export function AdminFlashcardSelector({
     fetchNextPage,
     handleToggleFlashcard,
     handleRemoveFlashcard,
-  } = useAdminFlashcardSelector(value, onChange);
+  } = useAdminFlashcardSelector(value, onChange, filters);
 
   const { ref: loadMoreRef, inView } = useInView({
     threshold: 0,

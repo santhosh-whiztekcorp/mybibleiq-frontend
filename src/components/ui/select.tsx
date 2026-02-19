@@ -20,7 +20,7 @@ function SelectValue({ ...props }: React.ComponentProps<typeof SelectPrimitive.V
 }
 
 const selectTriggerVariants = cva(
-  "data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive flex items-center justify-between gap-2 border whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/0 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/0 aria-invalid:border-destructive flex items-center justify-between gap-2 border whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
@@ -32,6 +32,8 @@ const selectTriggerVariants = cva(
           "bg-white border-[#E2E2E2] text-black rounded-lg px-3 py-2.5 text-xs font-semibold min-h-[44px] w-full",
         adminFilter:
           "bg-[#F3F3F5] border-[#F3F3F5] text-black rounded-lg px-3 py-3 text-xs font-semibold min-h-[44px] w-full flex-1",
+        adminQuaternary:
+          "bg-[#F3F3F5] border-[#F3F3F5] text-black rounded-full px-4 py-2 text-xs font-semibold min-h-[36px] w-auto",
         userPrimary:
           "bg-white border-[#D1D5DB] text-black rounded-lg px-3 py-3 text-xs font-semibold min-h-[44px] w-full",
         userGroup: "bg-white border-white text-black rounded-lg px-3 py-3 text-xs font-normal min-h-[42px] w-full",

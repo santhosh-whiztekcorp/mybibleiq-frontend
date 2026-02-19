@@ -21,7 +21,7 @@ export const useMediaDataTableColumns = (
   const columns: ColumnDef<AdminMediaSummary>[] = useMemo(
     () => [
       {
-        accessorKey: "thumbnail",
+        accessorKey: "title",
         header: "Media",
         cell: ({ row }) => {
           const item = row.original;

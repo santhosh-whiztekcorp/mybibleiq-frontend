@@ -7,4 +7,7 @@ export const ADMIN_ROUTES = {
   MEDIA_MANAGER: "/media-manager",
   QUEST_MANAGER: "/quest-manager",
   QUIZ_MANAGER: "/quiz-manager",
+  GROUP_MANAGER: "/group-manager",
+  GROUP_MANAGER_DETAIL: (groupId: string, view?: string) =>
+    `/group-manager/group?groupId=${groupId}${view ? "&view=" + view : ""}`,
 } as const;

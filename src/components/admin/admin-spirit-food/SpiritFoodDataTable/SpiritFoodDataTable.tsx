@@ -61,7 +61,7 @@ export function SpiritFoodDataTable({
       searchValue={searchValue}
       onSearchChange={onSearchChange}
       searchPlaceholder="Search by book, reference, date, maker or checker..."
-      showSearch={true}
+      showSearch={false}
       showPagination={true}
       entriesCount={items.length}
       entriesCountLabel="Spirit Food Entries"

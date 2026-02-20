@@ -118,6 +118,7 @@ export { default as ArchiveIcon } from "@/assets/icons/svg/archive.svg";
 export { default as AnswerRightIcon } from "@/assets/icons/svg/answer-right.svg";
 export { default as AnswerWrongIcon } from "@/assets/icons/svg/answer-wrong.svg";
 export { default as AnnouncementIcon } from "@/assets/icons/svg/announcement.svg";
+export { default as AnnouncementOutlinedIcon } from "@/assets/icons/svg/announcement-outlined.svg";
 export { default as BadgeBgShiningIcon } from "@/assets/icons/svg/badge-bg-shining.svg";
 export { default as BellIcon } from "@/assets/icons/svg/bell.svg";
 export { default as BellV2Icon } from "@/assets/icons/svg/bell-v2.svg";
@@ -137,6 +138,7 @@ export { default as ChevronDownIcon } from "@/assets/icons/svg/chevron-down.svg"
 export { default as CheckedGearIcon } from "@/assets/icons/svg/checked-gear.svg";
 export { default as CircleCheckIcon } from "@/assets/icons/svg/circle-check.svg";
 export { default as CircleQuestionIcon } from "@/assets/icons/svg/circle-question.svg";
+export { default as CircleSlashIcon } from "@/assets/icons/svg/circle-slash.svg";
 export { default as CopyIcon } from "@/assets/icons/svg/copy.svg";
 export { default as CrossIcon } from "@/assets/icons/svg/cross.svg";
 export { default as CrownIcon } from "@/assets/icons/svg/crown.svg";

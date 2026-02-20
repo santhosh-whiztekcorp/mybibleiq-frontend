@@ -61,7 +61,7 @@ export function AdminDashboardPage() {
             </TabsTrigger>
           </TabsList>
         </ScrollArea>
-        <div className="mt-4 md:bg-gray-50 md:border md:rounded-2xl md:p-4">
+        <div className="mt-4 2xl:bg-gray-50 2xl:border 2xl:rounded-2xl 2xl:p-4">
           <TabsContent value="user-activity">
             <UserActivity />
           </TabsContent>

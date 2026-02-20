@@ -89,6 +89,42 @@ export const BADGE_CONDITION_OPERATOR_LABELS: Record<BadgeConditionOperator, str
   LessThanOrEqual: "Less Than Or Equal",
 };
 
+/* ---- Badge Metric Options ---- */
+export const BADGE_METRIC_OPTIONS_BY_TRIGGER: Record<BadgeTriggerType, { value: string; label: string }[]> = {
+  TimeBased: [
+    { value: "DailyTimeMinutes", label: "Daily time (minutes)" },
+    { value: "TotalCumulativeTimeHours", label: "Total cumulative time (hours)" },
+    { value: "ExtendedSessionMinutes", label: "Extended session (minutes)" },
+  ],
+  StreakBased: [
+    { value: "ConsecutiveLoginDays", label: "Consecutive login days" },
+    { value: "DailyQuizStreak", label: "Daily quiz streak" },
+  ],
+  CountBased: [
+    { value: "TotalQuizzes", label: "Total quizzes completed" },
+    { value: "AudioQuizzes", label: "Audio quizzes completed" },
+    { value: "VideoQuizzes", label: "Video quizzes completed" },
+    { value: "SwordDrillCompleted", label: "Sword drill completed" },
+    { value: "QuestsCompleted", label: "Quests completed" },
+    { value: "WordsLearnedFlashcard", label: "Word learned (Flashcards)" },
+    // Achievement based metrics often fall under count or specific milestones
+    { value: "PerfectQuizScore", label: "Perfect quiz score (100%)" },
+    { value: "SpeedAchievementSeconds", label: "Speed achievement (Seconds)" },
+  ],
+  MilestoneBased: [
+    { value: "TotalXPEarned", label: "Total XP earned" },
+    { value: "BibleBooksStudied", label: "Bible books studied" },
+    { value: "VersesLearned", label: "Verses learned" },
+  ],
+  EngagementBased: [
+    { value: "CompleteReflections", label: "Complete reflections" },
+    { value: "SendEncouragementMessages", label: "Send encouragement messages" },
+    { value: "ShareProgressToFeed", label: "Share progress to feed" },
+    { value: "JoinGroupQuests", label: "Join group quests" },
+    { value: "ParticipateInSeasonalEvents", label: "Participate in seasonal events" },
+  ],
+};
+
 /* ---- Badge Status Actions ---- */
 export const BADGE_STATUS_ACTIONS = BadgeStatusActionEnum.options;
 export const BADGE_STATUS_ACTION_LABELS: Record<BadgeStatusAction, string> = {

@@ -1,11 +1,13 @@
 "use client";
 
 import React from "react";
-import { Plus, Upload } from "lucide-react";
+import { Plus, Upload, LayoutGrid, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SearchIcon } from "@/assets";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
+import { useAdminViewStore } from "@/store/useAdminViewStore";
 import {
   QuestionTypeStats,
   QuestionStatusStats,
@@ -67,6 +69,8 @@ export function QuestionManagerPage() {
     isImportModalOpen,
     setIsImportModalOpen,
   } = useQuestionManagerPage();
+
+  const { viewMode, setViewMode } = useAdminViewStore();
 
   return (
     <div className="w-full space-y-4 pt-2">
@@ -184,26 +188,76 @@ export function QuestionManagerPage() {
 
       {/* Questions Content */}
       <div className="space-y-4">
-        {/* Desktop View: Data Table */}
-        <div className="hidden md:block">
-          <QuestionDataTable
-            items={questions}
-            isLoading={isLoading}
-            total={total}
-            pagination={{
-              pageIndex: (filterStore.page || 1) - 1,
-              pageSize: filterStore.pageSize || 10,
-            }}
-            onPaginationChange={handlePaginationChange}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onPublish={handlePublish}
-            onArchive={handleArchive}
-            onClone={handleClone}
-          />
+        {/* Desktop View Switcher */}
+        <div className="hidden md:flex items-center gap-3 mb-2">
+          <div className="flex items-center bg-white p-1 rounded-lg border border-[#E2E8F0] gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setViewMode("table")}
+              className={cn(
+                "h-8 px-3 text-xs font-bold uppercase transition-all",
+                viewMode === "table"
+                  ? "bg-[#F8FAFC] text-primary shadow-sm"
+                  : "border-transparent text-[#656A73] hover:text-[#1E293B]"
+              )}
+            >
+              <List className="h-4 w-4 mr-2" />
+              Table
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setViewMode("card")}
+              className={cn(
+                "h-8 px-3 text-xs font-bold uppercase transition-all",
+                viewMode === "card"
+                  ? "bg-[#F8FAFC] text-primary shadow-sm"
+                  : "border-transparent text-[#656A73] hover:text-[#1E293B]"
+              )}
+            >
+              <LayoutGrid className="h-4 w-4 mr-2" />
+              Cards
+            </Button>
+          </div>
+          <div className="text-sm font-semibold text-[#656A73]">Total Questions: {total}</div>
         </div>
 
-        {/* Mobile View: Card List */}
+        {/* Desktop View: Data Table / Card List */}
+        <div className="hidden md:block">
+          {viewMode === "table" ? (
+            <QuestionDataTable
+              items={questions}
+              isLoading={isLoading}
+              total={total}
+              pagination={{
+                pageIndex: (filterStore.page || 1) - 1,
+                pageSize: filterStore.pageSize || 10,
+              }}
+              onPaginationChange={handlePaginationChange}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onPublish={handlePublish}
+              onArchive={handleArchive}
+              onClone={handleClone}
+            />
+          ) : (
+            <QuestionCardList
+              items={questions}
+              isLoading={isLoading}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onPublish={handlePublish}
+              onArchive={handleArchive}
+              onClone={handleClone}
+              onLoadMore={fetchNextPage}
+              hasNextPage={hasNextPage}
+              isFetchingNextPage={isFetchingNextPage}
+            />
+          )}
+        </div>
+
+        {/* Mobile View: Card List (Always) */}
         <div className="md:hidden">
           <QuestionCardList
             items={questions}

@@ -27,7 +27,6 @@ export const AdminGroupListInputSchema = z.object({
 export const AdminGroupReportsListInputSchema = z.object({
   page: z.number().min(1).optional(),
   pageSize: z.number().min(1).optional(),
-
   status: z.string().optional(),
 });
 

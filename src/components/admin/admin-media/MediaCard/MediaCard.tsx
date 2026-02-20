@@ -91,7 +91,7 @@ const MediaCardComponent = ({ item, onEdit, onDelete, onPublish, onArchive, onCl
                 className="flex-1 h-7 text-[10px] font-bold"
                 onClick={() => onEdit?.(item)}
               >
-                <Pencil className="h-3 w-3 mr-1" />
+                <Pencil className="h-3 w-3" />
                 Edit
               </Button>
               <Button
@@ -100,7 +100,7 @@ const MediaCardComponent = ({ item, onEdit, onDelete, onPublish, onArchive, onCl
                 className="flex-1 h-7 text-[10px] font-bold"
                 onClick={() => onPublish?.(item)}
               >
-                <Send className="h-3 w-3 mr-1" />
+                <Send className="h-3 w-3" />
                 Publish
               </Button>
               <Button
@@ -122,7 +122,7 @@ const MediaCardComponent = ({ item, onEdit, onDelete, onPublish, onArchive, onCl
                 className="flex-1 h-7 text-[10px] font-bold"
                 onClick={() => onArchive?.(item)}
               >
-                <Archive className="h-3 w-3 mr-1" />
+                <Archive className="h-3 w-3" />
                 Archive
               </Button>
               <Button
@@ -131,7 +131,7 @@ const MediaCardComponent = ({ item, onEdit, onDelete, onPublish, onArchive, onCl
                 className="flex-1 h-7 text-[10px] font-bold"
                 onClick={() => onClone?.(item)}
               >
-                <Copy className="h-3 w-3 mr-1" />
+                <Copy className="h-3 w-3" />
                 Clone
               </Button>
             </>
@@ -143,7 +143,7 @@ const MediaCardComponent = ({ item, onEdit, onDelete, onPublish, onArchive, onCl
               className="w-full h-7 text-[10px] font-bold"
               onClick={() => onClone?.(item)}
             >
-              <Copy className="h-3 w-3 mr-1" />
+              <Copy className="h-3 w-3" />
               Clone
             </Button>
           )}

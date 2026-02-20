@@ -65,7 +65,7 @@ export function FlashcardGroupCard({ item, onEdit, onDelete, onPublish, onArchiv
                 className="flex-1 h-8 text-[10px] font-bold"
                 onClick={() => onEdit?.(item)}
               >
-                <Pencil className="h-3 w-3 mr-1" />
+                <Pencil className="h-3 w-3" />
                 Edit
               </Button>
               <Button
@@ -74,7 +74,7 @@ export function FlashcardGroupCard({ item, onEdit, onDelete, onPublish, onArchiv
                 className="flex-1 h-8 text-[10px] font-bold"
                 onClick={() => onPublish?.(item.id)}
               >
-                <Send className="h-3 w-3 mr-1" />
+                <Send className="h-3 w-3" />
                 Publish
               </Button>
               <Button
@@ -83,7 +83,7 @@ export function FlashcardGroupCard({ item, onEdit, onDelete, onPublish, onArchiv
                 className="flex-1 h-8 text-[10px] font-bold"
                 onClick={() => onDelete?.(item)}
               >
-                <Trash2 className="h-3 w-3 mr-1" />
+                <Trash2 className="h-3 w-3" />
                 Delete
               </Button>
             </>
@@ -96,7 +96,7 @@ export function FlashcardGroupCard({ item, onEdit, onDelete, onPublish, onArchiv
                 className="flex-1 h-8 text-[10px] font-bold"
                 onClick={() => onArchive?.(item.id)}
               >
-                <Archive className="h-3 w-3 mr-1" />
+                <Archive className="h-3 w-3" />
                 Archive
               </Button>
               <Button
@@ -105,7 +105,7 @@ export function FlashcardGroupCard({ item, onEdit, onDelete, onPublish, onArchiv
                 className="flex-1 h-8 text-[10px] font-bold"
                 onClick={() => onClone?.(item)}
               >
-                <Copy className="h-3 w-3 mr-1" />
+                <Copy className="h-3 w-3" />
                 Clone
               </Button>
             </>
@@ -117,7 +117,7 @@ export function FlashcardGroupCard({ item, onEdit, onDelete, onPublish, onArchiv
               className="w-full h-8 text-[10px] font-bold"
               onClick={() => onClone?.(item)}
             >
-              <Copy className="h-3 w-3 mr-1" />
+              <Copy className="h-3 w-3" />
               Clone
             </Button>
           )}

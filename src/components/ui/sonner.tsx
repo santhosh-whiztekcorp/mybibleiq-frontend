@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleCheckIcon, InfoIcon, Loader2Icon, OctagonXIcon, TriangleAlertIcon } from "lucide-react";
+import { BellIcon } from "lucide-react";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
 
 const Toaster = ({ ...props }: ToasterProps) => {
@@ -18,11 +18,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
         },
       }}
       icons={{
-        success: <CircleCheckIcon className="w-7 h-7" />,
-        info: <InfoIcon className="w-7 h-7" />,
-        warning: <TriangleAlertIcon className="w-7 h-7" />,
-        error: <OctagonXIcon className="w-7 h-7" />,
-        loading: <Loader2Icon className="w-7 h-7 animate-spin" />,
+        success: <BellIcon className="w-7 h-7" />,
+        info: <BellIcon className="w-7 h-7" />,
+        warning: <BellIcon className="w-7 h-7" />,
+        error: <BellIcon className="w-7 h-7" />,
+        loading: <BellIcon className="w-7 h-7 animate-spin" />,
       }}
       style={
         {

@@ -44,7 +44,7 @@ export const ADMIN_GROUP_STATUS_LABELS: Record<AdminGroupStatus, string> = {
   archived: "Archived",
 };
 export const ADMIN_GROUP_STATUS_SELECT_OPTIONS: SelectOption[] = [
-  { label: "All Statuses", value: "" },
+  { label: "All Statuses", value: "all" },
   ...ADMIN_GROUP_STATUS_OPTIONS.map((status) => ({
     label: ADMIN_GROUP_STATUS_LABELS[status],
     value: status,
@@ -58,7 +58,7 @@ export const ADMIN_GROUP_MEMBER_STATUS_LABELS: Record<AdminGroupMemberStatus, st
   inactive: "Inactive",
 };
 export const ADMIN_GROUP_MEMBER_STATUS_SELECT_OPTIONS: SelectOption[] = [
-  { label: "All Statuses", value: "" },
+  { label: "All Statuses", value: "all" },
   ...ADMIN_GROUP_MEMBER_STATUS_OPTIONS.map((status) => ({
     label: ADMIN_GROUP_MEMBER_STATUS_LABELS[status],
     value: status,
@@ -76,12 +76,20 @@ export const ADMIN_GROUP_TYPE_LABELS: Record<AdminGroupType, string> = {
   other: "Other",
 };
 export const ADMIN_GROUP_TYPE_SELECT_OPTIONS: SelectOption[] = [
-  { label: "All Types", value: "" },
+  { label: "All Types", value: "all" },
   ...ADMIN_GROUP_TYPE_OPTIONS.map((type) => ({
     label: ADMIN_GROUP_TYPE_LABELS[type],
     value: type,
   })),
 ];
+
+/* ---- Group Status to Badge Variant Mapping ---- */
+export const ADMIN_GROUP_STATUS_VARIANTS: Record<AdminGroupStatus, string> = {
+  active: "statusActive",
+  suspended: "statusSuspended",
+  banned: "statusSuspended",
+  archived: "statusArchived",
+};
 
 /* ---- Group Type to Badge Variant Mapping ---- */
 export const ADMIN_GROUP_TYPE_TO_BADGE_VARIANT: Record<AdminGroupType, string> = {
@@ -90,7 +98,7 @@ export const ADMIN_GROUP_TYPE_TO_BADGE_VARIANT: Record<AdminGroupType, string> =
   bible_study: "userGroupBibleStudy",
   family: "userGroupFamily",
   prayer_group: "userGroupPrayerGroup",
-  other: "userGroupOther",
+  other: "outline",
 };
 
 /* ---- Group Privacy Options ---- */
@@ -100,7 +108,7 @@ export const ADMIN_GROUP_PRIVACY_LABELS: Record<AdminGroupPrivacy, string> = {
   private: "Private",
 };
 export const ADMIN_GROUP_PRIVACY_SELECT_OPTIONS: SelectOption[] = [
-  { label: "All Privacy", value: "" },
+  { label: "All Privacy", value: "all" },
   ...ADMIN_GROUP_PRIVACY_OPTIONS.map((privacy) => ({
     label: ADMIN_GROUP_PRIVACY_LABELS[privacy],
     value: privacy,
@@ -117,7 +125,7 @@ export const ADMIN_GROUP_REPORT_STATUS_LABELS: Record<AdminGroupReportStatus, st
   dismissed: "Dismissed",
 };
 export const ADMIN_GROUP_REPORT_STATUS_SELECT_OPTIONS: SelectOption[] = [
-  { label: "All Statuses", value: "" },
+  { label: "All Statuses", value: "all" },
   ...ADMIN_GROUP_REPORT_STATUS_OPTIONS.map((status) => ({
     label: ADMIN_GROUP_REPORT_STATUS_LABELS[status],
     value: status,
@@ -133,7 +141,7 @@ export const ADMIN_GROUP_ANNOUNCEMENT_STATUS_LABELS: Record<AdminGroupAnnounceme
   flagged: "Flagged",
 };
 export const ADMIN_GROUP_ANNOUNCEMENT_STATUS_SELECT_OPTIONS: SelectOption[] = [
-  { label: "All Statuses", value: "" },
+  { label: "All Statuses", value: "all" },
   ...ADMIN_GROUP_ANNOUNCEMENT_STATUS_OPTIONS.map((status) => ({
     label: ADMIN_GROUP_ANNOUNCEMENT_STATUS_LABELS[status],
     value: status,
@@ -148,7 +156,7 @@ export const ADMIN_GROUP_MEMBER_ROLE_LABELS: Record<AdminGroupMemberRole, string
   member: "Member",
 };
 export const ADMIN_GROUP_MEMBER_ROLE_SELECT_OPTIONS: SelectOption[] = [
-  { label: "All Roles", value: "" },
+  { label: "All Roles", value: "all" },
   ...ADMIN_GROUP_MEMBER_ROLE_OPTIONS.map((role) => ({
     label: ADMIN_GROUP_MEMBER_ROLE_LABELS[role],
     value: role,
@@ -164,7 +172,7 @@ export const ADMIN_GROUP_ACTIVITY_EVENT_TYPE_LABELS: Record<AdminGroupActivityEv
   report: "Report",
 };
 export const ADMIN_GROUP_ACTIVITY_EVENT_TYPE_SELECT_OPTIONS: SelectOption[] = [
-  { label: "All Event Types", value: "" },
+  { label: "All Event Types", value: "all" },
   ...ADMIN_GROUP_ACTIVITY_EVENT_TYPE_OPTIONS.map((type) => ({
     label: ADMIN_GROUP_ACTIVITY_EVENT_TYPE_LABELS[type],
     value: type,
@@ -179,9 +187,15 @@ export const ADMIN_GROUP_ASSIGNMENT_STATUS_LABELS: Record<string, string> = {
   completed: "Completed",
 };
 
+export const ADMIN_GROUP_ASSIGNMENT_STATUS_VARIANTS: Record<string, string> = {
+  not_started: "tag",
+  in_progress: "statusInProgress",
+  completed: "statusPublished",
+};
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const ADMIN_GROUP_ASSIGNMENT_STATUS_SELECT_OPTIONS: any[] = [
-  { label: "All Statuses", value: "" }, // mapped to undefined in hooks
+  { label: "All Statuses", value: "all" }, // mapped to undefined in hooks
   { label: "Not Started", value: null },
   ...ADMIN_GROUP_ASSIGNMENT_STATUS_OPTIONS.filter((s) => s !== "not_started").map((status) => ({
     label: ADMIN_GROUP_ASSIGNMENT_STATUS_LABELS[status],
@@ -196,7 +210,7 @@ export const ADMIN_GROUP_WARN_LEADER_NOTIFICATION_TYPE_LABELS: Record<AdminGroup
   email: "Email",
 };
 export const ADMIN_GROUP_WARN_LEADER_NOTIFICATION_TYPE_SELECT_OPTIONS: SelectOption[] = [
-  { label: "All Notification Types", value: "" },
+  { label: "All Notification Types", value: "all" },
   ...ADMIN_GROUP_WARN_LEADER_NOTIFICATION_TYPE_OPTIONS.map((type) => ({
     label: ADMIN_GROUP_WARN_LEADER_NOTIFICATION_TYPE_LABELS[type],
     value: type,
@@ -261,3 +275,33 @@ export const adminGroupManagementQueryKeys = {
   leaderboardList: (id: string, filters: Partial<AdminGroupLeaderboardListInput>) =>
     ["admin-group-management", "detail", id, "leaderboard", filters] as const,
 };
+
+/* ---- Activity Log Time Period Options ---- */
+export type AdminGroupActivityLogTimePeriod = "all" | "today" | "last_7_days" | "last_30_days";
+export const ADMIN_GROUP_ACTIVITY_LOG_TIME_LABELS: Record<AdminGroupActivityLogTimePeriod, string> = {
+  all: "All Time",
+  today: "Today",
+  last_7_days: "Last 7 Days",
+  last_30_days: "Last 30 Days",
+};
+export const ADMIN_GROUP_ACTIVITY_LOG_TIME_SELECT_OPTIONS: SelectOption[] = [
+  { label: "All Time", value: "all" },
+  { label: "Today", value: "today" },
+  { label: "Last 7 Days", value: "last_7_days" },
+  { label: "Last 30 Days", value: "last_30_days" },
+];
+
+/* ---- Leaderboard Period Options ---- */
+export const ADMIN_GROUP_LEADERBOARD_PERIOD_OPTIONS = ["week", "month", "all_time"] as const;
+export type AdminGroupLeaderboardPeriod = (typeof ADMIN_GROUP_LEADERBOARD_PERIOD_OPTIONS)[number];
+export const ADMIN_GROUP_LEADERBOARD_PERIOD_LABELS: Record<AdminGroupLeaderboardPeriod, string> = {
+  week: "This Week",
+  month: "This Month",
+  all_time: "All Time",
+};
+export const ADMIN_GROUP_LEADERBOARD_PERIOD_SELECT_OPTIONS: SelectOption[] = [
+  ...ADMIN_GROUP_LEADERBOARD_PERIOD_OPTIONS.map((period) => ({
+    label: ADMIN_GROUP_LEADERBOARD_PERIOD_LABELS[period],
+    value: period,
+  })),
+];

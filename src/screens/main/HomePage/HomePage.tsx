@@ -19,7 +19,7 @@ export function HomePage() {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated && isAdmin) {
-      router.push(ROUTES.SPIRIT_FOOD);
+      router.push(ROUTES.DASHBOARD);
     }
   }, [isAuthenticated, isAdmin, router, isLoading]);
 

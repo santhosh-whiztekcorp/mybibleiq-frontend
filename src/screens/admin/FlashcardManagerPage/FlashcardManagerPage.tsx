@@ -3,11 +3,13 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { FlashcardGroupManagerPage } from "@/screens/admin/FlashcardGroupManagerPage";
 
-import { Plus } from "lucide-react";
+import { Plus, List, LayoutGrid } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SearchIcon } from "@/assets";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useAdminViewStore } from "@/store/useAdminViewStore";
+import { cn } from "@/lib/utils";
 import {
   FlashcardDataTable,
   FlashcardForm,
@@ -52,6 +54,8 @@ export function FlashcardManagerPage() {
     handleFormSuccess,
     setIsFormOpen,
   } = useFlashcardManagerPage();
+
+  const { viewMode, setViewMode } = useAdminViewStore();
 
   return (
     <div className="w-full">
@@ -153,7 +157,42 @@ export function FlashcardManagerPage() {
 
           {/* List Section */}
 
-          {/* Mobile View: Cards */}
+          {/* View Switcher (Desktop only) */}
+          <div className="hidden md:flex justify-between items-center mb-2">
+            <div className="inline-flex p-1 bg-[#F1F5F9] rounded-lg">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setViewMode("table")}
+                className={cn(
+                  "h-8 px-3 text-[10px] font-bold uppercase transition-all",
+                  viewMode === "table"
+                    ? "bg-white text-primary shadow-sm"
+                    : "border-transparent text-[#656A73] hover:text-primary"
+                )}
+              >
+                <List className="h-3.5 w-3.5 mr-1.5" />
+                Table
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setViewMode("card")}
+                className={cn(
+                  "h-8 px-3 text-[10px] font-bold uppercase transition-all",
+                  viewMode === "card"
+                    ? "bg-white text-primary shadow-sm"
+                    : "border-transparent text-[#656A73] hover:text-primary"
+                )}
+              >
+                <LayoutGrid className="h-3.5 w-3.5 mr-1.5" />
+                Cards
+              </Button>
+            </div>
+            <div className="text-sm font-semibold text-muted-foreground mr-2">Total Flashcards: {total}</div>
+          </div>
+
+          {/* Mobile View: Cards (Always) */}
           <div className="block md:hidden">
             <FlashcardCardList
               items={flashcards}
@@ -165,25 +204,36 @@ export function FlashcardManagerPage() {
             />
           </div>
 
-          {/* Desktop View: Table */}
-          <div className="hidden md:block bg-white rounded-lg border border-[#E2E8F0] overflow-hidden">
-            <FlashcardDataTable
-              items={flashcards}
-              isLoading={isLoading}
-              total={total}
-              pagination={{
-                pageIndex: filterStore.page - 1,
-                pageSize: filterStore.pageSize,
-              }}
-              onPaginationChange={handlePaginationChange}
-              searchValue={filterStore.q ?? ""}
-              onSearchChange={handleSearchChange}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onPublish={handlePublish}
-              onArchive={handleArchive}
-              onClone={handleClone}
-            />
+          {/* Desktop View: Table or Cards based on viewMode */}
+          <div className="hidden md:block">
+            {viewMode === "table" ? (
+              <FlashcardDataTable
+                items={flashcards}
+                isLoading={isLoading}
+                total={total}
+                pagination={{
+                  pageIndex: filterStore.page - 1,
+                  pageSize: filterStore.pageSize,
+                }}
+                onPaginationChange={handlePaginationChange}
+                searchValue={filterStore.q ?? ""}
+                onSearchChange={handleSearchChange}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onPublish={handlePublish}
+                onArchive={handleArchive}
+                onClone={handleClone}
+              />
+            ) : (
+              <FlashcardCardList
+                items={flashcards}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onPublish={handlePublish}
+                onArchive={handleArchive}
+                onClone={handleClone}
+              />
+            )}
           </div>
 
           {/* Form Drawer */}

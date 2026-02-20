@@ -1,10 +1,12 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { Plus, List, LayoutGrid } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SearchIcon } from "@/assets";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useAdminViewStore } from "@/store/useAdminViewStore";
+import { cn } from "@/lib/utils";
 import {
   BadgeStats,
   BadgeDataTable,
@@ -55,6 +57,8 @@ export function BadgeManagerPage() {
     handleSearch,
     handlePaginationChange,
   } = useBadgeManagerPage();
+
+  const { viewMode, setViewMode } = useAdminViewStore();
 
   return (
     <div className="w-full space-y-4 pt-2">
@@ -177,7 +181,42 @@ export function BadgeManagerPage() {
       <div className="flex-1 overflow-hidden space-y-6">
         {/* Content Section */}
         <div className="fex flex-col">
-          {/* Mobile View: Cards */}
+          {/* View Switcher (Desktop only) */}
+          <div className="hidden md:flex items-center gap-3 mb-2">
+            <div className="inline-flex p-1 bg-[#F1F5F9] rounded-lg">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setViewMode("table")}
+                className={cn(
+                  "h-8 px-3 text-[10px] font-bold uppercase transition-all",
+                  viewMode === "table"
+                    ? "bg-white text-primary shadow-sm"
+                    : "border-transparent text-[#656A73] hover:text-primary"
+                )}
+              >
+                <List className="h-3.5 w-3.5 mr-1.5" />
+                Table
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setViewMode("card")}
+                className={cn(
+                  "h-8 px-3 text-[10px] font-bold uppercase transition-all",
+                  viewMode === "card"
+                    ? "bg-white text-primary shadow-sm"
+                    : "border-transparent text-[#656A73] hover:text-primary"
+                )}
+              >
+                <LayoutGrid className="h-3.5 w-3.5 mr-1.5" />
+                Cards
+              </Button>
+            </div>
+            <div className="text-sm font-semibold text-muted-foreground">Total Badges: {totalBadges}</div>
+          </div>
+
+          {/* Mobile View: Cards (Always) */}
           <div className="block md:hidden">
             <BadgeCardList
               items={badges}
@@ -189,25 +228,36 @@ export function BadgeManagerPage() {
             />
           </div>
 
-          {/* Desktop View: Table */}
+          {/* Desktop View: Table or Cards based on viewMode */}
           <div className="hidden md:block">
-            <BadgeDataTable
-              items={badges}
-              isLoading={isLoading}
-              total={totalBadges}
-              pagination={{
-                pageIndex: filters.page - 1,
-                pageSize: filters.pageSize,
-              }}
-              onPaginationChange={handlePaginationChange}
-              searchValue={filters.q || ""}
-              onSearchChange={handleSearch}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onPublish={handlePublish}
-              onArchive={handleArchive}
-              onClone={handleClone}
-            />
+            {viewMode === "table" ? (
+              <BadgeDataTable
+                items={badges}
+                isLoading={isLoading}
+                total={totalBadges}
+                pagination={{
+                  pageIndex: filters.page - 1,
+                  pageSize: filters.pageSize,
+                }}
+                onPaginationChange={handlePaginationChange}
+                searchValue={filters.q || ""}
+                onSearchChange={handleSearch}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onPublish={handlePublish}
+                onArchive={handleArchive}
+                onClone={handleClone}
+              />
+            ) : (
+              <BadgeCardList
+                items={badges}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onPublish={handlePublish}
+                onArchive={handleArchive}
+                onClone={handleClone}
+              />
+            )}
           </div>
         </div>
       </div>

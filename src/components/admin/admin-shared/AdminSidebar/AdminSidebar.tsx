@@ -15,7 +15,7 @@ import {
   SidebarMenuItem,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { LogOut, UserIcon } from "lucide-react";
+import { LogOut, UserIcon, Users } from "lucide-react";
 import { useLogout } from "@/resources/auth/auth.hooks";
 import { cn } from "@/lib/utils";
 
@@ -51,6 +51,11 @@ const menuItems = [
     title: "User Manager",
     url: ROUTES.USER_MANAGER,
     icon: UserIcon,
+  },
+  {
+    title: "Group Manager",
+    url: ROUTES.GROUP_MANAGER,
+    icon: Users,
   },
 ];
 

@@ -10,7 +10,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <SidebarProvider>
         <AdminSidebar />
         <SidebarInset className="overflow-x-hidden">
-          <div className="flex flex-1 flex-col gap-4 p-4 min-w-0">{children}</div>
+          <div className="flex flex-1 flex-col gap-4 p-4 min-w-0 bg-white">{children}</div>
         </SidebarInset>
       </SidebarProvider>
     </ProtectedRoute>

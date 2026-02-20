@@ -18,6 +18,8 @@ const inputVariants = cva(
           "placeholder:text-[#656A73] bg-[#F3F3F5] border-[#DADADA] h-auto rounded-[10px] px-3 py-2.5 text-[13px] font-semibold",
         adminSearchBar:
           "placeholder:text-[#83827E] bg-[#F0F0F0] border-[#F0F0F0] h-auto rounded-[10px] px-3 py-3 text-xs font-semibold",
+        adminFilter:
+          "placeholder:text-[#83827E] bg-[#F3F3F5] border-[#F3F3F5] h-auto rounded-[10px] px-3 py-3 text-xs font-semibold",
         userGroup:
           "placeholder:text-[#83827E] bg-white border-white h-auto rounded-[10px] px-3 py-3 text-xs font-normal",
         userGroupForm:

@@ -70,7 +70,7 @@ const tabsTriggerVariants = cva(
         adminTertiary:
           "rounded-lg px-3 py-2 text-xs font-semibold text-black data-[state=active]:bg-[#CEEEFF] data-[state=active]:border-[#98CDE6]",
         adminQuaternary:
-          "rounded-full px-2.5 py-1 text-xs font-semibold text-black data-[state=active]:px-2 data-[state=active]:bg-[#202020] data-[state=active]:border-[#C7C7C7] data-[state=active]:text-white",
+          "rounded-full px-2.5 py-[5px] text-xs font-semibold text-black data-[state=active]:px-2 data-[state=active]:bg-[#202020] data-[state=active]:border-[#C7C7C7] data-[state=active]:text-white",
         userGroup:
           "rounded-full px-3 py-1.5 text-sm font-medium text-black data-[state=active]:px-2 data-[state=active]:bg-white data-[state=active]:border-white",
         userQuiz:

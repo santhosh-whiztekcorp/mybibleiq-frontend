@@ -80,17 +80,17 @@ const QuestCardComponent = (props: QuestCardProps) => {
         {item.status === "Draft" && (
           <>
             <Button variant="actionEdit" size="sm" onClick={() => onEdit?.(item)}>
-              <Pencil className="h-3 w-3 mr-1" />
+              <Pencil className="h-3 w-3" />
               <span className="text-xs">Edit</span>
             </Button>
             {item.totalStages > 0 && (
               <>
                 <Button variant="actionPublish" size="sm" onClick={() => onPublish?.(item)}>
-                  <Send className="h-3 w-3 mr-1" />
+                  <Send className="h-3 w-3" />
                   <span className="text-xs">Publish</span>
                 </Button>
                 <Button variant="actionSchedule" size="sm" onClick={() => onSchedule?.(item)}>
-                  <Calendar className="h-3 w-3 mr-1" />
+                  <Calendar className="h-3 w-3" />
                   <span className="text-xs">Schedule</span>
                 </Button>
               </>
@@ -104,7 +104,7 @@ const QuestCardComponent = (props: QuestCardProps) => {
         {item.status === "Published" && (
           <>
             <Button variant="actionArchive" size="sm" onClick={() => onArchive?.(item)}>
-              <Archive className="h-3 w-3 mr-1.5" />
+              <Archive className="h-3 w-3" />
               <span className="text-xs">Archive</span>
             </Button>
             <Button
@@ -113,14 +113,14 @@ const QuestCardComponent = (props: QuestCardProps) => {
               className="flex-1 min-w-0 h-8 text-[10px]"
               onClick={() => onClone?.(item)}
             >
-              <Copy className="h-3 w-3 mr-1.5" />
+              <Copy className="h-3 w-3" />
               <span className="text-xs">Clone</span>
             </Button>
           </>
         )}
         {item.status === "Archived" && (
           <Button variant="actionClone" size="sm" onClick={() => onClone?.(item)}>
-            <Copy className="h-3 w-3 mr-1.5" />
+            <Copy className="h-3 w-3" />
             <span className="text-xs">Clone</span>
           </Button>
         )}

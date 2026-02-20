@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -13,7 +12,6 @@ import {
   UserSettingsTab,
   UserFeedbackTab,
 } from "@/components/admin/admin-user-management";
-import { ADMIN_ROUTES } from "@/constants/routes/admin.routes";
 import { useUserDetailPage } from "./UserDetailPage.hooks";
 
 export function UserDetailPage() {
@@ -26,7 +24,7 @@ export function UserDetailPage() {
       {/* Header */}
       <div className="flex items-center gap-3">
         <SidebarTrigger />
-        <Button variant="ghost" size="icon" onClick={() => router.push(ADMIN_ROUTES.USER_MANAGER)} className="shrink-0">
+        <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0">
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>

@@ -27,14 +27,34 @@ import {
   BADGE_TRIGGER_TYPE_LABELS,
   BADGE_CONDITION_OPERATOR_OPTIONS,
   BADGE_CONDITION_OPERATOR_LABELS,
+  BADGE_METRIC_OPTIONS_BY_TRIGGER,
 } from "@/resources/admin-badge/admin-badge.constants";
+import { BadgeTriggerType } from "@/resources/admin-badge/admin-badge.types";
 import { Loader2 } from "lucide-react";
+import { useEffect, useMemo } from "react";
 
 export function BadgeForm(props: BadgeFormProps) {
   const { form, onSubmit, isMutationLoading, isEditMode } = useBadgeForm(props);
   const { onClose } = props;
 
   const assignmentType = form.watch("assignmentType");
+  const triggerType = form.watch("triggerConfig.triggerType") as BadgeTriggerType;
+
+  const metricOptions = useMemo(() => {
+    if (!triggerType) return [];
+    return BADGE_METRIC_OPTIONS_BY_TRIGGER[triggerType] || [];
+  }, [triggerType]);
+
+  // Reset metric type if it's not valid for the selected trigger type
+  useEffect(() => {
+    if (triggerType && metricOptions.length > 0) {
+      const currentMetric = form.getValues("triggerConfig.metric.type");
+      const isValid = metricOptions.some((opt) => opt.value === currentMetric);
+      if (!isValid) {
+        form.setValue("triggerConfig.metric.type", metricOptions[0].value);
+      }
+    }
+  }, [triggerType, metricOptions, form]);
 
   return (
     <Sheet open={true} onOpenChange={onClose}>
@@ -68,6 +88,13 @@ export function BadgeForm(props: BadgeFormProps) {
                     name="description"
                     label="Description"
                     placeholder="Describe what the badge is for..."
+                  />
+
+                  <TagSelectorController
+                    control={form.control}
+                    name="tags"
+                    label="Tags"
+                    placeholder="Type and press enter to add tags..."
                   />
 
                   <MediaSelectorController
@@ -142,6 +169,15 @@ export function BadgeForm(props: BadgeFormProps) {
                         }))}
                       />
 
+                      <SelectController
+                        variant="adminPrimary"
+                        control={form.control}
+                        name="triggerConfig.metric.type"
+                        label="Metric Key"
+                        options={metricOptions}
+                        placeholder="Select metric key"
+                      />
+
                       <div className="grid grid-cols-2 gap-4">
                         <SelectController
                           variant="adminPrimary"
@@ -162,26 +198,8 @@ export function BadgeForm(props: BadgeFormProps) {
                           placeholder="e.g. 5"
                         />
                       </div>
-
-                      <InputController
-                        variant="adminPrimary"
-                        control={form.control}
-                        name="triggerConfig.metric.type"
-                        label="Metric Key"
-                        placeholder="e.g. login_count"
-                      />
                     </div>
                   )}
-                </div>
-
-                {/* Tags */}
-                <div className="space-y-4 pt-2">
-                  <TagSelectorController
-                    control={form.control}
-                    name="tags"
-                    label="Tags"
-                    placeholder="Type and press enter to add tags..."
-                  />
                 </div>
               </div>
             </ScrollArea>

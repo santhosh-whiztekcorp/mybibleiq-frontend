@@ -18,7 +18,7 @@ const QuestionCardComponent = (props: QuestionCardProps) => {
   return (
     <div
       className={cn(
-        "rounded-xl border overflow-hidden transition-all hover:shadow-md p-4 space-y-3",
+        "rounded-xl border overflow-hidden transition-all hover:shadow-md p-4 space-y-3 h-full flex flex-col",
         cardBgColor,
         cardBorderColor
       )}
@@ -59,7 +59,7 @@ const QuestionCardComponent = (props: QuestionCardProps) => {
       )}
 
       {/* 4. Dates */}
-      <div className="flex flex-col gap-1 text-[10px] text-[#94A3B8] font-medium pt-3 border-t border-[#F1F5F9]">
+      <div className="flex flex-col gap-1 text-[10px] text-[#94A3B8] font-medium pt-3 border-t border-[#F1F5F9] mt-auto">
         {item.createdAt && <span>Created: {formatDateString(item.createdAt)}</span>}
         {item.updatedAt && <span>Updated: {formatDateString(item.updatedAt)}</span>}
         {item.status === "Published" && item.publishedAt && (
@@ -77,7 +77,7 @@ const QuestionCardComponent = (props: QuestionCardProps) => {
               className="flex-1 h-8 text-[10px] px-2"
               onClick={() => onEdit?.(item)}
             >
-              <Pencil className="h-3 w-3 mr-1.5" />
+              <Pencil className="h-3 w-3" />
               Edit
             </Button>
             <Button
@@ -86,7 +86,7 @@ const QuestionCardComponent = (props: QuestionCardProps) => {
               className="flex-1 h-8 text-[10px] px-2"
               onClick={() => onPublish?.(item)}
             >
-              <Send className="h-3 w-3 mr-1.5" />
+              <Send className="h-3 w-3" />
               Publish
             </Button>
             <Button
@@ -108,18 +108,18 @@ const QuestionCardComponent = (props: QuestionCardProps) => {
               className="flex-1 h-8 text-[10px]"
               onClick={() => onArchive?.(item)}
             >
-              <Archive className="h-3 w-3 mr-1.5" />
+              <Archive className="h-3 w-3" />
               Archive
             </Button>
             <Button variant="actionClone" size="sm" className="flex-1 h-8 text-[10px]" onClick={() => onClone?.(item)}>
-              <Copy className="h-3 w-3 mr-1.5" />
+              <Copy className="h-3 w-3" />
               Clone
             </Button>
           </>
         )}
         {item.status === "Archived" && (
           <Button variant="actionClone" size="sm" className="flex-1 h-8 text-[10px]" onClick={() => onClone?.(item)}>
-            <Copy className="h-3 w-3 mr-1.5" />
+            <Copy className="h-3 w-3" />
             Clone
           </Button>
         )}

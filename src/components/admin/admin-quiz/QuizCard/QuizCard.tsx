@@ -82,7 +82,7 @@ const QuizCardComponent = (props: QuizCardProps) => {
               className="flex-1 h-8 text-[10px] px-2"
               onClick={() => onEdit?.(item)}
             >
-              <Pencil className="h-3 w-3 mr-1" />
+              <Pencil className="h-3 w-3" />
               Edit
             </Button>
             <Button
@@ -91,7 +91,7 @@ const QuizCardComponent = (props: QuizCardProps) => {
               className="flex-1 h-8 text-[10px] px-2"
               onClick={() => onPublish?.(item)}
             >
-              <Send className="h-3 w-3 mr-1" />
+              <Send className="h-3 w-3" />
               Publish
             </Button>
             <Button
@@ -100,7 +100,7 @@ const QuizCardComponent = (props: QuizCardProps) => {
               className="flex-1 h-8 text-[10px] px-2"
               onClick={() => onSchedule?.(item)}
             >
-              <Calendar className="h-3 w-3 mr-1" />
+              <Calendar className="h-3 w-3" />
               Schedule
             </Button>
             <Button
@@ -122,18 +122,18 @@ const QuizCardComponent = (props: QuizCardProps) => {
               className="flex-1 h-8 text-[10px]"
               onClick={() => onArchive?.(item)}
             >
-              <Archive className="h-3 w-3 mr-1.5" />
+              <Archive className="h-3 w-3" />
               Archive
             </Button>
             <Button variant="actionClone" size="sm" className="flex-1 h-8 text-[10px]" onClick={() => onClone?.(item)}>
-              <Copy className="h-3 w-3 mr-1.5" />
+              <Copy className="h-3 w-3" />
               Clone
             </Button>
           </>
         )}
         {item.status === "Archived" && (
           <Button variant="actionClone" size="sm" className="flex-1 h-8 text-[10px]" onClick={() => onClone?.(item)}>
-            <Copy className="h-3 w-3 mr-1.5" />
+            <Copy className="h-3 w-3" />
             Clone
           </Button>
         )}

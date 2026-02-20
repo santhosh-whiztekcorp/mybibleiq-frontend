@@ -1,12 +1,14 @@
 "use client";
 
 import React from "react";
-import { Plus } from "lucide-react";
+import { Plus, List, LayoutGrid } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { TrophyIcon, SearchIcon } from "@/assets";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useAdminViewStore } from "@/store/useAdminViewStore";
+import { cn } from "@/lib/utils";
 import {
   QuestStatusStats,
   QuestDataTable,
@@ -77,6 +79,8 @@ export function QuestManagerPage() {
     setIsScheduleModalOpen,
     isEditingQuestLoading,
   } = useQuestManagerPage();
+
+  const { viewMode, setViewMode } = useAdminViewStore();
 
   return (
     <div className="w-full space-y-4 md:space-y-6">
@@ -188,28 +192,82 @@ export function QuestManagerPage() {
       </div>
 
       <div className="space-y-4">
-        {/* Desktop View: Data Table */}
-        <div className="hidden md:block bg-white rounded-lg border border-[#E2E8F0] overflow-hidden">
-          <QuestDataTable
-            items={quests}
-            isLoading={isLoading}
-            total={total}
-            pagination={{
-              pageIndex: (filterStore.page || 1) - 1,
-              pageSize: filterStore.pageSize || 10,
-            }}
-            onPaginationChange={handlePaginationChange}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onPublish={handlePublish}
-            onArchive={handleArchive}
-            onClone={handleClone}
-            onSchedule={handleSchedule}
-            onManageStages={handleManageStages}
-          />
+        {/* View Switcher (Desktop only) */}
+        <div className="hidden md:flex items-center gap-3 mb-2">
+          <div className="inline-flex p-1 bg-[#F1F5F9] rounded-lg">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setViewMode("table")}
+              className={cn(
+                "h-8 px-3 text-[10px] font-bold uppercase transition-all",
+                viewMode === "table"
+                  ? "bg-white text-primary shadow-sm"
+                  : "border-transparent text-[#656A73] hover:text-primary"
+              )}
+            >
+              <List className="h-3.5 w-3.5 mr-1.5" />
+              Table
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setViewMode("card")}
+              className={cn(
+                "h-8 px-3 text-[10px] font-bold uppercase transition-all",
+                viewMode === "card"
+                  ? "bg-white text-primary shadow-sm"
+                  : "border-transparent text-[#656A73] hover:text-primary"
+              )}
+            >
+              <LayoutGrid className="h-3.5 w-3.5 mr-1.5" />
+              Cards
+            </Button>
+          </div>
+          <div className="text-sm font-semibold text-muted-foreground mr-2">Total Quests: {total}</div>
         </div>
 
-        {/* Mobile View: Card List */}
+        {/* Desktop View: Data Table or Card List based on viewMode */}
+        <div className="hidden md:block">
+          {viewMode === "table" ? (
+            <div className="bg-white rounded-lg border border-[#E2E8F0] overflow-hidden">
+              <QuestDataTable
+                items={quests}
+                isLoading={isLoading}
+                total={total}
+                pagination={{
+                  pageIndex: (filterStore.page || 1) - 1,
+                  pageSize: filterStore.pageSize || 10,
+                }}
+                onPaginationChange={handlePaginationChange}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onPublish={handlePublish}
+                onArchive={handleArchive}
+                onClone={handleClone}
+                onSchedule={handleSchedule}
+                onManageStages={handleManageStages}
+              />
+            </div>
+          ) : (
+            <QuestCardList
+              items={quests}
+              isLoading={isLoading}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onPublish={handlePublish}
+              onArchive={handleArchive}
+              onClone={handleClone}
+              onSchedule={handleSchedule}
+              onManageStages={handleManageStages}
+              onLoadMore={fetchNextPage}
+              hasNextPage={hasNextPage}
+              isFetchingNextPage={isFetchingNextPage}
+            />
+          )}
+        </div>
+
+        {/* Mobile View: Card List (Always) */}
         <div className="md:hidden">
           <QuestCardList
             items={quests}

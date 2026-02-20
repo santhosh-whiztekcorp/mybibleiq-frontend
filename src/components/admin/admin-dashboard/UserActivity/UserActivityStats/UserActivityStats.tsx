@@ -101,16 +101,18 @@ export function UserActivityStats() {
             <span className="text-xs font-semibold text-[#202020]">User Feedback</span>
           </div>
           <div className="text-xl font-bold text-black">{feedback.totalFeedback.toLocaleString()}</div>
-          {feedback.averageRating !== null && (
-            <div className="flex items-center gap-1">
-              <Star className="h-4 w-4 text-[#F1B100] fill-[#F1B100]" />
-              <span className="text-[12px] font-medium text-[#202020]">{feedback.averageRating.toFixed(1)}</span>
-            </div>
-          )}
-          <p className="text-[12px] text-[#202020]">
-            <span className="font-bold">Negative Feedback: </span>
-            {feedback.negativeFeedbackInPeriod}
-          </p>
+          <div className="flex flex-col xl:flex-row items-start xl:items-center gap-1 justify-between">
+            {feedback.averageRating !== null && (
+              <div className="flex items-center gap-1">
+                <Star className="h-4 w-4 text-[#F1B100] fill-[#F1B100]" />
+                <span className="text-[12px] font-medium text-[#202020]">{feedback.averageRating.toFixed(1)}</span>
+              </div>
+            )}
+            <p className="text-[12px] text-[#202020]">
+              <span className="font-bold">Negative Feedback: </span>
+              {feedback.negativeFeedbackInPeriod}
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>

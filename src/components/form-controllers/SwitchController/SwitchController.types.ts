@@ -7,4 +7,5 @@ export type SwitchControllerProps<T extends FieldValues> = {
   error?: string;
   size?: "sm" | "default";
   disabled?: boolean;
+  className?: string;
 };

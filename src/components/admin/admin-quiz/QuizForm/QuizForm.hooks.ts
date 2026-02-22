@@ -29,6 +29,7 @@ export const useQuizForm = ({ item, onSuccess, onClose }: QuizFormProps) => {
         subsetCount: item.subsetCount,
         isSwordDrillEnabled: item.isSwordDrillEnabled,
         swordDrillConfig: item.swordDrillConfig,
+        completionBadgeId: item.completionBadgeId,
         questions: item.questions.map((q) => ({
           questionId: q.questionId,
           order: q.order,

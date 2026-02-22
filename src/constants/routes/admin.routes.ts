@@ -10,4 +10,6 @@ export const ADMIN_ROUTES = {
   GROUP_MANAGER: "/group-manager",
   GROUP_MANAGER_DETAIL: (groupId: string, view?: string) =>
     `/group-manager/group?groupId=${groupId}${view ? "&view=" + view : ""}`,
+  GLOBAL_UPDATES: "/global-updates",
+  CHATBOT_MANAGER: "/chatbot-manager",
 } as const;

@@ -15,7 +15,7 @@ import {
   SidebarMenuItem,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { LogOut, UserIcon, Users } from "lucide-react";
+import { GlobeIcon, LogOut, MessageSquare, UserIcon, Users } from "lucide-react";
 import { useLogout } from "@/resources/auth/auth.hooks";
 import { cn } from "@/lib/utils";
 
@@ -56,6 +56,16 @@ const menuItems = [
     title: "Group Manager",
     url: ROUTES.GROUP_MANAGER,
     icon: Users,
+  },
+  {
+    title: "Chatbot Manager",
+    url: ROUTES.CHATBOT_MANAGER,
+    icon: MessageSquare,
+  },
+  {
+    title: "Global Updates",
+    url: ROUTES.GLOBAL_UPDATES,
+    icon: GlobeIcon,
   },
 ];
 

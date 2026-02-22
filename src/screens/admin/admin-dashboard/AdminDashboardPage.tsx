@@ -46,7 +46,7 @@ export function AdminDashboardPage() {
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full max-w-[1440px] mx-auto">
         <ScrollArea className="w-full pb-2" orientation="horizontal">
-          <TabsList variant="adminQuaternary" className="w-full justify-start min-w-[600px]">
+          <TabsList variant="adminQuaternary" className="w-fit justify-start">
             <TabsTrigger variant="adminQuaternary" value="user-activity">
               User Activity
             </TabsTrigger>

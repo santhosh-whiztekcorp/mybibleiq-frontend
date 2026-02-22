@@ -13,6 +13,7 @@ export const defaultCreateQuizFormValues: CreateAdminQuizInput = {
   questions: [],
   isSwordDrillEnabled: false,
   swordDrillConfig: undefined,
+  completionBadgeId: undefined,
 };
 
 /* ---- Default Filter Values ---- */

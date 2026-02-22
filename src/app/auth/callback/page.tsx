@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, Suspense } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useFinalizeOAuth } from "@/resources/auth/auth.hooks";
 import { ROUTES } from "@/constants/routes";
@@ -93,9 +93,5 @@ function OAuthCallbackContent() {
 }
 
 export default function OAuthCallbackPage() {
-  return (
-    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Loading...</div>}>
-      <OAuthCallbackContent />
-    </Suspense>
-  );
+  return <OAuthCallbackContent />;
 }

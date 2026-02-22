@@ -11,4 +11,5 @@ export type DatePickerControllerProps<T extends FieldValues> = Omit<
     name: FieldPath<T>;
     label?: string;
     error?: string;
+    showTime?: boolean;
   };

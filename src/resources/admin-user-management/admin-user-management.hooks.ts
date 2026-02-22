@@ -114,10 +114,10 @@ export const useAdminUserManagementBadges = (userId: string, filters: Omit<Admin
         sort: filters.sort ?? "-earnedAt",
       }),
     getNextPageParam: (lastPage, allPages) => {
-      if (!lastPage || typeof lastPage.total === "undefined") {
+      if (!lastPage || typeof lastPage.totalEarned === "undefined") {
         return undefined;
       }
-      const totalPages = Math.ceil(lastPage.total / (filters.pageSize ?? 20));
+      const totalPages = Math.ceil(lastPage.totalEarned / (filters.pageSize ?? 20));
       const nextPage = allPages.length + 1;
       return nextPage <= totalPages ? nextPage : undefined;
     },

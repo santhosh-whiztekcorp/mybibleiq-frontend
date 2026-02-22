@@ -10,6 +10,11 @@ import {
   CreateAdminBadgeRequestSchema,
   UpdateAdminBadgeRequestSchema,
   UpdateAdminBadgeStatusResetScheam,
+  TimeBasedMetricEnum,
+  StreakBasedMetricEnum,
+  CountBasedMetricEnum,
+  MilestoneBasedMetricEnum,
+  EngagementBasedMetricEnum,
 } from "./admin-badge.schemas";
 
 /* ---- Enum Types ---- */
@@ -20,6 +25,11 @@ export type BadgeAssignmentType = z.infer<typeof BadgeAssignmentTypeEnum>;
 export type BadgeTriggerType = z.infer<typeof BadgeTriggerTypeEnum>;
 export type BadgeConditionOperator = z.infer<typeof BadgeConditionOperatorEnum>;
 export type BadgeStatusAction = z.infer<typeof BadgeStatusActionEnum>;
+export type TimeBasedConfig = z.infer<typeof TimeBasedMetricEnum>;
+export type StreakBasedConfig = z.infer<typeof StreakBasedMetricEnum>;
+export type CountBasedConfig = z.infer<typeof CountBasedMetricEnum>;
+export type MilestoneBasedConfig = z.infer<typeof MilestoneBasedMetricEnum>;
+export type EngagementBasedConfig = z.infer<typeof EngagementBasedMetricEnum>;
 
 /* ---- Trigger Config Types ---- */
 export type BadgeTriggerMetric = {

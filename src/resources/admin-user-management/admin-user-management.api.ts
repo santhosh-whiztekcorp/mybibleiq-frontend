@@ -254,7 +254,7 @@ export const getAdminUserBadges = async (
 
     return {
       items: filtered.slice(start, end),
-      total: filtered.length,
+      totalEarned: filtered.length,
       page,
       pageSize,
     };

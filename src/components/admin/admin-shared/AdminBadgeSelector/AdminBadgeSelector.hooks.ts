@@ -15,6 +15,8 @@ export const useAdminBadgeSelector = (
     ...filters,
     q: debouncedSearch || undefined,
     pageSize: 20,
+    assignmentType: "Manual",
+    status: "Published",
   });
 
   const { data: selectedBadge } = useAdminBadgeDetail(value ?? "", !!value);

@@ -11,6 +11,7 @@ export function DatePickerController<T extends FieldValues>({
   label,
   error,
   variant = "default",
+  showTime = false,
   ...props
 }: DatePickerControllerProps<T>) {
   return (
@@ -37,6 +38,7 @@ export function DatePickerController<T extends FieldValues>({
             <DatePicker
               {...props}
               variant={variant}
+              showTime={showTime}
               value={dateValue}
               onChange={(date) => {
                 field.onChange(date);

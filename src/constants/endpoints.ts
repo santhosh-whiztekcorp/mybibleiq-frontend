@@ -562,6 +562,30 @@ export const endpoints = {
       deleteById: (id: string) => `/admin/tags/categories/${id}`,
     },
   },
+  adminChatbot: {
+    /* ---- Config ---- */
+    getConfig: "/admin/chatbot-manager/config",
+    updateConfig: "/admin/chatbot-manager/config",
+
+    /* ---- Quick Actions ---- */
+    getQuickActions: "/admin/chatbot-manager/quick-actions",
+    updateQuickAction: (id: string) => `/admin/chatbot-manager/quick-actions/${id}`,
+
+    /* ---- Responses ---- */
+    getResponses: "/admin/chatbot-manager/responses",
+    createResponse: "/admin/chatbot-manager/responses",
+    updateResponse: (id: string) => `/admin/chatbot-manager/responses/${id}`,
+    deleteResponse: (id: string) => `/admin/chatbot-manager/responses/${id}`,
+
+    /* ---- Analytics & Logs ---- */
+    getStats: "/admin/chatbot-manager/stats",
+    getTotalConversations: "/admin/chatbot-manager/analytics/total-conversations",
+    getAvgResponseTime: "/admin/chatbot-manager/analytics/avg-response-time",
+    getMostAskedQuestions: "/admin/chatbot-manager/analytics/most-asked-questions",
+    getConversations: "/admin/chatbot-manager/conversations",
+    getConversationDetails: (id: string) => `/admin/chatbot-manager/conversations/${id}`,
+    getConversationStats: "/admin/chatbot-manager/conversation-stats",
+  },
   globalUpdatesAdmin: {
     /* ---- GET ---- */
     getAll: "/admin/global-updates",

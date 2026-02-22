@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
@@ -23,10 +22,12 @@ export function QuestStageListing(props: QuestStageListingProps) {
                 Manage the stages for this quest.
               </SheetDescription>
             </SheetHeader>
-            <Button variant="actionAdd" onClick={onAddStage} className="mt-4 w-full font-semibold">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Stage
-            </Button>
+            {isDraft && (
+              <Button variant="actionAdd" onClick={onAddStage} className="mt-4 w-full font-semibold">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Stage
+              </Button>
+            )}
           </div>
 
           <ScrollArea className="flex-1">

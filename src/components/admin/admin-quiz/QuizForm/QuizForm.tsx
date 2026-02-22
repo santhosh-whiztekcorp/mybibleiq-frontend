@@ -16,6 +16,7 @@ import {
   TextareaController,
   SwitchController,
   SliderController,
+  BadgeSelectorController,
 } from "@/components/form-controllers";
 import { AdminQuestionSelector } from "@/components/admin/admin-shared/AdminQuestionSelector";
 import {
@@ -144,6 +145,14 @@ export function QuizForm(props: QuizFormProps) {
 
                     <TagSelectorController control={form.control} name="tags" label="Tags" placeholder="Select tags" />
                   </div>
+
+                  <BadgeSelectorController
+                    control={form.control}
+                    name="completionBadgeId"
+                    label="Completion Badge"
+                    placeholder="Select completion badge (optional)"
+                    filters={{ status: "Published" }}
+                  />
                 </div>
 
                 {/* Randomization Section */}

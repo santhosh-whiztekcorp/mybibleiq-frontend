@@ -6,6 +6,8 @@ export { SelectInlineController } from "./SelectInlineController";
 export { DatePickerController } from "./DatePickerController";
 export { SliderController } from "./SliderController";
 export { TagSelectorController } from "./TagSelectorController";
+export { UserSelectorController } from "./UserSelectorController";
+export { GroupSelectorController } from "./GroupSelectorController";
 export { MediaSelectorController } from "./MediaSelectorController";
 export { BadgeSelectorController } from "./BadgeSelectorController";
 export { FlashcardSelectorController } from "./FlashcardSelectorController";

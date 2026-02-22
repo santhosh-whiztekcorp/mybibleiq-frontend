@@ -21,10 +21,10 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
         <div className="absolute bottom-[10%] left-[10%] w-[35%] h-[35%] bg-orange-50 rounded-full blur-[100px] opacity-60" />
       </div>
 
-      <div className="relative z-10 max-w-lg w-full bg-white/40 backdrop-blur-xl border border-white/60 p-10 rounded-[2.5rem] shadow-2xl shadow-slate-200/50 animate-in fade-in slide-in-from-bottom-8 duration-700">
+      <div className="relative bg-gray-100 z-10 max-w-lg w-full border p-5 py-9 rounded-[2.5rem] shadow-slate-200/50 animate-in fade-in slide-in-from-bottom-8 duration-700">
         <div className="mb-8 flex justify-center">
           <div className="relative">
-            <div className="w-24 h-24 bg-white rounded-3xl shadow-xl flex items-center justify-center p-4">
+            <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center p-4">
               <Image
                 src={pngIcons.logoColored}
                 alt="MyBibleIQ Logo"
@@ -81,7 +81,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
         )}
       </div>
 
-      <p className="absolute bottom-8 text-slate-400 text-xs font-semibold uppercase tracking-[0.2em]">MyBibleIQ</p>
+      <p className="absolute bottom-8 text-slate-400 text-xs font-semibold">MyBibleIQ</p>
     </div>
   );
 }

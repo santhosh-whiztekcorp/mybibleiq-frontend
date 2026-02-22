@@ -82,8 +82,7 @@ export type AdminUserSpiritFoodResponse = AdminUserSpiritFood;
 
 export type AdminUserBadge = {
   id: string;
-  badgeId: string;
-  title: string;
+  name: string;
   description: string;
   rarity: BadgeRarity;
   iconUrl: string;
@@ -133,7 +132,7 @@ export type AdminUserStatsResponse = {
 
 export type AdminUserBadgesListResponse = {
   items: AdminUserBadge[];
-  total: number;
+  totalEarned: number;
   page: number;
   pageSize: number;
 };

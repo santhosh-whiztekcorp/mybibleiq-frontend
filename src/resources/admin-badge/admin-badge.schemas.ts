@@ -4,19 +4,15 @@ import { z } from "zod";
 export const AdminBadgeStausEnum = z.enum(["Draft", "Published", "Archived"], {
   message: "Badge status must be one of: Draft, Published, or Archived",
 });
-
 export const BadgeRarityEnum = z.enum(["Common", "Rare", "Epic", "Legendary", "Special"], {
   message: "Badge rarity must be one of: Common, Rare, Epic, Legendary, or Special",
 });
-
 export const BadgeCategoryEnum = z.enum(["Consistency", "LearningAction", "Milestone", "SpecialEngagement"], {
   message: "Badge category must be one of: Consistency, Learning Action, Milestone, or Special Engagement",
 });
-
 export const BadgeAssignmentTypeEnum = z.enum(["Manual", "Automatic"], {
   message: "Badge assignment type must be either Manual or Automatic",
 });
-
 export const BadgeTriggerTypeEnum = z.enum(
   ["TimeBased", "StreakBased", "CountBased", "MilestoneBased", "EngagementBased"],
   {
@@ -24,14 +20,24 @@ export const BadgeTriggerTypeEnum = z.enum(
       "Badge trigger type must be one of: Time Based, Streak Based, Count Based, Milestone Based, or Engagement Based",
   }
 );
-
 export const BadgeConditionOperatorEnum = z.enum(["GreaterThanOrEqual", "Equals", "LessThanOrEqual"], {
   message: "Badge condition operator must be one of: Greater Than Or Equal, Equals, or Less Than Or Equal",
 });
-
 export const BadgeStatusActionEnum = z.enum(["Publish", "Clone", "Archive"], {
   message: "Badge status action must be one of: Publish, Clone, or Archive",
 });
+export const TimeBasedMetricEnum = z.enum(["DailyTime", "TotalCumulativeTime", "ExtendedSession"], {
+  message: "Invalid TimeBased metric",
+});
+export const StreakBasedMetricEnum = z.enum(["ConsecutiveLoginDays"], { message: "Invalid StreakBased metric" });
+export const CountBasedMetricEnum = z.enum(["TotalQuizzes", "TotalQuests", "TotalSwordDrills", "TotalFlashcards"], {
+  message: "Invalid CountBased metric",
+});
+export const MilestoneBasedMetricEnum = z.enum(["TotalXP"], { message: "Invalid MilestoneBased metric" });
+export const EngagementBasedMetricEnum = z.enum(
+  ["GroupJoined", "TotalGroupQuizzesCompleted", "TotalGroupQuestsCompleted"],
+  { message: "Invalid EngagementBased metric" }
+);
 
 /* ---- Trigger Config Schemas ---- */
 const TriggerMetricSchema = z.object({

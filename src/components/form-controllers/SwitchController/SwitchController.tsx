@@ -11,6 +11,7 @@ export function SwitchController<T extends FieldValues>({
   label,
   error,
   size,
+  className,
   ...props
 }: SwitchControllerProps<T>) {
   return (
@@ -27,7 +28,14 @@ export function SwitchController<T extends FieldValues>({
         control={control}
         name={name}
         render={({ field }) => (
-          <Switch {...props} checked={!!field.value} onCheckedChange={field.onChange} id={name} size={size} />
+          <Switch
+            {...props}
+            checked={!!field.value}
+            onCheckedChange={field.onChange}
+            id={name}
+            size={size}
+            className={className}
+          />
         )}
       />
       {error && (

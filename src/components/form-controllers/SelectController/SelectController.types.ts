@@ -1,3 +1,4 @@
+import type { ElementType } from "react";
 import type { Control, FieldPath, FieldValues } from "react-hook-form";
 import type { SelectTrigger, selectTriggerVariants } from "@/components/ui/select";
 import type { VariantProps } from "class-variance-authority";
@@ -6,6 +7,9 @@ export type SelectOption = {
   label: string;
   value: string;
   description?: string;
+  icon?: ElementType<Record<string, unknown>>;
+  iconColor?: string;
+  disabled?: boolean;
 };
 
 export type SelectControllerProps<T extends FieldValues> = Omit<

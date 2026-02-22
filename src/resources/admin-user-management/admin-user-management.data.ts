@@ -99,8 +99,6 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       joinedAt: "2025-01-15T10:30:00.000Z",
       lastActive: "2025-01-20T14:22:31.000Z",
       location: "Dallas, TX",
-      email: "john.doe@example.com",
-      phone: "+1234-567-8900",
     },
     stats: {
       totalXp: 4567,
@@ -128,8 +126,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
     badges: [
       {
         id: "badge-uuid-1",
-        badgeId: "badge-001",
-        title: "First Quest",
+        name: "First Quest",
         description: "Completed your first quest",
         rarity: "Common",
         iconUrl: "https://via.placeholder.com/64",
@@ -137,8 +134,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-2",
-        badgeId: "badge-002",
-        title: "Quiz Master",
+        name: "Quiz Master",
         description: "Completed 10 quizzes",
         rarity: "Rare",
         iconUrl: "https://via.placeholder.com/64",
@@ -146,8 +142,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-3",
-        badgeId: "badge-003",
-        title: "Streak Champion",
+        name: "Streak Champion",
         description: "Maintained a 7-day streak",
         rarity: "Epic",
         iconUrl: "https://via.placeholder.com/64",
@@ -155,8 +150,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-4",
-        badgeId: "badge-004",
-        title: "Bible Explorer",
+        name: "Bible Explorer",
         description: "Read 50 Bible chapters",
         rarity: "Common",
         iconUrl: "https://via.placeholder.com/64",
@@ -164,8 +158,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-5",
-        badgeId: "badge-005",
-        title: "Sword Drill Expert",
+        name: "Sword Drill Expert",
         description: "Completed 25 sword drills",
         rarity: "Rare",
         iconUrl: "https://via.placeholder.com/64",
@@ -173,8 +166,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-6",
-        badgeId: "badge-006",
-        title: "Perfect Score",
+        name: "Perfect Score",
         description: "Got 100% on 5 quizzes",
         rarity: "Epic",
         iconUrl: "https://via.placeholder.com/64",
@@ -182,8 +174,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-7",
-        badgeId: "badge-007",
-        title: "Daily Devotion",
+        name: "Daily Devotion",
         description: "Completed 30 days of spirit food",
         rarity: "Common",
         iconUrl: "https://via.placeholder.com/64",
@@ -191,8 +182,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-8",
-        badgeId: "badge-008",
-        title: "Quest Completer",
+        name: "Quest Completer",
         description: "Completed 5 quests",
         rarity: "Rare",
         iconUrl: "https://via.placeholder.com/64",
@@ -200,8 +190,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-9",
-        badgeId: "badge-009",
-        title: "Memory Master",
+        name: "Memory Master",
         description: "Memorized 20 verses",
         rarity: "Common",
         iconUrl: "https://via.placeholder.com/64",
@@ -209,8 +198,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-10",
-        badgeId: "badge-010",
-        title: "Speed Demon",
+        name: "Speed Demon",
         description: "Completed quiz in under 2 minutes",
         rarity: "Epic",
         iconUrl: "https://via.placeholder.com/64",
@@ -218,8 +206,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-11",
-        badgeId: "badge-011",
-        title: "Faithful Follower",
+        name: "Faithful Follower",
         description: "Logged in 50 days",
         rarity: "Rare",
         iconUrl: "https://via.placeholder.com/64",
@@ -227,8 +214,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-12",
-        badgeId: "badge-012",
-        title: "Chapter Champion",
+        name: "Chapter Champion",
         description: "Read 100 Bible chapters",
         rarity: "Legendary",
         iconUrl: "https://via.placeholder.com/64",
@@ -236,8 +222,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-13",
-        badgeId: "badge-013",
-        title: "Quiz Warrior",
+        name: "Quiz Warrior",
         description: "Completed 50 quizzes",
         rarity: "Epic",
         iconUrl: "https://via.placeholder.com/64",
@@ -245,8 +230,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-14",
-        badgeId: "badge-014",
-        title: "Verse Collector",
+        name: "Verse Collector",
         description: "Saved 30 verses",
         rarity: "Common",
         iconUrl: "https://via.placeholder.com/64",
@@ -254,8 +238,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-15",
-        badgeId: "badge-015",
-        title: "Sword Master",
+        name: "Sword Master",
         description: "Completed 50 sword drills",
         rarity: "Epic",
         iconUrl: "https://via.placeholder.com/64",
@@ -263,8 +246,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-16",
-        badgeId: "badge-016",
-        title: "Early Bird",
+        name: "Early Bird",
         description: "Completed spirit food before 7 AM",
         rarity: "Rare",
         iconUrl: "https://via.placeholder.com/64",
@@ -272,8 +254,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-17",
-        badgeId: "badge-017",
-        title: "Night Owl",
+        name: "Night Owl",
         description: "Completed activities after 10 PM",
         rarity: "Rare",
         iconUrl: "https://via.placeholder.com/64",
@@ -281,8 +262,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-18",
-        badgeId: "badge-018",
-        title: "Perfect Week",
+        name: "Perfect Week",
         description: "Completed all daily activities for 7 days",
         rarity: "Legendary",
         iconUrl: "https://via.placeholder.com/64",
@@ -290,8 +270,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-19",
-        badgeId: "badge-019",
-        title: "Quest Hero",
+        name: "Quest Hero",
         description: "Completed 10 quests",
         rarity: "Epic",
         iconUrl: "https://via.placeholder.com/64",
@@ -299,8 +278,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-20",
-        badgeId: "badge-020",
-        title: "Bible Scholar",
+        name: "Bible Scholar",
         description: "Read all 66 books",
         rarity: "Legendary",
         iconUrl: "https://via.placeholder.com/64",
@@ -308,8 +286,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-21",
-        badgeId: "badge-021",
-        title: "Quick Learner",
+        name: "Quick Learner",
         description: "Completed 5 quizzes in one day",
         rarity: "Rare",
         iconUrl: "https://via.placeholder.com/64",
@@ -317,8 +294,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-22",
-        badgeId: "badge-022",
-        title: "Streak Keeper",
+        name: "Streak Keeper",
         description: "Maintained a 30-day streak",
         rarity: "Legendary",
         iconUrl: "https://via.placeholder.com/64",
@@ -326,8 +302,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-23",
-        badgeId: "badge-023",
-        title: "First Steps",
+        name: "First Steps",
         description: "Completed your first quiz",
         rarity: "Common",
         iconUrl: "https://via.placeholder.com/64",
@@ -335,8 +310,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-24",
-        badgeId: "badge-024",
-        title: "Sword Fighter",
+        name: "Sword Fighter",
         description: "Completed your first sword drill",
         rarity: "Common",
         iconUrl: "https://via.placeholder.com/64",
@@ -344,8 +318,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-25",
-        badgeId: "badge-025",
-        title: "Verse Memorizer",
+        name: "Verse Memorizer",
         description: "Memorized 10 verses",
         rarity: "Rare",
         iconUrl: "https://via.placeholder.com/64",
@@ -353,8 +326,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-26",
-        badgeId: "badge-026",
-        title: "Dedicated Learner",
+        name: "Dedicated Learner",
         description: "Spent 100 hours studying",
         rarity: "Epic",
         iconUrl: "https://via.placeholder.com/64",
@@ -362,8 +334,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-27",
-        badgeId: "badge-027",
-        title: "Special Achievement",
+        name: "Special Achievement",
         description: "Earned during special event",
         rarity: "Special",
         iconUrl: "https://via.placeholder.com/64",
@@ -382,7 +353,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       {
         id: "feedback-uuid-2",
         message: "Would like to see more quiz categories.",
-        category: "feature",
+        category: "feature_request",
         status: "open",
         createdAt: "2025-01-19T15:30:00.000Z",
         updatedAt: "2025-01-19T15:30:00.000Z",
@@ -421,8 +392,6 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       joinedAt: "2025-01-10T08:20:00.000Z",
       lastActive: "2025-01-20T12:10:00.000Z",
       location: "Austin, TX",
-      email: "jane.smith@example.com",
-      phone: "+1234-567-8901",
     },
     stats: {
       totalXp: 3200,
@@ -437,8 +406,6 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
     settings: {
       notifications: false,
       soundEffects: true,
-      showEmail: true,
-      language: "English",
     },
     spiritFood: {
       savedVerses: 8,
@@ -452,8 +419,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
     badges: [
       {
         id: "badge-uuid-4",
-        badgeId: "badge-001",
-        title: "First Quest",
+        name: "First Quest",
         description: "Completed your first quest",
         rarity: "Common",
         iconUrl: "https://via.placeholder.com/64",
@@ -464,7 +430,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       {
         id: "feedback-uuid-3",
         message: "Having issues with notifications.",
-        category: "bug",
+        category: "bug_report",
         status: "in_progress",
         createdAt: "2025-01-15T11:20:00.000Z",
         updatedAt: "2025-01-16T09:00:00.000Z",
@@ -490,8 +456,6 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       joinedAt: "2024-12-20T14:15:00.000Z",
       lastActive: "2025-01-18T10:00:00.000Z",
       location: "Houston, TX",
-      email: "bob.wilson@example.com",
-      phone: "+1234-567-8902",
     },
     stats: {
       totalXp: 1200,
@@ -506,8 +470,6 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
     settings: {
       notifications: true,
       soundEffects: false,
-      showEmail: false,
-      language: "English",
     },
     spiritFood: {
       savedVerses: 3,
@@ -532,8 +494,6 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       joinedAt: "2025-01-05T09:45:00.000Z",
       lastActive: "2025-01-19T16:30:00.000Z",
       location: "San Antonio, TX",
-      email: "alice.brown@example.com",
-      phone: "+1234-567-8903",
     },
     stats: {
       totalXp: 2800,
@@ -548,8 +508,6 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
     settings: {
       notifications: true,
       soundEffects: true,
-      showEmail: true,
-      language: "English",
     },
     spiritFood: {
       savedVerses: 10,
@@ -563,8 +521,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
     badges: [
       {
         id: "badge-uuid-5",
-        badgeId: "badge-001",
-        title: "First Quest",
+        name: "First Quest",
         description: "Completed your first quest",
         rarity: "Common",
         iconUrl: "https://via.placeholder.com/64",
@@ -592,8 +549,6 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       joinedAt: "2024-11-30T16:00:00.000Z",
       lastActive: "2025-01-21T09:15:00.000Z",
       location: null,
-      email: "charlie.davis@example.com",
-      phone: "+1234-567-8904",
     },
     stats: {
       totalXp: 8900,
@@ -608,8 +563,6 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
     settings: {
       notifications: true,
       soundEffects: true,
-      showEmail: true,
-      language: "English",
     },
     spiritFood: {
       savedVerses: 42,
@@ -623,8 +576,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
     badges: [
       {
         id: "badge-uuid-6",
-        badgeId: "badge-001",
-        title: "First Quest",
+        name: "First Quest",
         description: "Completed your first quest",
         rarity: "Common",
         iconUrl: "https://via.placeholder.com/64",
@@ -632,8 +584,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-7",
-        badgeId: "badge-002",
-        title: "Quiz Master",
+        name: "Quiz Master",
         description: "Completed 10 quizzes",
         rarity: "Rare",
         iconUrl: "https://via.placeholder.com/64",
@@ -641,8 +592,7 @@ const MOCK_USER_DATA: Record<string, MockUserData> = {
       },
       {
         id: "badge-uuid-8",
-        badgeId: "badge-004",
-        title: "Legendary Player",
+        name: "Legendary Player",
         description: "Reached top 20 global rank",
         rarity: "Legendary",
         iconUrl: "https://via.placeholder.com/64",

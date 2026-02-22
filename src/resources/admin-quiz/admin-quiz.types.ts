@@ -60,6 +60,7 @@ export type AdminQuizSummary = {
   tags: string[];
   publishAt?: string;
   publishedAt?: string;
+  completionBadgeId?: string;
   isSwordDrillEnabled: boolean;
   createdAt: string;
   updatedAt: string;
@@ -79,6 +80,7 @@ export type AdminQuizDetail = {
   totalQuestions: number;
   totalPoints: number;
   questions: QuizQuestionItem[];
+  completionBadgeId?: string;
   isSwordDrillEnabled: boolean;
   swordDrillConfig?: SwordDrillConfig;
   publishAt?: string;

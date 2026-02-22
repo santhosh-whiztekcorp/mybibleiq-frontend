@@ -7,7 +7,8 @@ export type ConfirmationAction =
   | "activate"
   | "dismiss"
   | "approve"
-  | "reject";
+  | "reject"
+  | "deliver";
 
 export type ConfirmationConfig = {
   title: (entity: string) => string;

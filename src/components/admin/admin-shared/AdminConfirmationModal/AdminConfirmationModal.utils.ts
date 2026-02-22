@@ -57,6 +57,12 @@ export const CONFIRMATION_CONFIG: Record<ConfirmationAction, ConfirmationConfig>
     label: "Reject",
     variant: "actionDelete",
   },
+  deliver: {
+    title: (entity: string) => `Deliver ${entity}`,
+    message: (entity: string) => `Are you sure you want to deliver this ${entity.toLowerCase()} now?`,
+    label: "Deliver Now",
+    variant: "actionPublish",
+  },
 };
 
 export const getConfirmationConfig = (action: ConfirmationAction | null) => {

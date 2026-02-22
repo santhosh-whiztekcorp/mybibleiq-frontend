@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,11 +8,7 @@ import { pngIcons } from "@/assets";
 import { useGetAdminUserManagementActivity, useAdminUserManagementBadges } from "@/resources/admin-user-management";
 import { BADGE_RARITY_LABELS } from "@/resources/admin-user-management";
 
-type UserActivityTabProps = {
-  userId: string;
-};
-
-export function UserActivityTab({ userId }: UserActivityTabProps) {
+export function UserActivityTab({ userId }: { userId: string }) {
   const { data: activityData, isLoading, error } = useGetAdminUserManagementActivity(userId);
   const {
     data: badgesData,
@@ -28,7 +23,7 @@ export function UserActivityTab({ userId }: UserActivityTabProps) {
 
   const activity = activityData?.activity;
   const badges = badgesData?.pages.flatMap((p) => p?.items ?? []) ?? [];
-  const totalBadges = badgesData?.pages[0]?.total ?? 0;
+  const totalBadges = badgesData?.pages[0]?.totalEarned ?? 0;
 
   if (!userId) {
     return (
@@ -141,7 +136,7 @@ export function UserActivityTab({ userId }: UserActivityTabProps) {
                     {badge.iconUrl ? (
                       <Image
                         src={badge.iconUrl}
-                        alt={badge.title}
+                        alt={badge.name}
                         width={48}
                         height={48}
                         className="h-12 w-12 object-contain"
@@ -152,7 +147,7 @@ export function UserActivityTab({ userId }: UserActivityTabProps) {
                     <Badge variant={badgeVariant} size="sm">
                       {rarityLabel}
                     </Badge>
-                    <p className="text-sm font-medium line-clamp-2">{badge.title}</p>
+                    <p className="text-sm font-medium line-clamp-2">{badge.name}</p>
                   </div>
                 );
               })}

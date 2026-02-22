@@ -2,6 +2,8 @@ export * from "./AdminSidebar";
 export * from "./AdminMediaSelector";
 export * from "./AdminBadgeSelector";
 export * from "./AdminTagSelector";
+export * from "./AdminUserSelector";
+export * from "./AdminGroupSelector";
 export * from "./AdminQuestionSelector";
 export * from "./AdminFlashcardSelector";
 export * from "./AdminUserActionModal";

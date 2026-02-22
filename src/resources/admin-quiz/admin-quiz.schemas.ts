@@ -134,6 +134,7 @@ export const CreateAdminQuizRequestSchema = z
       .min(1, { message: "Quiz must have at least 1 question" }),
     isSwordDrillEnabled: z.boolean({ message: "Please specify if sword drill is enabled" }),
     swordDrillConfig: SwordDrillConfigSchema.optional(),
+    completionBadgeId: z.string({ message: "Completion badge ID is required" }).optional(),
   })
   .superRefine((data, ctx) => {
     if (data.timeLimitType !== "None" && !data.timeLimitValue) {

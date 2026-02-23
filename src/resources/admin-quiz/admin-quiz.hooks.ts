@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, InfiniteData } from "@tanstack/react-query";
 import { create } from "zustand";
 import { useForm } from "react-hook-form";
 import Toast from "@/lib/toast";
@@ -27,6 +27,9 @@ import type {
   UpdateAdminQuizStatusInput,
   AdminQuizListInput,
   AdminQuizFilterStore,
+  AdminQuizListResponse,
+  AdminQuizSummary,
+  AdminQuizDetail,
 } from "./admin-quiz.types";
 
 /* ---- Form Hooks ---- */
@@ -54,15 +57,42 @@ export const useUpdateAdminQuizStatusForm = () =>
 export const useCreateAdminQuiz = () =>
   useMutation({
     mutationFn: (input: CreateAdminQuizInput) => createAdminQuiz(input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminQuizQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Quiz created successfully",
-          text2: "The quiz has been created",
-        });
-      }, 300);
+    onSuccess: (data) => {
+      /* ---- Prepend to first page of all list variants ---- */
+      queryClient.setQueriesData<InfiniteData<AdminQuizListResponse>>(
+        { queryKey: adminQuizQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          const newItem: AdminQuizSummary = {
+            id: data.id,
+            title: data.title,
+            description: data.description,
+            status: data.status,
+            difficulty: data.difficulty,
+            totalQuestions: data.totalQuestions,
+            totalPoints: data.totalPoints,
+            tags: data.tags,
+            publishAt: data.publishAt,
+            publishedAt: data.publishedAt,
+            completionBadgeId: data.completionBadgeId,
+            isSwordDrillEnabled: data.isSwordDrillEnabled,
+            createdAt: data.createdAt,
+            updatedAt: data.updatedAt,
+          };
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page, i) =>
+              i === 0 ? { ...page, items: [newItem, ...page.items], total: page.total + 1 } : page
+            ),
+          };
+        }
+      );
+      queryClient.invalidateQueries({ queryKey: adminQuizQueryKeys.stats() });
+      Toast.show({
+        type: "success",
+        text1: "Quiz created successfully",
+        text2: "The quiz has been created",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -77,15 +107,42 @@ export const useCreateAdminQuiz = () =>
 export const useUpdateAdminQuiz = () =>
   useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateAdminQuizInput }) => updateAdminQuiz(id, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminQuizQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Quiz updated successfully",
-          text2: "The quiz has been updated",
-        });
-      }, 300);
+    onSuccess: (data, { id }) => {
+      /* ---- Update item in all list pages ---- */
+      queryClient.setQueriesData<InfiniteData<AdminQuizListResponse>>(
+        { queryKey: adminQuizQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.map((item) =>
+                item.id === id
+                  ? {
+                      ...item,
+                      title: data.title,
+                      description: data.description,
+                      difficulty: data.difficulty,
+                      tags: data.tags,
+                      totalQuestions: data.totalQuestions,
+                      totalPoints: data.totalPoints,
+                      isSwordDrillEnabled: data.isSwordDrillEnabled,
+                      updatedAt: data.updatedAt,
+                    }
+                  : item
+              ),
+            })),
+          };
+        }
+      );
+      /* ---- Update detail cache ---- */
+      queryClient.setQueryData<AdminQuizDetail>(adminQuizQueryKeys.detail(id), data);
+      Toast.show({
+        type: "success",
+        text1: "Quiz updated successfully",
+        text2: "The quiz has been updated",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -100,15 +157,45 @@ export const useUpdateAdminQuiz = () =>
 export const useUpdateAdminQuizStatus = () =>
   useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateAdminQuizStatusInput }) => updateAdminQuizStatus(id, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminQuizQueryKeys.all });
-      setTimeout(() => {
+    onSuccess: (data, { id, input }) => {
+      if (input.action === "Clone") {
+        /* ---- Clone creates a new quiz — invalidate list so it appears ---- */
+        queryClient.invalidateQueries({ queryKey: adminQuizQueryKeys.lists() });
+        queryClient.invalidateQueries({ queryKey: adminQuizQueryKeys.stats() });
+        Toast.show({
+          type: "success",
+          text1: "Quiz cloned successfully",
+          text2: "A draft copy of the quiz has been created",
+        });
+      } else {
+        /* ---- Schedule / Unschedule / Publish / Archive: update existing item's status ---- */
+        queryClient.setQueriesData<InfiniteData<AdminQuizListResponse>>(
+          { queryKey: adminQuizQueryKeys.lists() },
+          (oldData) => {
+            if (!oldData) return oldData;
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                items: page.items.map((item) =>
+                  item.id === id ? { ...item, status: data.status, publishAt: data.publishAt } : item
+                ),
+              })),
+            };
+          }
+        );
+        /* ---- Update detail cache ---- */
+        queryClient.setQueryData<AdminQuizDetail>(adminQuizQueryKeys.detail(id), (oldData) => {
+          if (!oldData) return oldData;
+          return { ...oldData, status: data.status, publishAt: data.publishAt };
+        });
+        queryClient.invalidateQueries({ queryKey: adminQuizQueryKeys.stats() });
         Toast.show({
           type: "success",
           text1: "Quiz status updated successfully",
           text2: "The quiz status has been updated",
         });
-      }, 300);
+      }
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -123,15 +210,29 @@ export const useUpdateAdminQuizStatus = () =>
 export const useDeleteAdminQuiz = () =>
   useMutation({
     mutationFn: (id: string) => deleteAdminQuiz(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminQuizQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Quiz deleted successfully",
-          text2: "The quiz has been deleted",
-        });
-      }, 300);
+    onSuccess: (_, id) => {
+      /* ---- Remove item from all list pages ---- */
+      queryClient.setQueriesData<InfiniteData<AdminQuizListResponse>>(
+        { queryKey: adminQuizQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.filter((item) => item.id !== id),
+              total: page.total - 1,
+            })),
+          };
+        }
+      );
+      queryClient.removeQueries({ queryKey: adminQuizQueryKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: adminQuizQueryKeys.stats() });
+      Toast.show({
+        type: "success",
+        text1: "Quiz deleted successfully",
+        text2: "The quiz has been deleted",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);

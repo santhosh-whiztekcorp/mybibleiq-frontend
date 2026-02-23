@@ -12,11 +12,11 @@ export function FlashcardGroupCard({ item, onEdit, onDelete, onPublish, onArchiv
   const { displayTags, remainingTagsCount, cardBorderColor } = useFlashcardGroupCard(item);
 
   return (
-    <div className={cn("rounded-lg border overflow-hidden", cardBorderColor)}>
+    <div className={cn("rounded-lg border overflow-hidden flex flex-col h-full", cardBorderColor)}>
       {/* Complete Gradient Background */}
-      <div className="bg-linear-to-br from-[#F7EFD0] to-[#FF96C7] p-3 space-y-3">
+      <div className="bg-linear-to-br from-[#F7EFD0] to-[#FF96C7] p-3 flex-1 flex flex-col gap-3">
         {/* Name and Description */}
-        <div className="space-y-2">
+        <div className="shrink-0 space-y-2">
           <h3 className="text-xs font-bold text-[#393737] line-clamp-2">{item.name}</h3>
           {item.description && (
             <p className="text-[10px] font-semibold text-[#4E4E4E] line-clamp-2">{item.description}</p>
@@ -55,7 +55,7 @@ export function FlashcardGroupCard({ item, onEdit, onDelete, onPublish, onArchiv
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-2 mt-auto pt-1">
           {/* Status-based actions */}
           {item.status === "Draft" && (
             <>

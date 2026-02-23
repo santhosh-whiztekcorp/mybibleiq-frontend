@@ -90,6 +90,3 @@ export const adminUserManagementQueryKeys = {
   savedVersesList: (userId: string, params?: AdminUserSavedVersesListInput) =>
     [...adminUserManagementQueryKeys.savedVerses(userId), params] as const,
 };
-
-/* ---- Mock Flag ---- */
-export const USE_MOCK_DATA = false;

@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, InfiniteData } from "@tanstack/react-query";
 import { create } from "zustand";
 import { useForm } from "react-hook-form";
 import Toast from "@/lib/toast";
@@ -29,6 +29,9 @@ import type {
   UpdateAdminMediaStatusInput,
   AdminMediaListInput,
   AdminMediaFilterStore,
+  AdminMediaListResponse,
+  AdminMediaSummary,
+  AdminMediaDetail,
 } from "./admin-media.types";
 
 /* ---- Form Hooks ---- */
@@ -56,15 +59,41 @@ export const useUpdateAdminMediaStatusForm = () =>
 export const useCreateAdminMedia = () =>
   useMutation({
     mutationFn: (input: CreateAdminMediaInput) => createAdminMedia(input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminMediaQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Media created successfully",
-          text2: "The media has been created",
-        });
-      }, 300);
+    onSuccess: (data) => {
+      /* ---- Prepend to first page of all list variants ---- */
+      queryClient.setQueriesData<InfiniteData<AdminMediaListResponse>>(
+        { queryKey: adminMediaQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          const newItem: AdminMediaSummary = {
+            id: data.id,
+            status: data.status,
+            title: data.title,
+            type: data.type,
+            url: data.url,
+            caption: data.caption,
+            sizeBytes: data.sizeBytes,
+            duration: data.duration,
+            tags: data.tags,
+            publishedAt: data.publishedAt,
+            archivedAt: data.archivedAt,
+            createdAt: data.createdAt,
+            updatedAt: data.updatedAt,
+          };
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page, i) =>
+              i === 0 ? { ...page, items: [newItem, ...page.items], total: page.total + 1 } : page
+            ),
+          };
+        }
+      );
+      queryClient.invalidateQueries({ queryKey: adminMediaQueryKeys.stats() });
+      Toast.show({
+        type: "success",
+        text1: "Media created successfully",
+        text2: "The media has been created",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -79,15 +108,59 @@ export const useCreateAdminMedia = () =>
 export const useUpdateAdminMedia = () =>
   useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateAdminMediaInput }) => updateAdminMedia(id, input),
-    onSuccess: () => {
+    onSuccess: (data, { id }) => {
+      /* ---- Update item in all list variants for instant feedback ---- */
+      queryClient.setQueriesData<InfiniteData<AdminMediaListResponse>>(
+        { queryKey: adminMediaQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              total: page.total,
+              items: page.items.map((item) =>
+                item.id === id
+                  ? {
+                      ...item,
+                      title: data.title,
+                      url: data.url
+                        ? `${data.url}${data.url.includes("?") ? "&" : "?"}v=${new Date(data.updatedAt).getTime()}`
+                        : data.url,
+                      type: data.type,
+                      caption: data.caption,
+                      sizeBytes: data.sizeBytes,
+                      duration: data.duration,
+                      tags: data.tags,
+                      status: data.status,
+                      updatedAt: data.updatedAt,
+                    }
+                  : item
+              ),
+            })),
+          };
+        }
+      );
+
+      /* ---- Invalidate to ensure consistency with backend ---- */
+      queryClient.invalidateQueries({ queryKey: adminMediaQueryKeys.lists() });
       queryClient.invalidateQueries({ queryKey: adminMediaQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Media updated successfully",
-          text2: "The media has been updated",
-        });
-      }, 300);
+      queryClient.invalidateQueries({ queryKey: adminMediaQueryKeys.stats() });
+
+      /* ---- Update detail cache ---- */
+      const versionedData = {
+        ...data,
+        url: data.url
+          ? `${data.url}${data.url.includes("?") ? "&" : "?"}v=${new Date(data.updatedAt).getTime()}`
+          : data.url,
+      };
+      queryClient.setQueryData<AdminMediaDetail>(adminMediaQueryKeys.detail(id), versionedData);
+
+      Toast.show({
+        type: "success",
+        text1: "Media updated successfully",
+        text2: "The media has been updated",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -103,15 +176,43 @@ export const useUpdateAdminMediaStatus = () =>
   useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateAdminMediaStatusInput }) =>
       updateAdminMediaStatus(id, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminMediaQueryKeys.all });
-      setTimeout(() => {
+    onSuccess: (data, { id, input }) => {
+      if (input.action === "Clone") {
+        /* ---- Clone creates a new media item — invalidate list so it appears ---- */
+        queryClient.invalidateQueries({ queryKey: adminMediaQueryKeys.lists() });
+        queryClient.invalidateQueries({ queryKey: adminMediaQueryKeys.stats() });
+        Toast.show({
+          type: "success",
+          text1: "Media cloned successfully",
+          text2: "A draft copy of the media has been created",
+        });
+      } else {
+        /* ---- Publish / Archive: update existing item's status in all list pages ---- */
+        queryClient.setQueriesData<InfiniteData<AdminMediaListResponse>>(
+          { queryKey: adminMediaQueryKeys.lists() },
+          (oldData) => {
+            if (!oldData) return oldData;
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                items: page.items.map((item) => (item.id === id ? { ...item, status: data.status } : item)),
+              })),
+            };
+          }
+        );
+        /* ---- Update detail cache ---- */
+        queryClient.setQueryData<AdminMediaDetail>(adminMediaQueryKeys.detail(id), (oldData) => {
+          if (!oldData) return oldData;
+          return { ...oldData, status: data.status };
+        });
+        queryClient.invalidateQueries({ queryKey: adminMediaQueryKeys.stats() });
         Toast.show({
           type: "success",
           text1: "Media status updated successfully",
           text2: "The media status has been updated",
         });
-      }, 300);
+      }
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -126,15 +227,29 @@ export const useUpdateAdminMediaStatus = () =>
 export const useDeleteAdminMedia = () =>
   useMutation({
     mutationFn: (id: string) => deleteAdminMedia(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminMediaQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Media deleted successfully",
-          text2: "The media has been deleted",
-        });
-      }, 300);
+    onSuccess: (_, id) => {
+      /* ---- Remove item from all list pages ---- */
+      queryClient.setQueriesData<InfiniteData<AdminMediaListResponse>>(
+        { queryKey: adminMediaQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.filter((item) => item.id !== id),
+              total: page.total - 1,
+            })),
+          };
+        }
+      );
+      queryClient.removeQueries({ queryKey: adminMediaQueryKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: adminMediaQueryKeys.stats() });
+      Toast.show({
+        type: "success",
+        text1: "Media deleted successfully",
+        text2: "The media has been deleted",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);

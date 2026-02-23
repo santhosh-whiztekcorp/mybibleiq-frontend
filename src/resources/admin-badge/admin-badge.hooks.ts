@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, InfiniteData } from "@tanstack/react-query";
 import { create } from "zustand";
 import { useForm } from "react-hook-form";
 import Toast from "@/lib/toast";
@@ -27,6 +27,9 @@ import type {
   UpdateAdminBadgeStatusInput,
   AdminBadgeListInput,
   AdminBadgeFilterStore,
+  AdminBadgeListResponse,
+  AdminBadgeSummary,
+  AdminBadgeDetail,
 } from "./admin-badge.types";
 
 /* ---- Form Hooks ---- */
@@ -54,15 +57,41 @@ export const useUpdateAdminBadgeStatusForm = () =>
 export const useCreateAdminBadge = () =>
   useMutation({
     mutationFn: (input: CreateAdminBadgeInput) => createAdminBadge(input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminBadgeQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Badge created successfully",
-          text2: "The badge has been created",
-        });
-      }, 300);
+    onSuccess: (data) => {
+      /* ---- Prepend new badge to the first page of every list variant ---- */
+      queryClient.setQueriesData<InfiniteData<AdminBadgeListResponse>>(
+        { queryKey: adminBadgeQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          const newItem: AdminBadgeSummary = {
+            id: data.id,
+            name: data.name,
+            description: data.description,
+            iconUrl: data.iconUrl,
+            status: data.status,
+            rarity: data.rarity,
+            category: data.category,
+            assignmentType: data.assignmentType,
+            tags: data.tags,
+            triggerConfig: data.triggerConfig,
+            createdAt: data.createdAt,
+            updatedAt: data.updatedAt,
+          };
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page, i) =>
+              i === 0 ? { ...page, items: [newItem, ...page.items], total: page.total + 1 } : page
+            ),
+          };
+        }
+      );
+      /* ---- Invalidate stats since count changed ---- */
+      queryClient.invalidateQueries({ queryKey: adminBadgeQueryKeys.stats() });
+      Toast.show({
+        type: "success",
+        text1: "Badge created successfully",
+        text2: "The badge has been created",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -77,15 +106,59 @@ export const useCreateAdminBadge = () =>
 export const useUpdateAdminBadge = () =>
   useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateAdminBadgeInput }) => updateAdminBadge(id, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminBadgeQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Badge updated successfully",
-          text2: "The badge has been updated",
-        });
-      }, 300);
+    onSuccess: (data, { id }) => {
+      /* ---- Update item in all list variants for instant feedback ---- */
+      queryClient.setQueriesData<InfiniteData<AdminBadgeListResponse>>(
+        { queryKey: adminBadgeQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              total: page.total,
+              items: page.items.map((item) =>
+                item.id === id
+                  ? {
+                      ...item,
+                      name: data.name,
+                      description: data.description,
+                      iconUrl: data.iconUrl
+                        ? `${data.iconUrl}${data.iconUrl.includes("?") ? "&" : "?"}v=${new Date(data.updatedAt).getTime()}`
+                        : data.iconUrl,
+                      rarity: data.rarity,
+                      category: data.category,
+                      assignmentType: data.assignmentType,
+                      tags: data.tags,
+                      status: data.status,
+                      triggerConfig: data.triggerConfig,
+                      updatedAt: data.updatedAt,
+                    }
+                  : item
+              ),
+            })),
+          };
+        }
+      );
+
+      /* ---- Invalidate all list variants to ensure data consistency ---- */
+      queryClient.invalidateQueries({ queryKey: adminBadgeQueryKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: adminBadgeQueryKeys.stats() });
+
+      /* ---- Update detail cache ---- */
+      const versionedData = {
+        ...data,
+        iconUrl: data.iconUrl
+          ? `${data.iconUrl}${data.iconUrl.includes("?") ? "&" : "?"}v=${new Date(data.updatedAt).getTime()}`
+          : data.iconUrl,
+      };
+      queryClient.setQueryData<AdminBadgeDetail>(adminBadgeQueryKeys.detail(id), versionedData);
+
+      Toast.show({
+        type: "success",
+        text1: "Badge updated successfully",
+        text2: "The badge has been updated",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -101,15 +174,44 @@ export const useUpdateAdminBadgeStatus = () =>
   useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateAdminBadgeStatusInput }) =>
       updateAdminBadgeStatus(id, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminBadgeQueryKeys.all });
-      setTimeout(() => {
+    onSuccess: (data, { id, input }) => {
+      if (input.action === "Clone") {
+        /* ---- Clone creates a new badge — invalidate the list so it appears ---- */
+        queryClient.invalidateQueries({ queryKey: adminBadgeQueryKeys.lists() });
+        queryClient.invalidateQueries({ queryKey: adminBadgeQueryKeys.stats() });
+        Toast.show({
+          type: "success",
+          text1: "Badge cloned successfully",
+          text2: "A draft copy of the badge has been created",
+        });
+      } else {
+        /* ---- Publish / Archive: update existing badge's status in all list pages ---- */
+        queryClient.setQueriesData<InfiniteData<AdminBadgeListResponse>>(
+          { queryKey: adminBadgeQueryKeys.lists() },
+          (oldData) => {
+            if (!oldData) return oldData;
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                items: page.items.map((item) => (item.id === id ? { ...item, status: data.status } : item)),
+              })),
+            };
+          }
+        );
+        /* ---- Update detail cache ---- */
+        queryClient.setQueryData<AdminBadgeDetail>(adminBadgeQueryKeys.detail(id), (oldData) => {
+          if (!oldData) return oldData;
+          return { ...oldData, status: data.status };
+        });
+        /* ---- Invalidate stats since counts changed ---- */
+        queryClient.invalidateQueries({ queryKey: adminBadgeQueryKeys.stats() });
         Toast.show({
           type: "success",
           text1: "Badge status updated successfully",
           text2: "The badge status has been updated",
         });
-      }, 300);
+      }
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -124,15 +226,31 @@ export const useUpdateAdminBadgeStatus = () =>
 export const useDeleteAdminBadge = () =>
   useMutation({
     mutationFn: (id: string) => deleteAdminBadge(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminBadgeQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Badge deleted successfully",
-          text2: "The badge has been deleted",
-        });
-      }, 300);
+    onSuccess: (_, id) => {
+      /* ---- Remove item from all list pages ---- */
+      queryClient.setQueriesData<InfiniteData<AdminBadgeListResponse>>(
+        { queryKey: adminBadgeQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.filter((item) => item.id !== id),
+              total: page.total - 1,
+            })),
+          };
+        }
+      );
+      /* ---- Remove detail cache ---- */
+      queryClient.removeQueries({ queryKey: adminBadgeQueryKeys.detail(id) });
+      /* ---- Invalidate stats since count changed ---- */
+      queryClient.invalidateQueries({ queryKey: adminBadgeQueryKeys.stats() });
+      Toast.show({
+        type: "success",
+        text1: "Badge deleted successfully",
+        text2: "The badge has been deleted",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);

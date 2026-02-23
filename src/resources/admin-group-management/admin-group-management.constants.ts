@@ -32,7 +32,6 @@ import type {
   AdminGroupWarnLeaderNotificationType,
 } from "./admin-group-management.types";
 
-export const USE_MOCK_DATA = false;
 export const SHOW_ACTIVITY_LOG_BUTTON = false;
 
 /* ---- Group Status Options ---- */

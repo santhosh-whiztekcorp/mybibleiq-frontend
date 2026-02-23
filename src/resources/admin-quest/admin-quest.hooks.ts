@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, InfiniteData } from "@tanstack/react-query";
 import { create } from "zustand";
 import { useForm } from "react-hook-form";
 import Toast from "@/lib/toast";
@@ -41,6 +41,9 @@ import type {
   AdminQuestStageListInput,
   CreateAdminQuestStageInput,
   UpdateAdminQuestStageInput,
+  AdminQuestListResponse,
+  AdminQuestSummary,
+  AdminQuestDetail,
 } from "./admin-quest.types";
 
 /* ---- Form Hooks ---- */
@@ -68,15 +71,39 @@ export const useUpdateAdminQuestStatusForm = () =>
 export const useCreateAdminQuest = () =>
   useMutation({
     mutationFn: (input: CreateAdminQuestInput) => createAdminQuest(input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminQuestQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Quest created successfully",
-          text2: "The quest has been created",
-        });
-      }, 300);
+    onSuccess: (data) => {
+      /* ---- Prepend to first page of all list variants ---- */
+      queryClient.setQueriesData<InfiniteData<AdminQuestListResponse>>(
+        { queryKey: adminQuestQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          const newItem: AdminQuestSummary = {
+            id: data.id,
+            title: data.title,
+            description: data.description,
+            status: data.status,
+            totalStages: 0,
+            tags: data.tags ?? [],
+            publishAt: data.publishAt,
+            publishedAt: data.publishedAt,
+            archivedAt: data.archivedAt,
+            createdAt: data.createdAt,
+            updatedAt: data.updatedAt,
+          };
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page, i) =>
+              i === 0 ? { ...page, items: [newItem, ...page.items], total: page.total + 1 } : page
+            ),
+          };
+        }
+      );
+      queryClient.invalidateQueries({ queryKey: adminQuestQueryKeys.statsStatus() });
+      Toast.show({
+        type: "success",
+        text1: "Quest created successfully",
+        text2: "The quest has been created",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -91,15 +118,38 @@ export const useCreateAdminQuest = () =>
 export const useUpdateAdminQuest = () =>
   useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateAdminQuestInput }) => updateAdminQuest(id, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminQuestQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Quest updated successfully",
-          text2: "The quest has been updated",
-        });
-      }, 300);
+    onSuccess: (data, { id }) => {
+      /* ---- Update item in all list pages ---- */
+      queryClient.setQueriesData<InfiniteData<AdminQuestListResponse>>(
+        { queryKey: adminQuestQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.map((item) =>
+                item.id === id
+                  ? {
+                      ...item,
+                      title: data.title,
+                      description: data.description,
+                      tags: data.tags ?? [],
+                      updatedAt: data.updatedAt,
+                    }
+                  : item
+              ),
+            })),
+          };
+        }
+      );
+      /* ---- Update detail cache ---- */
+      queryClient.setQueryData<AdminQuestDetail>(adminQuestQueryKeys.detail(id), data);
+      Toast.show({
+        type: "success",
+        text1: "Quest updated successfully",
+        text2: "The quest has been updated",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -115,15 +165,43 @@ export const useUpdateAdminQuestStatus = () =>
   useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateAdminQuestStatusInput }) =>
       updateAdminQuestStatus(id, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminQuestQueryKeys.all });
-      setTimeout(() => {
+    onSuccess: (data, { id, input }) => {
+      if (input.action === "Clone") {
+        /* ---- Clone creates a new quest — invalidate list so it appears ---- */
+        queryClient.invalidateQueries({ queryKey: adminQuestQueryKeys.lists() });
+        queryClient.invalidateQueries({ queryKey: adminQuestQueryKeys.statsStatus() });
+        Toast.show({
+          type: "success",
+          text1: "Quest cloned successfully",
+          text2: "A draft copy of the quest has been created",
+        });
+      } else {
+        /* ---- Publish / Archive / Schedule: update existing item's status ---- */
+        queryClient.setQueriesData<InfiniteData<AdminQuestListResponse>>(
+          { queryKey: adminQuestQueryKeys.lists() },
+          (oldData) => {
+            if (!oldData) return oldData;
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                items: page.items.map((item) => (item.id === id ? { ...item, status: data.status } : item)),
+              })),
+            };
+          }
+        );
+        /* ---- Update detail cache ---- */
+        queryClient.setQueryData<AdminQuestDetail>(adminQuestQueryKeys.detail(id), (oldData) => {
+          if (!oldData) return oldData;
+          return { ...oldData, status: data.status };
+        });
+        queryClient.invalidateQueries({ queryKey: adminQuestQueryKeys.statsStatus() });
         Toast.show({
           type: "success",
           text1: "Quest status updated successfully",
           text2: "The quest status has been updated",
         });
-      }, 300);
+      }
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -138,15 +216,29 @@ export const useUpdateAdminQuestStatus = () =>
 export const useDeleteAdminQuest = () =>
   useMutation({
     mutationFn: (id: string) => deleteAdminQuest(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminQuestQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Quest deleted successfully",
-          text2: "The quest has been deleted",
-        });
-      }, 300);
+    onSuccess: (_, id) => {
+      /* ---- Remove item from all list pages ---- */
+      queryClient.setQueriesData<InfiniteData<AdminQuestListResponse>>(
+        { queryKey: adminQuestQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.filter((item) => item.id !== id),
+              total: page.total - 1,
+            })),
+          };
+        }
+      );
+      queryClient.removeQueries({ queryKey: adminQuestQueryKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: adminQuestQueryKeys.statsStatus() });
+      Toast.show({
+        type: "success",
+        text1: "Quest deleted successfully",
+        text2: "The quest has been deleted",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -213,15 +305,30 @@ export const useCreateAdminQuestStage = () =>
   useMutation({
     mutationFn: ({ questId, input }: { questId: string; input: CreateAdminQuestStageInput }) =>
       createAdminQuestStage(questId, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminQuestQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Stage created successfully",
-          text2: "The stage has been created",
-        });
-      }, 300);
+    onSuccess: (_, { questId }) => {
+      /* ---- Increment stage count in list + invalidate the stage list for this quest ---- */
+      queryClient.setQueriesData<InfiniteData<AdminQuestListResponse>>(
+        { queryKey: adminQuestQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.map((item) =>
+                item.id === questId ? { ...item, totalStages: item.totalStages + 1 } : item
+              ),
+            })),
+          };
+        }
+      );
+      /* ---- Invalidate the stage list query for this quest ---- */
+      queryClient.invalidateQueries({ queryKey: [...adminQuestQueryKeys.detail(questId), "stages"] });
+      Toast.show({
+        type: "success",
+        text1: "Stage created successfully",
+        text2: "The stage has been created",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -244,15 +351,15 @@ export const useUpdateAdminQuestStage = () =>
       stageId: string;
       input: UpdateAdminQuestStageInput;
     }) => updateAdminQuestStage(questId, stageId, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminQuestQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Stage updated successfully",
-          text2: "The stage has been updated",
-        });
-      }, 300);
+    onSuccess: (data, { questId, stageId }) => {
+      /* ---- Invalidate stage list + update detail ---- */
+      queryClient.invalidateQueries({ queryKey: [...adminQuestQueryKeys.detail(questId), "stages"] });
+      queryClient.setQueryData([...adminQuestQueryKeys.detail(questId), "stages", stageId], data);
+      Toast.show({
+        type: "success",
+        text1: "Stage updated successfully",
+        text2: "The stage has been updated",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -267,15 +374,30 @@ export const useUpdateAdminQuestStage = () =>
 export const useDeleteAdminQuestStage = () =>
   useMutation({
     mutationFn: ({ questId, stageId }: { questId: string; stageId: string }) => deleteAdminQuestStage(questId, stageId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminQuestQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Stage deleted successfully",
-          text2: "The stage has been deleted",
-        });
-      }, 300);
+    onSuccess: (_, { questId, stageId }) => {
+      /* ---- Decrement stage count in list + invalidate the stage list ---- */
+      queryClient.setQueriesData<InfiniteData<AdminQuestListResponse>>(
+        { queryKey: adminQuestQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.map((item) =>
+                item.id === questId ? { ...item, totalStages: Math.max(0, item.totalStages - 1) } : item
+              ),
+            })),
+          };
+        }
+      );
+      queryClient.removeQueries({ queryKey: [...adminQuestQueryKeys.detail(questId), "stages", stageId] });
+      queryClient.invalidateQueries({ queryKey: [...adminQuestQueryKeys.detail(questId), "stages"] });
+      Toast.show({
+        type: "success",
+        text1: "Stage deleted successfully",
+        text2: "The stage has been deleted",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);

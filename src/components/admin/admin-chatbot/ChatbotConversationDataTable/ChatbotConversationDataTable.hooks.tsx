@@ -51,9 +51,13 @@ export const useChatbotConversationDataTableColumns = (onView: (item: ChatbotCon
           const status = row.original.status;
           const statusVariant = status === "RESOLVED" ? "statusActive" : "statusArchived";
           return (
-            <Badge variant={statusVariant} size="sm">
-              {CHATBOT_CONVERSATION_STATUS_LABELS[status]}
-            </Badge>
+            <>
+              {status && (
+                <Badge variant={statusVariant} size="sm">
+                  {CHATBOT_CONVERSATION_STATUS_LABELS[status]}
+                </Badge>
+              )}
+            </>
           );
         },
       },

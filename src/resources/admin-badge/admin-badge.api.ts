@@ -17,19 +17,46 @@ export const getAdminBadgeList = async (input: AdminBadgeListInput): Promise<Adm
   const response = await apiClient.get<ApiResponseEnvelope<AdminBadgeListResponse>>(endpoints.badgesAdmin.getAll, {
     params: input,
   });
-  return response.data;
+
+  // Handle both wrapped and unwrapped responses
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+
+  // If response is already the list response (not wrapped)
+  if (response && "items" in response) {
+    return response as unknown as AdminBadgeListResponse;
+  }
+
+  throw new Error("Unexpected API response structure");
 };
 
 /* ---- Get Badge Detail ---- */
 export const getAdminBadgeDetail = async (id: string): Promise<AdminBadgeDetail> => {
   const response = await apiClient.get<ApiResponseEnvelope<AdminBadgeDetail>>(endpoints.badgesAdmin.getById(id));
-  return response.data;
+
+  // Handle both wrapped and unwrapped responses
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+
+  // If response is already the detail (not wrapped)
+  if (response && "id" in response) {
+    return response as unknown as AdminBadgeDetail;
+  }
+
+  throw new Error("Unexpected API response structure");
 };
 
 /* ---- Create Badge ---- */
 export const createAdminBadge = async (input: CreateAdminBadgeInput): Promise<AdminBadgeDetail> => {
   const response = await apiClient.post<ApiResponseEnvelope<AdminBadgeDetail>>(endpoints.badgesAdmin.create, input);
-  return response.data;
+
+  // Handle both wrapped and unwrapped (direct) responses
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+  return response as unknown as AdminBadgeDetail;
 };
 
 /* ---- Update Badge ---- */
@@ -38,7 +65,12 @@ export const updateAdminBadge = async (id: string, input: UpdateAdminBadgeInput)
     endpoints.badgesAdmin.updateById(id),
     input
   );
-  return response.data;
+
+  // Handle both wrapped and unwrapped (direct) responses
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+  return response as unknown as AdminBadgeDetail;
 };
 
 /* ---- Update Badge Status ---- */
@@ -50,7 +82,12 @@ export const updateAdminBadgeStatus = async (
     endpoints.badgesAdmin.changeStatusById(id),
     input
   );
-  return response.data;
+
+  // Handle both wrapped and unwrapped (direct) responses
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+  return response as unknown as UpdateAdminBadgeStatusResponse;
 };
 
 /* ---- Delete Badge ---- */
@@ -63,5 +100,9 @@ export const getAdminBadgeStatusStats = async (): Promise<AdminBadgeStatusStatsR
   const response = await apiClient.get<ApiResponseEnvelope<AdminBadgeStatusStatsResponse>>(
     endpoints.badgesAdmin.getStats
   );
-  return response.data;
+
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+  return response as unknown as AdminBadgeStatusStatsResponse;
 };

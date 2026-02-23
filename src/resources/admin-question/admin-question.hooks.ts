@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, InfiniteData } from "@tanstack/react-query";
 import { create } from "zustand";
 import { useForm } from "react-hook-form";
 import type { Resolver } from "react-hook-form";
@@ -36,6 +36,9 @@ import type {
   ImportPreviewAdminQuestionInput,
   ImportCommitAdminQuestionInput,
   ImportReportAdminQuestionInput,
+  AdminQuestionListResponse,
+  AdminQuestionSummary,
+  AdminQuestionDetail,
 } from "./admin-question.types";
 
 const createQuestionResolver = zodResolver(CreateAdminQuestionRequestSchema);
@@ -76,15 +79,36 @@ export const useUpdateAdminQuestionStatusForm = () =>
 export const useCreateAdminQuestion = () =>
   useMutation({
     mutationFn: (input: CreateAdminQuestionInput) => createAdminQuestion(input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminQuestionQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Question created successfully",
-          text2: "The question has been created",
-        });
-      }, 300);
+    onSuccess: (data) => {
+      /* ---- Prepend to first page of all list variants ---- */
+      queryClient.setQueriesData<InfiniteData<AdminQuestionListResponse>>(
+        { queryKey: adminQuestionQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          const newItem: AdminQuestionSummary = {
+            id: data.id,
+            status: data.status,
+            questionText: data.questionText,
+            type: data.type,
+            tags: data.tags,
+            publishedAt: data.publishedAt,
+            createdAt: data.createdAt,
+            updatedAt: data.updatedAt,
+          };
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page, i) =>
+              i === 0 ? { ...page, items: [newItem, ...page.items], total: page.total + 1 } : page
+            ),
+          };
+        }
+      );
+      queryClient.invalidateQueries({ queryKey: adminQuestionQueryKeys.stats() });
+      Toast.show({
+        type: "success",
+        text1: "Question created successfully",
+        text2: "The question has been created",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -99,15 +123,38 @@ export const useCreateAdminQuestion = () =>
 export const useUpdateAdminQuestion = () =>
   useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateAdminQuestionInput }) => updateAdminQuestion(id, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminQuestionQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Question updated successfully",
-          text2: "The question has been updated",
-        });
-      }, 300);
+    onSuccess: (data, { id }) => {
+      /* ---- Update item in all list pages ---- */
+      queryClient.setQueriesData<InfiniteData<AdminQuestionListResponse>>(
+        { queryKey: adminQuestionQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.map((item) =>
+                item.id === id
+                  ? {
+                      ...item,
+                      questionText: data.questionText,
+                      type: data.type,
+                      tags: data.tags,
+                      updatedAt: data.updatedAt,
+                    }
+                  : item
+              ),
+            })),
+          };
+        }
+      );
+      /* ---- Update detail cache ---- */
+      queryClient.setQueryData<AdminQuestionDetail>(adminQuestionQueryKeys.detail(id), data);
+      Toast.show({
+        type: "success",
+        text1: "Question updated successfully",
+        text2: "The question has been updated",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -123,15 +170,43 @@ export const useUpdateAdminQuestionStatus = () =>
   useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateAdminQuestionStatusInput }) =>
       updateAdminQuestionStatus(id, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminQuestionQueryKeys.all });
-      setTimeout(() => {
+    onSuccess: (data, { id, input }) => {
+      if (input.action === "Clone") {
+        /* ---- Clone creates a new question — invalidate list so it appears ---- */
+        queryClient.invalidateQueries({ queryKey: adminQuestionQueryKeys.lists() });
+        queryClient.invalidateQueries({ queryKey: adminQuestionQueryKeys.stats() });
+        Toast.show({
+          type: "success",
+          text1: "Question cloned successfully",
+          text2: "A draft copy of the question has been created",
+        });
+      } else {
+        /* ---- Publish / Archive: update existing item's status ---- */
+        queryClient.setQueriesData<InfiniteData<AdminQuestionListResponse>>(
+          { queryKey: adminQuestionQueryKeys.lists() },
+          (oldData) => {
+            if (!oldData) return oldData;
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                items: page.items.map((item) => (item.id === id ? { ...item, status: data.status } : item)),
+              })),
+            };
+          }
+        );
+        /* ---- Update detail cache ---- */
+        queryClient.setQueryData<AdminQuestionDetail>(adminQuestionQueryKeys.detail(id), (oldData) => {
+          if (!oldData) return oldData;
+          return { ...oldData, status: data.status };
+        });
+        queryClient.invalidateQueries({ queryKey: adminQuestionQueryKeys.stats() });
         Toast.show({
           type: "success",
           text1: "Question status updated successfully",
           text2: "The question status has been updated",
         });
-      }, 300);
+      }
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -146,15 +221,29 @@ export const useUpdateAdminQuestionStatus = () =>
 export const useDeleteAdminQuestion = () =>
   useMutation({
     mutationFn: (id: string) => deleteAdminQuestion(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminQuestionQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Question deleted successfully",
-          text2: "The question has been deleted",
-        });
-      }, 300);
+    onSuccess: (_, id) => {
+      /* ---- Remove item from all list pages ---- */
+      queryClient.setQueriesData<InfiniteData<AdminQuestionListResponse>>(
+        { queryKey: adminQuestionQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.filter((item) => item.id !== id),
+              total: page.total - 1,
+            })),
+          };
+        }
+      );
+      queryClient.removeQueries({ queryKey: adminQuestionQueryKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: adminQuestionQueryKeys.stats() });
+      Toast.show({
+        type: "success",
+        text1: "Question deleted successfully",
+        text2: "The question has been deleted",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -171,7 +260,7 @@ export const useUploadAdminQuestionImportPreview = () =>
   useMutation({
     mutationFn: (input: ImportPreviewAdminQuestionInput) => importPreviewAdminQuestion(input),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminQuestionQueryKeys.all });
+      /* ---- Import preview doesn't change existing data, nothing to update ---- */
     },
   });
 
@@ -179,14 +268,14 @@ export const useCommitAdminQuestionImport = () =>
   useMutation({
     mutationFn: (input: ImportCommitAdminQuestionInput) => importCommitAdminQuestion(input),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminQuestionQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Import completed successfully",
-          text2: "The questions have been imported",
-        });
-      }, 300);
+      /* ---- Bulk import: invalidate all lists since we can't predict which pages changed ---- */
+      queryClient.invalidateQueries({ queryKey: adminQuestionQueryKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: adminQuestionQueryKeys.stats() });
+      Toast.show({
+        type: "success",
+        text1: "Import completed successfully",
+        text2: "The questions have been imported",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);

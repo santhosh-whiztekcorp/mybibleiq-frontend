@@ -45,15 +45,27 @@ export const useUpdateGlobalUpdateForm = (initialValues?: CreateGlobalUpdateInpu
 export const useCreateGlobalUpdate = () =>
   useMutation({
     mutationFn: (input: CreateGlobalUpdateInput) => createGlobalUpdate(input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminGlobalUpdatesQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Global update created successfully",
-          text2: "The global update has been created",
-        });
-      }, 300);
+    onSuccess: (data) => {
+      /* ---- Prepend new item to first page of all list variants ---- */
+      queryClient.setQueriesData<InfiniteData<GlobalUpdateListResponse>>(
+        { queryKey: adminGlobalUpdatesQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          const newItem = data;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page, i) =>
+              i === 0 ? { ...page, items: [newItem, ...page.items], total: page.total + 1 } : page
+            ),
+          };
+        }
+      );
+      queryClient.invalidateQueries({ queryKey: adminGlobalUpdatesQueryKeys.stats() });
+      Toast.show({
+        type: "success",
+        text1: "Global update created successfully",
+        text2: "The global update has been created",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -68,15 +80,29 @@ export const useCreateGlobalUpdate = () =>
 export const useUpdateGlobalUpdate = () =>
   useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateGlobalUpdateInput }) => updateGlobalUpdate(id, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminGlobalUpdatesQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Global update updated successfully",
-          text2: "The global update has been updated",
-        });
-      }, 300);
+    onSuccess: (data, { id }) => {
+      /* ---- Update item in all list pages ---- */
+      queryClient.setQueriesData<InfiniteData<GlobalUpdateListResponse>>(
+        { queryKey: adminGlobalUpdatesQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          const updated = data;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.map((item) => (item.id === id ? { ...item, ...updated } : item)),
+            })),
+          };
+        }
+      );
+      /* ---- Update detail cache ---- */
+      queryClient.setQueryData<GlobalUpdateDetail>(adminGlobalUpdatesQueryKeys.detail(id), data);
+      Toast.show({
+        type: "success",
+        text1: "Global update updated successfully",
+        text2: "The global update has been updated",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -91,15 +117,29 @@ export const useUpdateGlobalUpdate = () =>
 export const useDeleteGlobalUpdate = () =>
   useMutation({
     mutationFn: (id: string) => deleteGlobalUpdate(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminGlobalUpdatesQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Global update deleted successfully",
-          text2: "The global update has been deleted",
-        });
-      }, 300);
+    onSuccess: (_, id) => {
+      /* ---- Remove item from all list pages ---- */
+      queryClient.setQueriesData<InfiniteData<GlobalUpdateListResponse>>(
+        { queryKey: adminGlobalUpdatesQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.filter((item) => item.id !== id),
+              total: page.total - 1,
+            })),
+          };
+        }
+      );
+      queryClient.removeQueries({ queryKey: adminGlobalUpdatesQueryKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: adminGlobalUpdatesQueryKeys.stats() });
+      Toast.show({
+        type: "success",
+        text1: "Global update deleted successfully",
+        text2: "The global update has been deleted",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -141,13 +181,11 @@ export const useDeliverGlobalUpdate = () =>
       /* ---- Invalidate Stats ---- */
       queryClient.invalidateQueries({ queryKey: adminGlobalUpdatesQueryKeys.stats() });
 
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Global update delivered successfully",
-          text2: `Sent to ${data.targetUserCount} users in ${data.totalBatches} batches`,
-        });
-      }, 300);
+      Toast.show({
+        type: "success",
+        text1: "Global update delivered successfully",
+        text2: `Sent to ${data.targetUserCount} users in ${data.totalBatches} batches`,
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);

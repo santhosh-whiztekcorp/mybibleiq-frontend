@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, InfiniteData } from "@tanstack/react-query";
 import { create } from "zustand";
 import { useForm } from "react-hook-form";
 import { useMemo } from "react";
@@ -31,6 +31,9 @@ import type {
   UpdateAdminFlashcardGroupStatusInput,
   AdminFlashcardGroupListInput,
   AdminFlashcardGroupFilterStore,
+  AdminFlashcardGroupListResponse,
+  AdminFlashcardGroupSummary,
+  AdminFlashcardGroupDetail,
 } from "./admin-flashcard-group.types";
 
 /* ---- Form Hooks ---- */
@@ -64,15 +67,38 @@ export const useUpdateAdminFlashcardGroupStatusForm = () =>
 export const useCreateAdminFlashcardGroup = () =>
   useMutation({
     mutationFn: (input: CreateAdminFlashcardGroupInput) => createAdminFlashcardGroup(input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminFlashcardGroupQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Flashcard group created successfully",
-          text2: "The flashcard group has been created",
-        });
-      }, 300);
+    onSuccess: (data) => {
+      /* ---- Prepend to first page of all list variants ---- */
+      queryClient.setQueriesData<InfiniteData<AdminFlashcardGroupListResponse>>(
+        { queryKey: adminFlashcardGroupQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          const newItem: AdminFlashcardGroupSummary = {
+            id: data.id,
+            name: data.name,
+            description: data.description,
+            status: data.status,
+            tags: data.tags,
+            flashcardCount: data.flashcardCount,
+            publishedAt: data.publishedAt,
+            archivedAt: data.archivedAt,
+            createdAt: data.createdAt,
+            updatedAt: data.updatedAt,
+          };
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page, i) =>
+              i === 0 ? { ...page, items: [newItem, ...page.items], total: page.total + 1 } : page
+            ),
+          };
+        }
+      );
+      queryClient.invalidateQueries({ queryKey: adminFlashcardGroupQueryKeys.statsStatus() });
+      Toast.show({
+        type: "success",
+        text1: "Flashcard group created successfully",
+        text2: "The flashcard group has been created",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -88,15 +114,38 @@ export const useUpdateAdminFlashcardGroup = () =>
   useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateAdminFlashcardGroupInput }) =>
       updateAdminFlashcardGroup(id, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminFlashcardGroupQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Flashcard group updated successfully",
-          text2: "The flashcard group has been updated",
-        });
-      }, 300);
+    onSuccess: (data, { id }) => {
+      /* ---- Update item in all list pages ---- */
+      queryClient.setQueriesData<InfiniteData<AdminFlashcardGroupListResponse>>(
+        { queryKey: adminFlashcardGroupQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.map((item) =>
+                item.id === id
+                  ? {
+                      ...item,
+                      name: data.name,
+                      description: data.description,
+                      tags: data.tags,
+                      updatedAt: data.updatedAt,
+                    }
+                  : item
+              ),
+            })),
+          };
+        }
+      );
+      /* ---- Update detail cache ---- */
+      queryClient.setQueryData<AdminFlashcardGroupDetail>(adminFlashcardGroupQueryKeys.detail(id), data);
+      Toast.show({
+        type: "success",
+        text1: "Flashcard group updated successfully",
+        text2: "The flashcard group has been updated",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -112,15 +161,38 @@ export const useUpdateAdminFlashcardGroupFlashcards = () =>
   useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateAdminFlashcardGroupFlashcardsInput }) =>
       updateAdminFlashcardGroupFlashcards(id, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminFlashcardGroupQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Flashcards updated successfully",
-          text2: "The flashcard group flashcards have been updated",
-        });
-      }, 300);
+    onSuccess: (data, { id }) => {
+      /* ---- Update flashcard count in list + full detail ---- */
+      queryClient.setQueriesData<InfiniteData<AdminFlashcardGroupListResponse>>(
+        { queryKey: adminFlashcardGroupQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.map((item) =>
+                item.id === id ? { ...item, flashcardCount: data.flashcardCount, updatedAt: data.updatedAt } : item
+              ),
+            })),
+          };
+        }
+      );
+      /* ---- Update detail cache with new flashcard list ---- */
+      queryClient.setQueryData<AdminFlashcardGroupDetail>(adminFlashcardGroupQueryKeys.detail(id), (oldData) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          flashcards: data.flashcards,
+          flashcardCount: data.flashcardCount,
+          updatedAt: data.updatedAt,
+        };
+      });
+      Toast.show({
+        type: "success",
+        text1: "Flashcards updated successfully",
+        text2: "The flashcard group flashcards have been updated",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -136,15 +208,43 @@ export const useUpdateAdminFlashcardGroupStatus = () =>
   useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateAdminFlashcardGroupStatusInput }) =>
       updateAdminFlashcardGroupStatus(id, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminFlashcardGroupQueryKeys.all });
-      setTimeout(() => {
+    onSuccess: (data, { id, input }) => {
+      if (input.action === "CloneFromPublished") {
+        /* ---- Clone creates a new group — invalidate list so it appears ---- */
+        queryClient.invalidateQueries({ queryKey: adminFlashcardGroupQueryKeys.lists() });
+        queryClient.invalidateQueries({ queryKey: adminFlashcardGroupQueryKeys.statsStatus() });
+        Toast.show({
+          type: "success",
+          text1: "Flashcard group cloned successfully",
+          text2: "A draft copy of the flashcard group has been created",
+        });
+      } else {
+        /* ---- Publish / Archive / Unarchive: update existing item's status ---- */
+        queryClient.setQueriesData<InfiniteData<AdminFlashcardGroupListResponse>>(
+          { queryKey: adminFlashcardGroupQueryKeys.lists() },
+          (oldData) => {
+            if (!oldData) return oldData;
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                items: page.items.map((item) => (item.id === id ? { ...item, status: data.status } : item)),
+              })),
+            };
+          }
+        );
+        /* ---- Update detail cache ---- */
+        queryClient.setQueryData<AdminFlashcardGroupDetail>(adminFlashcardGroupQueryKeys.detail(id), (oldData) => {
+          if (!oldData) return oldData;
+          return { ...oldData, status: data.status };
+        });
+        queryClient.invalidateQueries({ queryKey: adminFlashcardGroupQueryKeys.statsStatus() });
         Toast.show({
           type: "success",
           text1: "Flashcard group status updated successfully",
           text2: "The flashcard group status has been updated",
         });
-      }, 300);
+      }
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);
@@ -159,15 +259,29 @@ export const useUpdateAdminFlashcardGroupStatus = () =>
 export const useDeleteAdminFlashcardGroup = () =>
   useMutation({
     mutationFn: (id: string) => deleteAdminFlashcardGroup(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminFlashcardGroupQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Flashcard group deleted successfully",
-          text2: "The flashcard group has been deleted",
-        });
-      }, 300);
+    onSuccess: (_, id) => {
+      /* ---- Remove item from all list pages ---- */
+      queryClient.setQueriesData<InfiniteData<AdminFlashcardGroupListResponse>>(
+        { queryKey: adminFlashcardGroupQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.filter((item) => item.id !== id),
+              total: page.total - 1,
+            })),
+          };
+        }
+      );
+      queryClient.removeQueries({ queryKey: adminFlashcardGroupQueryKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: adminFlashcardGroupQueryKeys.statsStatus() });
+      Toast.show({
+        type: "success",
+        text1: "Flashcard group deleted successfully",
+        text2: "The flashcard group has been deleted",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);

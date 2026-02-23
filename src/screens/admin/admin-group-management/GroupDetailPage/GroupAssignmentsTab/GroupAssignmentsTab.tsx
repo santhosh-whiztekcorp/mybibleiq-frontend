@@ -94,7 +94,7 @@ export function GroupAssignmentsTab() {
             Cards
           </Button>
         </div>
-        <div className="text-sm font-semibold text-muted-foreground">Total: {total}</div>
+        <div className="text-sm font-semibold text-muted-foreground">Total Assignments: {total}</div>
       </div>
 
       {/* Desktop View: Data Table or Card List based on viewMode */}

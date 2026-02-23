@@ -25,9 +25,11 @@ export function TagCardList({
 
   return (
     <div className="space-y-3">
-      {items.map((item) => (
-        <TagCard key={item.id} item={item} onEdit={onEdit} onDelete={onDelete} />
-      ))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {items.map((item) => (
+          <TagCard key={item.id} item={item} onEdit={onEdit} onDelete={onDelete} />
+        ))}
+      </div>
 
       {/* Loading target for infinite scroll */}
       <div ref={loadMoreRef} className="h-10 flex items-center justify-center">

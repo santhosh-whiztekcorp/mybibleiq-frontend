@@ -17,13 +17,35 @@ export const getAdminMediaList = async (input: AdminMediaListInput): Promise<Adm
   const response = await apiClient.get<ApiResponseEnvelope<AdminMediaListResponse>>(endpoints.mediaAdmin.getAll, {
     params: input,
   });
-  return response.data;
+
+  // Handle both wrapped and unwrapped responses
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+
+  // If response is already the list response (not wrapped)
+  if (response && "items" in response) {
+    return response as unknown as AdminMediaListResponse;
+  }
+
+  throw new Error("Unexpected API response structure");
 };
 
 /* ---- Get Media Detail ---- */
 export const getAdminMediaDetail = async (id: string): Promise<AdminMediaDetail> => {
   const response = await apiClient.get<ApiResponseEnvelope<AdminMediaDetail>>(endpoints.mediaAdmin.getById(id));
-  return response.data;
+
+  // Handle both wrapped and unwrapped responses
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+
+  // If response is already the detail (not wrapped)
+  if (response && "id" in response) {
+    return response as unknown as AdminMediaDetail;
+  }
+
+  throw new Error("Unexpected API response structure");
 };
 
 /* ---- Create Media ---- */
@@ -63,7 +85,12 @@ export const createAdminMedia = async (input: CreateAdminMediaInput): Promise<Ad
       "Content-Type": "multipart/form-data",
     },
   });
-  return response.data;
+
+  // Handle both wrapped and unwrapped (direct) responses
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+  return response as unknown as AdminMediaDetail;
 };
 
 /* ---- Update Media ---- */
@@ -106,7 +133,12 @@ export const updateAdminMedia = async (id: string, input: UpdateAdminMediaInput)
       },
     }
   );
-  return response.data;
+
+  // Handle both wrapped and unwrapped (direct) responses
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+  return response as unknown as AdminMediaDetail;
 };
 
 /* ---- Update Media Status ---- */
@@ -118,7 +150,12 @@ export const updateAdminMediaStatus = async (
     endpoints.mediaAdmin.updateStatusById(id),
     input
   );
-  return response.data;
+
+  // Handle both wrapped and unwrapped (direct) responses
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+  return response as unknown as UpdateAdminMediaStatusResponse;
 };
 
 /* ---- Delete Media ---- */
@@ -129,5 +166,9 @@ export const deleteAdminMedia = async (id: string): Promise<void> => {
 /* ---- Get Media Type Stats ---- */
 export const getAdminMediaTypeStats = async (): Promise<AdminMediaTypeStatsResponse> => {
   const response = await apiClient.get<ApiResponseEnvelope<AdminMediaTypeStatsResponse>>(endpoints.mediaAdmin.getStats);
-  return response.data;
+
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+  return response as unknown as AdminMediaTypeStatsResponse;
 };

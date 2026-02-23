@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { useQuery, useMutation, useInfiniteQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useInfiniteQuery, InfiniteData } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Toast from "@/lib/toast";
@@ -65,6 +65,10 @@ import type {
   AdminGroupUnbanInput,
   AdminGroupUpdateSettingsInput,
   AdminGroupChangeRoleInput,
+  AdminGroupListResponse,
+  AdminGroupReportsListResponse,
+  AdminGroupAnnouncementsListResponse,
+  AdminGroupMembersListResponse,
 } from "./admin-group-management.types";
 
 /* ---- List Groups (Infinite Query) ---- */
@@ -251,14 +255,13 @@ export const useWarnGroupLeader = () =>
     mutationFn: ({ groupId, input }: { groupId: string; input: AdminGroupWarnLeaderInput }) =>
       warnLeader(groupId, input),
     onSuccess: (_, variables) => {
+      /* ---- Warnin doesn't change report status; just invalidate the reports list ---- */
       queryClient.invalidateQueries({ queryKey: adminGroupManagementQueryKeys.reports(variables.groupId) });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Leader warned",
-          text2: "The group leader has been warned successfully",
-        });
-      }, 300);
+      Toast.show({
+        type: "success",
+        text1: "Leader warned",
+        text2: "The group leader has been warned successfully",
+      });
     },
     onError: (error) =>
       Toast.show({
@@ -271,15 +274,27 @@ export const useWarnGroupLeader = () =>
 export const useDismissGroupReport = () =>
   useMutation({
     mutationFn: ({ groupId, reportId }: { groupId: string; reportId: string }) => dismissReport(groupId, reportId),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: adminGroupManagementQueryKeys.reports(variables.groupId) });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Report dismissed",
-          text2: "The group report has been dismissed successfully",
-        });
-      }, 300);
+    onSuccess: (_, { groupId, reportId }) => {
+      /* ---- Remove the dismissed report from all report list pages for this group ---- */
+      queryClient.setQueriesData<InfiniteData<AdminGroupReportsListResponse>>(
+        { queryKey: adminGroupManagementQueryKeys.reports(groupId) },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.filter((item) => item.id !== reportId),
+              total: page.total - 1,
+            })),
+          };
+        }
+      );
+      Toast.show({
+        type: "success",
+        text1: "Report dismissed",
+        text2: "The group report has been dismissed successfully",
+      });
     },
     onError: (error) =>
       Toast.show({
@@ -293,17 +308,27 @@ export const useRejectGroupAnnouncement = () =>
   useMutation({
     mutationFn: ({ groupId, announcementId }: { groupId: string; announcementId: string }) =>
       rejectAnnouncement(groupId, announcementId),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: adminGroupManagementQueryKeys.announcements(variables.groupId),
+    onSuccess: (_, { groupId, announcementId }) => {
+      /* ---- Remove the rejected announcement from all announcement list pages ---- */
+      queryClient.setQueriesData<InfiniteData<AdminGroupAnnouncementsListResponse>>(
+        { queryKey: adminGroupManagementQueryKeys.announcements(groupId) },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.filter((item) => item.id !== announcementId),
+              total: page.total - 1,
+            })),
+          };
+        }
+      );
+      Toast.show({
+        type: "success",
+        text1: "Announcement rejected",
+        text2: "The announcement has been rejected successfully",
       });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Announcement rejected",
-          text2: "The announcement has been rejected successfully",
-        });
-      }, 300);
     },
     onError: (error) =>
       Toast.show({
@@ -316,16 +341,29 @@ export const useRejectGroupAnnouncement = () =>
 export const useBanAdminGroup = () =>
   useMutation({
     mutationFn: ({ groupId, input }: { groupId: string; input: AdminGroupBanInput }) => banGroup(groupId, input),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: adminGroupManagementQueryKeys.detail(variables.groupId) });
-      queryClient.invalidateQueries({ queryKey: adminGroupManagementQueryKeys.lists() });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Group banned",
-          text2: "The group has been banned successfully",
-        });
-      }, 300);
+    onSuccess: (_, { groupId }) => {
+      /* ---- Update group status to 'banned' in all list pages ---- */
+      queryClient.setQueriesData<InfiniteData<AdminGroupListResponse>>(
+        { queryKey: adminGroupManagementQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.map((item) => (item.id === groupId ? { ...item, status: "banned" as const } : item)),
+            })),
+          };
+        }
+      );
+      /* ---- Invalidate detail since it tracks ban metadata ---- */
+      queryClient.invalidateQueries({ queryKey: adminGroupManagementQueryKeys.detail(groupId) });
+      queryClient.invalidateQueries({ queryKey: adminGroupManagementQueryKeys.stats() });
+      Toast.show({
+        type: "success",
+        text1: "Group banned",
+        text2: "The group has been banned successfully",
+      });
     },
     onError: (error) =>
       Toast.show({
@@ -338,16 +376,28 @@ export const useBanAdminGroup = () =>
 export const useUnbanAdminGroup = () =>
   useMutation({
     mutationFn: ({ groupId, input }: { groupId: string; input: AdminGroupUnbanInput }) => unbanGroup(groupId, input),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: adminGroupManagementQueryKeys.detail(variables.groupId) });
-      queryClient.invalidateQueries({ queryKey: adminGroupManagementQueryKeys.lists() });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Group unbanned",
-          text2: "The group has been unbanned successfully",
-        });
-      }, 300);
+    onSuccess: (_, { groupId }) => {
+      /* ---- Update group status to 'active' in all list pages ---- */
+      queryClient.setQueriesData<InfiniteData<AdminGroupListResponse>>(
+        { queryKey: adminGroupManagementQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.map((item) => (item.id === groupId ? { ...item, status: "active" as const } : item)),
+            })),
+          };
+        }
+      );
+      queryClient.invalidateQueries({ queryKey: adminGroupManagementQueryKeys.detail(groupId) });
+      queryClient.invalidateQueries({ queryKey: adminGroupManagementQueryKeys.stats() });
+      Toast.show({
+        type: "success",
+        text1: "Group unbanned",
+        text2: "The group has been unbanned successfully",
+      });
     },
     onError: (error) =>
       Toast.show({
@@ -360,15 +410,29 @@ export const useUnbanAdminGroup = () =>
 export const useDeleteAdminGroup = () =>
   useMutation({
     mutationFn: ({ groupId }: { groupId: string }) => deleteGroup(groupId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminGroupManagementQueryKeys.lists() });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Group deleted",
-          text2: "The group has been permanently deleted",
-        });
-      }, 300);
+    onSuccess: (_, { groupId }) => {
+      /* ---- Remove from all list pages ---- */
+      queryClient.setQueriesData<InfiniteData<AdminGroupListResponse>>(
+        { queryKey: adminGroupManagementQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.filter((item) => item.id !== groupId),
+              total: page.total - 1,
+            })),
+          };
+        }
+      );
+      queryClient.removeQueries({ queryKey: adminGroupManagementQueryKeys.detail(groupId) });
+      queryClient.invalidateQueries({ queryKey: adminGroupManagementQueryKeys.stats() });
+      Toast.show({
+        type: "success",
+        text1: "Group deleted",
+        text2: "The group has been permanently deleted",
+      });
     },
     onError: (error) =>
       Toast.show({
@@ -382,15 +446,14 @@ export const useUpdateAdminGroupSettings = () =>
   useMutation({
     mutationFn: ({ groupId, input }: { groupId: string; input: AdminGroupUpdateSettingsInput }) =>
       updateGroupSettings(groupId, input),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: adminGroupManagementQueryKeys.detail(variables.groupId) });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Settings updated",
-          text2: "The group settings have been updated successfully",
-        });
-      }, 300);
+    onSuccess: (_, { groupId }) => {
+      /* ---- Settings changes can affect the detail but not the list summary ---- */
+      queryClient.invalidateQueries({ queryKey: adminGroupManagementQueryKeys.detail(groupId) });
+      Toast.show({
+        type: "success",
+        text1: "Settings updated",
+        text2: "The group settings have been updated successfully",
+      });
     },
     onError: (error) =>
       Toast.show({
@@ -403,15 +466,43 @@ export const useUpdateAdminGroupSettings = () =>
 export const useRemoveAdminGroupMember = () =>
   useMutation({
     mutationFn: ({ groupId, memberId }: { groupId: string; memberId: string }) => removeGroupMember(groupId, memberId),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: adminGroupManagementQueryKeys.members(variables.groupId) });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Member removed",
-          text2: "The member has been removed successfully",
-        });
-      }, 300);
+    onSuccess: (_, { groupId, memberId }) => {
+      /* ---- Remove member from all member list pages for this group ---- */
+      queryClient.setQueriesData<InfiniteData<AdminGroupMembersListResponse>>(
+        { queryKey: adminGroupManagementQueryKeys.members(groupId) },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.filter((item) => item.id !== memberId),
+              total: page.total - 1,
+            })),
+          };
+        }
+      );
+      /* ---- Update memberCount in list items ---- */
+      queryClient.setQueriesData<InfiniteData<AdminGroupListResponse>>(
+        { queryKey: adminGroupManagementQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.map((item) =>
+                item.id === groupId ? { ...item, memberCount: Math.max(0, item.memberCount - 1) } : item
+              ),
+            })),
+          };
+        }
+      );
+      Toast.show({
+        type: "success",
+        text1: "Member removed",
+        text2: "The member has been removed successfully",
+      });
     },
     onError: (error) =>
       Toast.show({
@@ -424,15 +515,26 @@ export const useRemoveAdminGroupMember = () =>
 export const useBanAdminGroupMember = () =>
   useMutation({
     mutationFn: ({ groupId, memberId }: { groupId: string; memberId: string }) => banGroupMember(groupId, memberId),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: adminGroupManagementQueryKeys.members(variables.groupId) });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Member banned",
-          text2: "The member has been banned successfully",
-        });
-      }, 300);
+    onSuccess: (_, { groupId, memberId }) => {
+      /* ---- Update member status to 'banned' in the member list ---- */
+      queryClient.setQueriesData<InfiniteData<AdminGroupMembersListResponse>>(
+        { queryKey: adminGroupManagementQueryKeys.members(groupId) },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.map((item) => (item.id === memberId ? { ...item, status: "banned" as const } : item)),
+            })),
+          };
+        }
+      );
+      Toast.show({
+        type: "success",
+        text1: "Member banned",
+        text2: "The member has been banned successfully",
+      });
     },
     onError: (error) =>
       Toast.show({
@@ -447,13 +549,11 @@ export const useExportAdminGroupActivityLog = () =>
     mutationFn: ({ groupId, params }: { groupId: string; params: AdminGroupActivityLogListInput }) =>
       exportActivityLog(groupId, params),
     onSuccess: () => {
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Export successful",
-          text2: "The activity log has been exported successfully",
-        });
-      }, 300);
+      Toast.show({
+        type: "success",
+        text1: "Export successful",
+        text2: "The activity log has been exported successfully",
+      });
     },
     onError: (error) =>
       Toast.show({
@@ -467,15 +567,26 @@ export const useChangeAdminGroupMemberRole = () =>
   useMutation({
     mutationFn: ({ groupId, userId, input }: { groupId: string; userId: string; input: AdminGroupChangeRoleInput }) =>
       changeGroupMemberRole(groupId, userId, input),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: adminGroupManagementQueryKeys.members(variables.groupId) });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Role updated",
-          text2: "The member role has been updated successfully",
-        });
-      }, 300);
+    onSuccess: (_, { groupId, userId, input }) => {
+      /* ---- Update member role in the member list ---- */
+      queryClient.setQueriesData<InfiniteData<AdminGroupMembersListResponse>>(
+        { queryKey: adminGroupManagementQueryKeys.members(groupId) },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.map((item) => (item.id === userId ? { ...item, role: input.role } : item)),
+            })),
+          };
+        }
+      );
+      Toast.show({
+        type: "success",
+        text1: "Role updated",
+        text2: "The member role has been updated successfully",
+      });
     },
     onError: (error) =>
       Toast.show({

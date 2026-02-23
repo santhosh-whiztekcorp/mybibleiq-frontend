@@ -154,7 +154,7 @@ export function BadgeCard({ item, onEdit, onDelete, onPublish, onArchive, onClon
       </div>
 
       {/* Footer / Actions */}
-      <div className="p-3">
+      <div className="p-3 mt-auto">
         <div className="flex gap-2">
           {item.status === "Draft" && (
             <>

@@ -17,7 +17,7 @@ const QuizCardComponent = (props: QuizCardProps) => {
   return (
     <div
       className={cn(
-        "rounded-xl border overflow-hidden transition-all hover:shadow-md p-4 space-y-3",
+        "rounded-xl border overflow-hidden transition-all hover:shadow-md p-4 flex flex-col h-full gap-3",
         cardBgColor,
         cardBorderColor
       )}
@@ -60,7 +60,7 @@ const QuizCardComponent = (props: QuizCardProps) => {
       )}
 
       {/* 4. Dates */}
-      <div className="flex flex-col gap-1 text-[10px] text-[#94A3B8] font-medium pt-3 border-t border-[#F1F5F9]">
+      <div className="flex flex-col gap-1 text-[10px] text-[#94A3B8] font-medium pt-3 border-t border-[#F1F5F9] mt-auto">
         {item.createdAt && <span>Created: {formatDateString(item.createdAt)}</span>}
         {item.status === "Published" && item.publishedAt && (
           <span>Published: {formatDateString(item.publishedAt)}</span>
@@ -73,7 +73,7 @@ const QuizCardComponent = (props: QuizCardProps) => {
       </div>
 
       {/* 5. Actions */}
-      <div className="flex -mx-4 -mb-4 px-4 py-2 mt-2 gap-2 border-t border-[#F1F5F9]">
+      <div className="flex flex-wrap -mx-4 -mb-4 px-4 py-2 mt-2 gap-2 border-t border-[#F1F5F9]">
         {item.status === "Draft" && (
           <>
             <Button

@@ -50,10 +50,16 @@ export const useQuestionForm = ({ item, onSuccess }: QuestionFormProps) => {
     name: "type",
   });
 
-  // Reset type-specific fields when type changes if they are empty
+  // When type changes, clear all inactive type-specific fields so stale
+  // data doesn't trigger field-level Zod validation for the wrong type
   useEffect(() => {
-    // This is optional but can help initialize fields when type changes
-  }, [questionType]);
+    if (questionType !== "MCQ") form.setValue("mcq", undefined, { shouldValidate: false });
+    if (questionType !== "TRUE_FALSE") form.setValue("trueFalse", undefined, { shouldValidate: false });
+    if (questionType !== "MATCH") form.setValue("matching", undefined, { shouldValidate: false });
+    if (questionType !== "FILL_BLANK") form.setValue("fillBlank", undefined, { shouldValidate: false });
+    if (questionType !== "ONE_WORD") form.setValue("oneWord", undefined, { shouldValidate: false });
+    if (questionType !== "ORDER") form.setValue("order", undefined, { shouldValidate: false });
+  }, [questionType]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onSubmit = form.handleSubmit(async (values) => {
     // Preprocess to strip inactive type configs

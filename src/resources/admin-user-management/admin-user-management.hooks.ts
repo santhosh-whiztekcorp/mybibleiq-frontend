@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { useQuery, useMutation, useInfiniteQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useInfiniteQuery, InfiniteData } from "@tanstack/react-query";
 import Toast from "@/lib/toast";
 import { queryClient } from "@/config/queryClient";
 import { getErrorMessage } from "@/utils/error";
@@ -35,6 +35,7 @@ import type {
   AdminUserBadgesFilterStore,
   AdminUserFeedbackFilterStore,
   AdminUserSavedVersesFilterStore,
+  AdminUserListResponse,
 } from "./admin-user-management.types";
 
 /* ---- List Users (Infinite Query for Pagination) ---- */
@@ -187,19 +188,24 @@ export const useSuspendAdminUserManagement = () =>
   useMutation({
     mutationFn: ({ userId, input }: { userId: string; input: AdminUserSuspendInput }) =>
       suspendAdminUser(userId, input),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: adminUserManagementQueryKeys.detail(variables.userId),
-        refetchType: "active",
-      });
-      queryClient.invalidateQueries({
-        queryKey: adminUserManagementQueryKeys.lists(),
-        refetchType: "active",
-      });
-      queryClient.invalidateQueries({
-        queryKey: adminUserManagementQueryKeys.stats(),
-        refetchType: "active",
-      });
+    onSuccess: (data, { userId }) => {
+      /* ---- Update status in all list pages ---- */
+      queryClient.setQueriesData<InfiniteData<AdminUserListResponse>>(
+        { queryKey: adminUserManagementQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.map((item) => (item.id === userId ? { ...item, status: data.status } : item)),
+            })),
+          };
+        }
+      );
+      /* ---- Invalidate the detail and stats since they track suspension info ---- */
+      queryClient.invalidateQueries({ queryKey: adminUserManagementQueryKeys.detail(userId) });
+      queryClient.invalidateQueries({ queryKey: adminUserManagementQueryKeys.stats() });
       Toast.show({
         type: "success",
         text1: "User suspended",
@@ -220,19 +226,23 @@ export const useSuspendAdminUserManagement = () =>
 export const useActivateAdminUserManagement = () =>
   useMutation({
     mutationFn: (userId: string) => activateAdminUser(userId),
-    onSuccess: (_, userId) => {
-      queryClient.invalidateQueries({
-        queryKey: adminUserManagementQueryKeys.detail(userId),
-        refetchType: "active",
-      });
-      queryClient.invalidateQueries({
-        queryKey: adminUserManagementQueryKeys.lists(),
-        refetchType: "active",
-      });
-      queryClient.invalidateQueries({
-        queryKey: adminUserManagementQueryKeys.stats(),
-        refetchType: "active",
-      });
+    onSuccess: (data, userId) => {
+      /* ---- Update status in all list pages ---- */
+      queryClient.setQueriesData<InfiniteData<AdminUserListResponse>>(
+        { queryKey: adminUserManagementQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.map((item) => (item.id === userId ? { ...item, status: data.status } : item)),
+            })),
+          };
+        }
+      );
+      queryClient.invalidateQueries({ queryKey: adminUserManagementQueryKeys.detail(userId) });
+      queryClient.invalidateQueries({ queryKey: adminUserManagementQueryKeys.stats() });
       Toast.show({
         type: "success",
         text1: "User activated",
@@ -253,15 +263,24 @@ export const useActivateAdminUserManagement = () =>
 export const useDeleteAdminUserManagement = () =>
   useMutation({
     mutationFn: ({ userId, input }: { userId: string; input: AdminUserDeleteInput }) => deleteAdminUser(userId, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: adminUserManagementQueryKeys.lists(),
-        refetchType: "active",
-      });
-      queryClient.invalidateQueries({
-        queryKey: adminUserManagementQueryKeys.stats(),
-        refetchType: "active",
-      });
+    onSuccess: (_, { userId }) => {
+      /* ---- Remove user from all list pages ---- */
+      queryClient.setQueriesData<InfiniteData<AdminUserListResponse>>(
+        { queryKey: adminUserManagementQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.filter((item) => item.id !== userId),
+              total: page.total - 1,
+            })),
+          };
+        }
+      );
+      queryClient.removeQueries({ queryKey: adminUserManagementQueryKeys.detail(userId) });
+      queryClient.invalidateQueries({ queryKey: adminUserManagementQueryKeys.stats() });
       Toast.show({
         type: "success",
         text1: "User deleted",

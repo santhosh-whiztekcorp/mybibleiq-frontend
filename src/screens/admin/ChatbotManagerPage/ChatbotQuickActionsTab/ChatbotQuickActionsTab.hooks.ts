@@ -10,9 +10,8 @@ export function useChatbotQuickActionsTab() {
 
   const [items, setItems] = useState<ChatbotQuickActionDetail[]>([]);
 
-  // Initialize/Reset items when data is fetched or reset is called
   useEffect(() => {
-    if (quickActions) {
+    if (quickActions && Array.isArray(quickActions)) {
       const sorted = [...quickActions].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
       const timer = setTimeout(() => {
         setItems(sorted);
@@ -22,32 +21,51 @@ export function useChatbotQuickActionsTab() {
   }, [quickActions]);
 
   const hasChanges = useMemo(() => {
-    if (!quickActions || items.length === 0) return false;
+    if (!quickActions || !Array.isArray(quickActions) || items.length === 0) return false;
 
-    // Quick check: if lengths differ (shouldn't happen here)
-    if (items.length !== quickActions.length) return true;
-
-    // Deep check: enabled, label, or order changed
-    return items.some((item, index) => {
-      const original = quickActions.find((q) => q.id === item.id);
-      if (!original) return true;
-
-      // Check order: original should have the same index if we sort it by sortOrder
-      const originalSorted = [...quickActions].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-      const originalIndex = originalSorted.findIndex((q) => q.id === item.id);
-
-      return item.enabled !== original.enabled || item.label !== original.label || index !== originalIndex;
+    const isContentSame = items.every((item) => {
+      const original = quickActions.find((q) => String(q.id) === String(item.id));
+      return original && item.enabled === original.enabled && item.label === original.label;
     });
+
+    if (!isContentSame) return true;
+
+    const originalSortedIds = [...quickActions]
+      .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
+      .map((q) => String(q.id));
+    const currentIds = items.map((item) => String(item.id));
+
+    return JSON.stringify(originalSortedIds) !== JSON.stringify(currentIds);
   }, [items, quickActions]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDragEnd = useCallback((event: any) => {
-    const { source, target } = event;
+    if (event.canceled) return;
 
-    if (source && target && source.id !== target.id) {
+    const source = event.operation?.source || event.source || event.active;
+
+    if (source && source.initialIndex !== undefined && source.index !== undefined) {
+      const { initialIndex, index } = source;
+
+      if (initialIndex !== index) {
+        setItems((prev) => {
+          const newItems = [...prev];
+          const [movedItem] = newItems.splice(initialIndex, 1);
+          newItems.splice(index, 0, movedItem);
+          return newItems;
+        });
+      }
+      return;
+    }
+
+    const target = event.operation?.target || event.target || event.over;
+    const sourceId = source?.id;
+    const targetId = target?.id;
+
+    if (sourceId && targetId && sourceId !== targetId) {
       setItems((prev) => {
-        const oldIndex = prev.findIndex((i) => i.id === source.id);
-        const newIndex = prev.findIndex((i) => i.id === target.id);
+        const oldIndex = prev.findIndex((i) => i.id === sourceId);
+        const newIndex = prev.findIndex((i) => i.id === targetId);
 
         if (oldIndex === -1 || newIndex === -1) return prev;
 
@@ -55,22 +73,22 @@ export function useChatbotQuickActionsTab() {
         const [movedItem] = newItems.splice(oldIndex, 1);
         newItems.splice(newIndex, 0, movedItem);
 
-        // We update the local state. The sortOrder will be assigned on Save
         return newItems;
       });
     }
   }, []);
 
   const handleToggleActive = useCallback((id: string) => {
-    setItems((prev) => prev.map((item) => (item.id === id ? { ...item, enabled: !item.enabled } : item)));
+    setItems((prev) =>
+      prev.map((item) => (String(item.id) === String(id) ? { ...item, enabled: !item.enabled } : item))
+    );
   }, []);
 
   const handleLabelChange = useCallback((id: string, label: string) => {
-    setItems((prev) => prev.map((item) => (item.id === id ? { ...item, label } : item)));
+    setItems((prev) => prev.map((item) => (String(item.id) === String(id) ? { ...item, label } : item)));
   }, []);
 
   const handleSave = useCallback(() => {
-    // Map items to the format expected by the API, assigning new sortOrder based on current index
     const payload = items.map((item, index) => ({
       section: item.section as string,
       label: item.label,
@@ -86,12 +104,11 @@ export function useChatbotQuickActionsTab() {
   }, [items, updateQuickActions, refetch]);
 
   const handleReset = useCallback(() => {
-    if (quickActions) {
+    if (quickActions && Array.isArray(quickActions)) {
       const sorted = [...quickActions].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
       setItems(sorted);
     }
   }, [quickActions]);
-
   return {
     items,
     isLoading,

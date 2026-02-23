@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, InfiniteData } from "@tanstack/react-query";
 import { create } from "zustand";
 import { useForm } from "react-hook-form";
 import Toast from "@/lib/toast";
@@ -46,12 +46,31 @@ import type {
   ApproveDeleteAdminSpiritFoodInput,
   CancelDeleteAdminSpiritFoodInput,
   ForceDeleteAdminSpiritFoodInput,
-  AdminSpiritFoodListInput,
-  AdminSpiritFoodFilterStore,
-  ImportReportAdminSpiritFoodInput,
   ImportPreviewAdminSpiritFoodInput,
   ImportCommitAdminSpiritFoodInput,
+  ImportReportAdminSpiritFoodInput,
+  AdminSpiritFoodListInput,
+  AdminSpiritFoodFilterStore,
+  AdminSpiritFoodListResponse,
+  AdminSpiritFoodDetail,
 } from "./admin-spirit-food.types";
+
+/* ---- Helper to update a single item in all list pages ---- */
+const updateItemInLists = (id: string, updater: (item: AdminSpiritFoodDetail) => AdminSpiritFoodDetail) => {
+  queryClient.setQueriesData<InfiniteData<AdminSpiritFoodListResponse>>(
+    { queryKey: adminSpiritFoodQueryKeys.lists() },
+    (oldData) => {
+      if (!oldData) return oldData;
+      return {
+        ...oldData,
+        pages: oldData.pages.map((page) => ({
+          ...page,
+          items: page.items.map((item) => (item.id === id ? updater(item) : item)),
+        })),
+      };
+    }
+  );
+};
 
 /* ---- Form Hooks ---- */
 export const useCreateAdminSpiritFoodForm = () =>
@@ -114,92 +133,76 @@ export const useForceDeleteAdminSpiritFoodForm = () =>
 export const useCreateAdminSpiritFood = () =>
   useMutation({
     mutationFn: (input: CreateAdminSpiritFoodInput) => createAdminSpiritFood(input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminSpiritFoodQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Spirit food created successfully",
-          text2: "The spirit food has been created",
-        });
-      }, 300);
+    onSuccess: (data) => {
+      /* ---- Prepend to first page of all list variants ---- */
+      queryClient.setQueriesData<InfiniteData<AdminSpiritFoodListResponse>>(
+        { queryKey: adminSpiritFoodQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page, i) =>
+              i === 0 ? { ...page, items: [data, ...page.items], total: page.total + 1 } : page
+            ),
+          };
+        }
+      );
+      queryClient.invalidateQueries({ queryKey: adminSpiritFoodQueryKeys.stats() });
+      Toast.show({ type: "success", text1: "Spirit food created successfully" });
     },
     onError: (error) => {
-      const errorMessage = getErrorMessage(error);
-      Toast.show({
-        type: "error",
-        text1: "Failed to create spirit food",
-        text2: errorMessage || "Please try again later",
-      });
+      Toast.show({ type: "error", text1: "Failed to create spirit food", text2: getErrorMessage(error) });
     },
   });
 
 export const useUpdateAdminSpiritFood = () =>
   useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateAdminSpiritFoodInput }) => updateAdminSpiritFood(id, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminSpiritFoodQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Spirit food updated successfully",
-          text2: "The spirit food has been updated",
-        });
-      }, 300);
+    onSuccess: (data, { id }) => {
+      updateItemInLists(id, () => data);
+      queryClient.setQueryData<AdminSpiritFoodDetail>(adminSpiritFoodQueryKeys.detail(id), data);
+      Toast.show({ type: "success", text1: "Spirit food updated successfully" });
     },
     onError: (error) => {
-      const errorMessage = getErrorMessage(error);
-      Toast.show({
-        type: "error",
-        text1: "Failed to update spirit food",
-        text2: errorMessage || "Please try again later",
-      });
+      Toast.show({ type: "error", text1: "Failed to update spirit food", text2: getErrorMessage(error) });
     },
   });
 
 export const useSubmitAdminSpiritFood = () =>
   useMutation({
     mutationFn: ({ id, input }: { id: string; input: SubmitAdminSpiritFoodInput }) => submitAdminSpiritFood(id, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminSpiritFoodQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Spirit food submitted successfully",
-          text2: "The spirit food has been submitted for review",
-        });
-      }, 300);
+    onSuccess: (data, { id }) => {
+      updateItemInLists(id, () => data);
+      queryClient.setQueryData<AdminSpiritFoodDetail>(adminSpiritFoodQueryKeys.detail(id), data);
+      queryClient.invalidateQueries({ queryKey: adminSpiritFoodQueryKeys.stats() });
+      Toast.show({ type: "success", text1: "Spirit food submitted for review" });
     },
     onError: (error) => {
-      const errorMessage = getErrorMessage(error);
-      Toast.show({
-        type: "error",
-        text1: "Failed to submit spirit food",
-        text2: errorMessage || "Please try again later",
-      });
+      Toast.show({ type: "error", text1: "Failed to submit spirit food", text2: getErrorMessage(error) });
     },
   });
 
 export const useCreateAndSubmitAdminSpiritFood = () =>
   useMutation({
     mutationFn: (input: CreateAdminSpiritFoodInput) => createAndSubmitAdminSpiritFood(input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminSpiritFoodQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Spirit food created and submitted successfully",
-          text2: "The spirit food has been created and submitted for review",
-        });
-      }, 300);
+    onSuccess: (data) => {
+      queryClient.setQueriesData<InfiniteData<AdminSpiritFoodListResponse>>(
+        { queryKey: adminSpiritFoodQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page, i) =>
+              i === 0 ? { ...page, items: [data, ...page.items], total: page.total + 1 } : page
+            ),
+          };
+        }
+      );
+      queryClient.invalidateQueries({ queryKey: adminSpiritFoodQueryKeys.stats() });
+      Toast.show({ type: "success", text1: "Spirit food created and submitted for review" });
     },
     onError: (error) => {
-      const errorMessage = getErrorMessage(error);
-      Toast.show({
-        type: "error",
-        text1: "Failed to create and submit spirit food",
-        text2: errorMessage || "Please try again later",
-      });
+      Toast.show({ type: "error", text1: "Failed to create and submit spirit food", text2: getErrorMessage(error) });
     },
   });
 
@@ -207,46 +210,28 @@ export const useApproveAdminSpiritFood = () =>
   useMutation({
     mutationFn: ({ id, input }: { id: string; input: ApproveAdminSpiritFoodInput }) =>
       approveAdminSpiritFood(id, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminSpiritFoodQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Spirit food approved successfully",
-          text2: "The spirit food has been approved",
-        });
-      }, 300);
+    onSuccess: (data, { id }) => {
+      updateItemInLists(id, () => data);
+      queryClient.setQueryData<AdminSpiritFoodDetail>(adminSpiritFoodQueryKeys.detail(id), data);
+      queryClient.invalidateQueries({ queryKey: adminSpiritFoodQueryKeys.stats() });
+      Toast.show({ type: "success", text1: "Spirit food approved successfully" });
     },
     onError: (error) => {
-      const errorMessage = getErrorMessage(error);
-      Toast.show({
-        type: "error",
-        text1: "Failed to approve spirit food",
-        text2: errorMessage || "Please try again later",
-      });
+      Toast.show({ type: "error", text1: "Failed to approve spirit food", text2: getErrorMessage(error) });
     },
   });
 
 export const useCancelAdminSpiritFood = () =>
   useMutation({
     mutationFn: ({ id, input }: { id: string; input: CancelAdminSpiritFoodInput }) => cancelAdminSpiritFood(id, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminSpiritFoodQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Spirit food cancelled successfully",
-          text2: "The spirit food has been cancelled",
-        });
-      }, 300);
+    onSuccess: (data, { id }) => {
+      updateItemInLists(id, () => data);
+      queryClient.setQueryData<AdminSpiritFoodDetail>(adminSpiritFoodQueryKeys.detail(id), data);
+      queryClient.invalidateQueries({ queryKey: adminSpiritFoodQueryKeys.stats() });
+      Toast.show({ type: "success", text1: "Spirit food cancelled successfully" });
     },
     onError: (error) => {
-      const errorMessage = getErrorMessage(error);
-      Toast.show({
-        type: "error",
-        text1: "Failed to cancel spirit food",
-        text2: errorMessage || "Please try again later",
-      });
+      Toast.show({ type: "error", text1: "Failed to cancel spirit food", text2: getErrorMessage(error) });
     },
   });
 
@@ -254,23 +239,14 @@ export const useRequestDeleteAdminSpiritFood = () =>
   useMutation({
     mutationFn: ({ id, input }: { id: string; input: RequestDeleteAdminSpiritFoodInput }) =>
       requestDeleteAdminSpiritFood(id, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminSpiritFoodQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Delete request submitted successfully",
-          text2: "The delete request has been submitted for approval",
-        });
-      }, 300);
+    onSuccess: (data, { id }) => {
+      updateItemInLists(id, () => data);
+      queryClient.setQueryData<AdminSpiritFoodDetail>(adminSpiritFoodQueryKeys.detail(id), data);
+      queryClient.invalidateQueries({ queryKey: adminSpiritFoodQueryKeys.stats() });
+      Toast.show({ type: "success", text1: "Delete request submitted successfully" });
     },
     onError: (error) => {
-      const errorMessage = getErrorMessage(error);
-      Toast.show({
-        type: "error",
-        text1: "Failed to submit delete request",
-        text2: errorMessage || "Please try again later",
-      });
+      Toast.show({ type: "error", text1: "Failed to request delete", text2: getErrorMessage(error) });
     },
   });
 
@@ -278,23 +254,14 @@ export const useApproveDeleteAdminSpiritFood = () =>
   useMutation({
     mutationFn: ({ id, input }: { id: string; input: ApproveDeleteAdminSpiritFoodInput }) =>
       approveDeleteAdminSpiritFood(id, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminSpiritFoodQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Delete request approved successfully",
-          text2: "The spirit food has been deleted",
-        });
-      }, 300);
+    onSuccess: (data, { id }) => {
+      updateItemInLists(id, () => data);
+      queryClient.setQueryData<AdminSpiritFoodDetail>(adminSpiritFoodQueryKeys.detail(id), data);
+      queryClient.invalidateQueries({ queryKey: adminSpiritFoodQueryKeys.stats() });
+      Toast.show({ type: "success", text1: "Delete request approved successfully" });
     },
     onError: (error) => {
-      const errorMessage = getErrorMessage(error);
-      Toast.show({
-        type: "error",
-        text1: "Failed to approve delete request",
-        text2: errorMessage || "Please try again later",
-      });
+      Toast.show({ type: "error", text1: "Failed to approve delete request", text2: getErrorMessage(error) });
     },
   });
 
@@ -302,23 +269,14 @@ export const useCancelDeleteAdminSpiritFood = () =>
   useMutation({
     mutationFn: ({ id, input }: { id: string; input: CancelDeleteAdminSpiritFoodInput }) =>
       cancelDeleteAdminSpiritFood(id, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminSpiritFoodQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Delete request cancelled successfully",
-          text2: "The delete request has been cancelled",
-        });
-      }, 300);
+    onSuccess: (data, { id }) => {
+      updateItemInLists(id, () => data);
+      queryClient.setQueryData<AdminSpiritFoodDetail>(adminSpiritFoodQueryKeys.detail(id), data);
+      queryClient.invalidateQueries({ queryKey: adminSpiritFoodQueryKeys.stats() });
+      Toast.show({ type: "success", text1: "Delete request cancelled successfully" });
     },
     onError: (error) => {
-      const errorMessage = getErrorMessage(error);
-      Toast.show({
-        type: "error",
-        text1: "Failed to cancel delete request",
-        text2: errorMessage || "Please try again later",
-      });
+      Toast.show({ type: "error", text1: "Failed to cancel delete request", text2: getErrorMessage(error) });
     },
   });
 
@@ -326,24 +284,61 @@ export const useForceDeleteAdminSpiritFood = () =>
   useMutation({
     mutationFn: ({ id, input }: { id: string; input: ForceDeleteAdminSpiritFoodInput }) =>
       forceDeleteAdminSpiritFood(id, input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminSpiritFoodQueryKeys.all });
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Spirit food deleted successfully",
-          text2: "The spirit food has been force deleted",
-        });
-      }, 300);
+    onSuccess: (_, { id }) => {
+      /* ---- Remove item from all list pages ---- */
+      queryClient.setQueriesData<InfiniteData<AdminSpiritFoodListResponse>>(
+        { queryKey: adminSpiritFoodQueryKeys.lists() },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.filter((item) => item.id !== id),
+              total: page.total - 1,
+            })),
+          };
+        }
+      );
+      queryClient.removeQueries({ queryKey: adminSpiritFoodQueryKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: adminSpiritFoodQueryKeys.stats() });
+      Toast.show({ type: "success", text1: "Spirit food deleted successfully" });
     },
     onError: (error) => {
-      const errorMessage = getErrorMessage(error);
-      Toast.show({
-        type: "error",
-        text1: "Failed to delete spirit food",
-        text2: errorMessage || "Please try again later",
-      });
+      Toast.show({ type: "error", text1: "Failed to delete spirit food", text2: getErrorMessage(error) });
     },
+  });
+
+/* ---- Import Mutation Hooks ---- */
+export const useUploadAdminSpiritFoodImportPreview = () =>
+  useMutation({
+    mutationFn: (input: ImportPreviewAdminSpiritFoodInput) => importPreviewAdminSpiritFood(input),
+    onSuccess: () => {
+      /* ---- Import preview doesn't change existing data ---- */
+    },
+  });
+
+export const useCommitAdminSpiritFoodImport = () =>
+  useMutation({
+    mutationFn: (input: ImportCommitAdminSpiritFoodInput) => importCommitAdminSpiritFood(input),
+    onSuccess: () => {
+      /* ---- Bulk import: invalidate all lists since we can't predict which pages changed ---- */
+      queryClient.invalidateQueries({ queryKey: adminSpiritFoodQueryKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: adminSpiritFoodQueryKeys.stats() });
+      Toast.show({ type: "success", text1: "Import completed successfully" });
+    },
+    onError: (error) => {
+      Toast.show({ type: "error", text1: "Failed to commit import", text2: getErrorMessage(error) });
+    },
+  });
+
+export const useImportReportAdminSpiritFood = (input: ImportReportAdminSpiritFoodInput) =>
+  useQuery({
+    queryKey: adminSpiritFoodQueryKeys.importReport(input.uploadId),
+    queryFn: () => importReportAdminSpiritFood(input),
+    enabled: !!input.uploadId,
+    staleTime: 0,
+    gcTime: 0,
   });
 
 /* ---- Query Hooks ---- */
@@ -355,10 +350,10 @@ export const useAdminSpiritFoodList = (filters: Omit<AdminSpiritFoodListInput, "
         ...filters,
         page: pageParam,
         pageSize: filters.pageSize ?? 20,
-        sort: filters.sort ?? "-createdAt",
+        sort: filters.sort ?? "-scheduledDate",
       }),
     getNextPageParam: (lastPage, allPages) => {
-      if (!lastPage || typeof lastPage.total !== "number") {
+      if (!lastPage || typeof lastPage.total === "undefined") {
         return undefined;
       }
       const totalPages = Math.ceil(lastPage.total / (filters.pageSize ?? 20));
@@ -366,8 +361,6 @@ export const useAdminSpiritFoodList = (filters: Omit<AdminSpiritFoodListInput, "
       return nextPage <= totalPages ? nextPage : undefined;
     },
     initialPageParam: 1,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
   });
 
 export const useAdminSpiritFoodDetail = (id: string, enabled = true) =>
@@ -379,74 +372,8 @@ export const useAdminSpiritFoodDetail = (id: string, enabled = true) =>
 
 export const useAdminSpiritFoodStats = () =>
   useQuery({
-    queryKey: [...adminSpiritFoodQueryKeys.stats()],
+    queryKey: adminSpiritFoodQueryKeys.stats(),
     queryFn: () => getAdminSpiritFoodStats(),
-  });
-
-export const useImportReportAdminSpiritFood = (input: ImportReportAdminSpiritFoodInput) =>
-  useQuery({
-    queryKey: adminSpiritFoodQueryKeys.importReport(input.uploadId, input.format),
-    queryFn: () => importReportAdminSpiritFood(input),
-    enabled: !!input.uploadId,
-    staleTime: 0, // Always fetch fresh data
-    gcTime: 0, // Don't cache
-  });
-
-/* ---- Import Mutation Hooks ---- */
-export const useUploadAdminSpiritFoodImportPreview = () =>
-  useMutation({
-    mutationFn: (input: ImportPreviewAdminSpiritFoodInput) => importPreviewAdminSpiritFood(input),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: adminSpiritFoodQueryKeys.all });
-      setTimeout(() => {
-        const message =
-          data.invalid > 0
-            ? `Found ${data.total} rows: ${data.valid} valid, ${data.invalid} invalid.`
-            : `Found ${data.total} valid rows ready for import.`;
-
-        Toast.show({
-          type: data.invalid > 0 ? "info" : "success",
-          text1: "File Validated",
-          text2: message,
-        });
-      }, 300);
-    },
-    onError: (error) => {
-      const errorMessage = getErrorMessage(error);
-      Toast.show({
-        type: "error",
-        text1: "Failed to generate import preview",
-        text2: errorMessage || "Please try again later",
-      });
-    },
-  });
-
-export const useCommitAdminSpiritFoodImport = () =>
-  useMutation({
-    mutationFn: (input: ImportCommitAdminSpiritFoodInput) => importCommitAdminSpiritFood(input),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: adminSpiritFoodQueryKeys.all });
-      setTimeout(() => {
-        const message =
-          data.failed > 0
-            ? `${data.success} entries imported successfully, ${data.failed} failed.`
-            : `All ${data.success} entries have been imported successfully.`;
-
-        Toast.show({
-          type: data.failed > 0 ? "info" : "success",
-          text1: "Bulk Import Complete",
-          text2: message,
-        });
-      }, 300);
-    },
-    onError: (error) => {
-      const errorMessage = getErrorMessage(error);
-      Toast.show({
-        type: "error",
-        text1: "Failed to commit import",
-        text2: errorMessage || "Please try again later",
-      });
-    },
   });
 
 /* ---- Filter Store ---- */
@@ -468,7 +395,7 @@ export const useAdminSpiritFoodFilterStore = create<AdminSpiritFoodFilterStore>(
 
       Object.entries(filters).forEach(([key, value]) => {
         const filterKey = key as keyof AdminSpiritFoodFilterStore;
-        if (value === null || (Array.isArray(value) && value.length === 0)) {
+        if (value === null) {
           updates[filterKey] = undefined as never;
         } else {
           updates[filterKey] = value as never;

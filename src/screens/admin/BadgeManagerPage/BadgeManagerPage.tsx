@@ -271,9 +271,6 @@ export function BadgeManagerPage() {
             setIsCreateModalOpen(false);
             setEditingBadge(undefined);
           }}
-          onSuccess={() => {
-            // Refresh is handled by mutation invalidation
-          }}
         />
       )}
 

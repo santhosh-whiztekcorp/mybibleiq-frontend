@@ -93,25 +93,72 @@ export const stripInactiveTypeConfigs = (data: unknown): unknown => {
   };
 };
 
-export const CreateAdminQuestionRequestSchema = z.object({
-  questionText: z
-    .string({ message: "Question text is required" })
-    .min(1, { message: "Question text cannot be empty" })
-    .max(2000, { message: "Question text must be 2000 characters or less" }),
-  type: QuestionTypeEnum,
-  tags: z
-    .array(z.string({ message: "Tag is required" }).min(1, { message: "Tag cannot be empty" }), {
-      message: "Please provide valid tags",
-    })
-    .optional(),
-  shuffle: z.boolean({ message: "Please specify if options should be shuffled" }).optional(),
-  mcq: McqSchema.optional(),
-  trueFalse: TrueFalseSchema.optional(),
-  matching: MatchingSchema.optional(),
-  fillBlank: FillBlankSchema.optional(),
-  oneWord: OneWordSchema.optional(),
-  order: OrderSchema.optional(),
-});
+export const CreateAdminQuestionRequestSchema = z
+  .object({
+    questionText: z
+      .string({ message: "Question text is required" })
+      .min(1, { message: "Question text cannot be empty" })
+      .max(2000, { message: "Question text must be 2000 characters or less" }),
+    type: QuestionTypeEnum,
+    tags: z
+      .array(z.string({ message: "Tag is required" }).min(1, { message: "Tag cannot be empty" }), {
+        message: "Please provide valid tags",
+      })
+      .optional(),
+    shuffle: z.boolean({ message: "Please specify if options should be shuffled" }).optional(),
+    mcq: McqSchema.optional(),
+    trueFalse: TrueFalseSchema.optional(),
+    matching: MatchingSchema.optional(),
+    fillBlank: FillBlankSchema.optional(),
+    oneWord: OneWordSchema.optional(),
+    order: OrderSchema.optional(),
+  })
+  .superRefine((data, ctx) => {
+    switch (data.type) {
+      case "MCQ": {
+        const result = McqSchema.safeParse(data.mcq);
+        if (!result.success) {
+          result.error.issues.forEach((issue) => ctx.addIssue({ ...issue, path: ["mcq", ...issue.path] }));
+        }
+        break;
+      }
+      case "TRUE_FALSE": {
+        const result = TrueFalseSchema.safeParse(data.trueFalse);
+        if (!result.success) {
+          result.error.issues.forEach((issue) => ctx.addIssue({ ...issue, path: ["trueFalse", ...issue.path] }));
+        }
+        break;
+      }
+      case "MATCH": {
+        const result = MatchingSchema.safeParse(data.matching);
+        if (!result.success) {
+          result.error.issues.forEach((issue) => ctx.addIssue({ ...issue, path: ["matching", ...issue.path] }));
+        }
+        break;
+      }
+      case "FILL_BLANK": {
+        const result = FillBlankSchema.safeParse(data.fillBlank);
+        if (!result.success) {
+          result.error.issues.forEach((issue) => ctx.addIssue({ ...issue, path: ["fillBlank", ...issue.path] }));
+        }
+        break;
+      }
+      case "ONE_WORD": {
+        const result = OneWordSchema.safeParse(data.oneWord);
+        if (!result.success) {
+          result.error.issues.forEach((issue) => ctx.addIssue({ ...issue, path: ["oneWord", ...issue.path] }));
+        }
+        break;
+      }
+      case "ORDER": {
+        const result = OrderSchema.safeParse(data.order);
+        if (!result.success) {
+          result.error.issues.forEach((issue) => ctx.addIssue({ ...issue, path: ["order", ...issue.path] }));
+        }
+        break;
+      }
+    }
+  });
 
 export const UpdateAdminQuestionRequestSchema = CreateAdminQuestionRequestSchema;
 

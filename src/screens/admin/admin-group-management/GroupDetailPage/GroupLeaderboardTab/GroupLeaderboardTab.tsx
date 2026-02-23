@@ -150,7 +150,7 @@ export function GroupLeaderboardTab() {
             Cards
           </Button>
         </div>
-        <div className="text-sm font-semibold text-muted-foreground">Total: {total}</div>
+        <div className="text-sm font-semibold text-muted-foreground">Total Members: {total}</div>
       </div>
 
       {/* Desktop View */}

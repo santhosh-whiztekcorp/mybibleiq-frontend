@@ -95,7 +95,7 @@ export function GroupReportsView() {
   return (
     <div className="flex flex-col gap-4">
       {/* View Switcher (Desktop only) */}
-      <div className="hidden md:flex justify-between items-center">
+      <div className="hidden md:flex items-center gap-5">
         <div className="inline-flex p-1 bg-[#F1F5F9] rounded-lg">
           <Button
             variant="ghost"

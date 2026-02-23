@@ -30,6 +30,15 @@ export function MCQFields() {
     }
   }, [fields.length, append]);
 
+  // When multiSelect is disabled, clear all correct answers
+  React.useEffect(() => {
+    if (!multiSelect) {
+      fields.forEach((_, i) => {
+        setValue(`mcq.options.${i}.isCorrect`, false, { shouldValidate: false });
+      });
+    }
+  }, [multiSelect]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const toggleCorrect = (index: number) => {
     if (multiSelect) {
       const current = watch(`mcq.options.${index}.isCorrect`);

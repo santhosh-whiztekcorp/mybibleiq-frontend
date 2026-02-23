@@ -14,13 +14,11 @@ export const useSubmitFeedback = () =>
   useMutation({
     mutationFn: (input: SubmitFeedbackInput) => submitFeedback(input),
     onSuccess: () => {
-      setTimeout(() => {
-        Toast.show({
-          type: "success",
-          text1: "Feedback submitted successfully",
-          text2: "Thank you for your feedback!",
-        });
-      }, 0);
+      Toast.show({
+        type: "success",
+        text1: "Feedback submitted successfully",
+        text2: "Thank you for your feedback!",
+      });
     },
     onError: (error) => {
       const errorMessage = getErrorMessage(error);

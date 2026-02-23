@@ -12,14 +12,14 @@ export function FlashcardCard({ item, onEdit, onDelete, onPublish, onArchive, on
   const { displayTags, remainingTagsCount, cardBgColor, cardBorderColor } = useFlashcardCard(item);
 
   return (
-    <div className={cn("rounded-xl border overflow-hidden", cardBgColor, cardBorderColor)}>
+    <div className={cn("rounded-xl border overflow-hidden flex flex-col h-full", cardBgColor, cardBorderColor)}>
       {/* Gradient Header with Word */}
-      <div className="bg-linear-to-br from-[#F7EFD0] to-[#FF96C7] p-4 rounded-lg mx-3 mt-3">
+      <div className="bg-linear-to-br from-[#F7EFD0] to-[#FF96C7] p-4 rounded-lg mx-3 mt-3 shrink-0">
         <h3 className="text-lg font-bold text-[#393737] text-center line-clamp-2">{item.word}</h3>
       </div>
 
       {/* Content */}
-      <div className="p-3 space-y-3">
+      <div className="p-3 flex-1 flex flex-col gap-3">
         {/* Info Row */}
         <div className="flex items-center gap-2 flex-wrap">
           <Badge variant={`status${item.status}`} size="sm">
@@ -55,7 +55,7 @@ export function FlashcardCard({ item, onEdit, onDelete, onPublish, onArchive, on
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-2 mt-auto pt-1">
           {item.status === "Draft" && (
             <>
               <Button

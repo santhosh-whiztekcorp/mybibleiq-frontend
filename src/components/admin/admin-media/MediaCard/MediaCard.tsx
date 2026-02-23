@@ -22,7 +22,11 @@ const MediaCardComponent = ({ item, onEdit, onDelete, onPublish, onArchive, onCl
 
   return (
     <div
-      className={cn("rounded-xl border overflow-hidden transition-all hover:shadow-md", cardBgColor, cardBorderColor)}
+      className={cn(
+        "rounded-xl border overflow-hidden transition-all hover:shadow-md flex flex-col h-full",
+        cardBgColor,
+        cardBorderColor
+      )}
     >
       {/* Media Preview / Icon */}
       <div
@@ -46,7 +50,7 @@ const MediaCardComponent = ({ item, onEdit, onDelete, onPublish, onArchive, onCl
       </div>
 
       {/* Content */}
-      <div className="p-3 space-y-3">
+      <div className="p-3 flex-1 flex flex-col gap-3">
         <div className="space-y-1">
           <div className="flex items-center justify-between gap-2">
             <h3 className="text-sm font-bold text-[#1a1a1a] line-clamp-1">{item.title}</h3>
@@ -82,7 +86,7 @@ const MediaCardComponent = ({ item, onEdit, onDelete, onPublish, onArchive, onCl
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2 pt-1">
+        <div className="flex items-center gap-2 mt-auto pt-1">
           {item.status === "Draft" && (
             <>
               <Button

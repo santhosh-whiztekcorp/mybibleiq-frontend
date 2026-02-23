@@ -63,7 +63,12 @@ export const createAdminFlashcardGroup = async (
     endpoints.flashcardGroupAdmin.create,
     input
   );
-  return response.data;
+
+  // Handle both wrapped and unwrapped (direct) responses
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+  return response as unknown as AdminFlashcardGroupDetail;
 };
 
 /* ---- Update Flashcard Group ---- */
@@ -75,7 +80,12 @@ export const updateAdminFlashcardGroup = async (
     endpoints.flashcardGroupAdmin.updateById(id),
     input
   );
-  return response.data;
+
+  // Handle both wrapped and unwrapped (direct) responses
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+  return response as unknown as AdminFlashcardGroupDetail;
 };
 
 /* ---- Update Flashcard Group Flashcards ---- */
@@ -87,7 +97,12 @@ export const updateAdminFlashcardGroupFlashcards = async (
     endpoints.flashcardGroupAdmin.updateFlashcardsById(id),
     input
   );
-  return response.data;
+
+  // Handle both wrapped and unwrapped (direct) responses
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+  return response as unknown as UpdateAdminFlashcardGroupFlashcardsResponse;
 };
 
 /* ---- Update Flashcard Group Status ---- */
@@ -99,7 +114,12 @@ export const updateAdminFlashcardGroupStatus = async (
     endpoints.flashcardGroupAdmin.updateStatusById(id),
     input
   );
-  return response.data;
+
+  // Handle both wrapped and unwrapped (direct) responses
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+  return response as unknown as UpdateAdminFlashcardGroupStatusResponse;
 };
 
 /* ---- Delete Flashcard Group ---- */
@@ -110,8 +130,12 @@ export const deleteAdminFlashcardGroup = async (id: string): Promise<void> => {
 /* ---- Get Flashcard Group Status Stats ---- */
 export const getAdminFlashcardGroupStatusStats = async (): Promise<AdminFlashcardGroupStatusStatsResponse> => {
   /* ---- API returns data directly, not wrapped in envelope ---- */
-  const response = await apiClient.get<AdminFlashcardGroupStatusStatsResponse>(
-    endpoints.flashcardGroupAdmin.getStatsStatus
-  );
-  return response;
+  const response = await apiClient.get<
+    AdminFlashcardGroupStatusStatsResponse | ApiResponseEnvelope<AdminFlashcardGroupStatusStatsResponse>
+  >(endpoints.flashcardGroupAdmin.getStatsStatus);
+
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+  return response as AdminFlashcardGroupStatusStatsResponse;
 };

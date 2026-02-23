@@ -162,7 +162,7 @@ export function QuizForm(props: QuizFormProps) {
                     <h3 className="text-sm font-bold text-black uppercase tracking-wider">Randomization</h3>
                   </div>
                   <RadioGroup
-                    value={randomization ?? "None"}
+                    value={randomization}
                     onValueChange={(val) => form.setValue("randomization", val as QuizRandomization)}
                     className="grid grid-cols-1 gap-3"
                   >
@@ -571,7 +571,7 @@ export function QuizForm(props: QuizFormProps) {
                         <h3 className="text-sm font-bold text-black uppercase tracking-wider">Randomization</h3>
                       </div>
                       <RadioGroup
-                        value={swordDrillRandomization ?? "ShuffleAll"}
+                        value={swordDrillRandomization}
                         onValueChange={(val) =>
                           form.setValue("swordDrillConfig.randomization", val as "ShuffleAll" | "RandomSubset")
                         }

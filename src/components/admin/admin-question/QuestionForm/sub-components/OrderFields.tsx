@@ -28,15 +28,18 @@ export function OrderFields() {
     }
   }, [fields.length, append]);
 
-  // Ensure order is correct
+  // Sync order values whenever fields change
+  React.useEffect(() => {
+    fields.forEach((field, index) => {
+      // @ts-expect-error - order property exists on field
+      if (field.order !== index) {
+        setValue(`order.items.${index}.order`, index, { shouldValidate: true });
+      }
+    });
+  }, [fields, setValue]);
+
   const handleRemove = (index: number) => {
     remove(index);
-    // After remove, update orders
-    setTimeout(() => {
-      fields.forEach((_, i) => {
-        setValue(`order.items.${i}.order`, i);
-      });
-    }, 0);
   };
 
   return (
@@ -62,7 +65,6 @@ export function OrderFields() {
                   variant="adminPrimary"
                   error={orderErrors?.items?.[index]?.text?.message}
                 />
-                <input type="hidden" name={`order.items.${index}.order`} value={index} />
               </div>
 
               <Button

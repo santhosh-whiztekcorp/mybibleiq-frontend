@@ -13,7 +13,7 @@ export function GroupCard(props: GroupCardProps) {
   const { formattedData } = useGroupCard(props);
 
   return (
-    <div className="flex flex-col rounded-2xl border border-[#E2E8F0] bg-white p-5 space-y-5">
+    <div className="flex flex-col rounded-2xl border border-[#E2E8F0] bg-white p-5 space-y-5 h-full">
       {/* Header */}
       <div className="flex items-start gap-3">
         {/* Icon */}
@@ -115,7 +115,7 @@ export function GroupCard(props: GroupCardProps) {
 
       {/* Action Button */}
       <Button
-        className="w-full bg-[#989FE2] hover:bg-[#7A7CE0] text-white font-bold h-12 rounded-xl gap-2 text-base"
+        className="w-full bg-[#989FE2] hover:bg-[#7A7CE0] text-white font-bold h-12 rounded-xl gap-2 text-base mt-auto"
         onClick={() => onView(item.id)}
       >
         <Eye className="w-4 h-4" />

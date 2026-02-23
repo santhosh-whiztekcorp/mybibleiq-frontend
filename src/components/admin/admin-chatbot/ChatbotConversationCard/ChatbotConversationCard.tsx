@@ -41,9 +41,11 @@ const ChatbotConversationCardComponent = ({ item, onView }: ChatbotConversationC
             <h3 className="text-[17px] font-bold text-[#1a1a1a] truncate leading-tight">{name}</h3>
             <p className="text-sm text-[#656A73] truncate">@{username}</p>
           </div>
-          <Badge variant={statusVariant} size="sm" className="shrink-0">
-            {CHATBOT_CONVERSATION_STATUS_LABELS[item.status]}
-          </Badge>
+          {item.status && (
+            <Badge variant={statusVariant} size="sm" className="shrink-0">
+              {CHATBOT_CONVERSATION_STATUS_LABELS[item.status]}
+            </Badge>
+          )}
         </div>
 
         <div className="flex items-center justify-between mt-auto">

@@ -110,7 +110,7 @@ export function GroupActivityLogView() {
       </div>
 
       {/* Desktop Table or Card View */}
-      <div className="hidden md:block bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+      <div className="hidden md:block">
         {viewMode === "table" ? (
           <ActivityLogDataTable
             data={data}

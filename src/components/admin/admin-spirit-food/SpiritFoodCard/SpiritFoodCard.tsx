@@ -24,8 +24,8 @@ export const SpiritFoodCard = React.memo(function SpiritFoodCard({
   const { isMaker, isChecker, cardVariant, badgeVariant } = useSpiritFoodCard(item, currentUserId);
 
   return (
-    <Card variant={cardVariant} className="gap-3 py-6!">
-      <div className="px-6 space-y-3">
+    <Card variant={cardVariant} className="h-full flex flex-col gap-3 py-6!">
+      <div className="px-6 flex-1 flex flex-col gap-3">
         {/* Verse Reference */}
         <div>
           <h3 className="text-sm font-bold text-[#393737] leading-tight">{item.verseReference}</h3>
@@ -82,7 +82,7 @@ export const SpiritFoodCard = React.memo(function SpiritFoodCard({
         </div>
 
         {/* Actions Row */}
-        <div className="flex flex-wrap items-center gap-2 pt-2">
+        <div className="flex flex-wrap items-center gap-2 mt-auto pt-2">
           {/* Edit - InProgress only */}
           {item.status === "InProgress" && (
             <Button variant="actionEdit" size="xs" onClick={() => onEdit?.(item)} className="font-semibold">

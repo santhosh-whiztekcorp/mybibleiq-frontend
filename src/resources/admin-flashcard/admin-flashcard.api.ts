@@ -55,7 +55,12 @@ export const createAdminFlashcard = async (input: CreateAdminFlashcardInput): Pr
     endpoints.flashcardAdmin.create,
     input
   );
-  return response.data;
+
+  // Handle both wrapped and unwrapped (direct) responses
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+  return response as unknown as AdminFlashcardDetail;
 };
 
 /* ---- Update Flashcard ---- */
@@ -67,7 +72,12 @@ export const updateAdminFlashcard = async (
     endpoints.flashcardAdmin.updateById(id),
     input
   );
-  return response.data;
+
+  // Handle both wrapped and unwrapped (direct) responses
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+  return response as unknown as AdminFlashcardDetail;
 };
 
 /* ---- Update Flashcard Status ---- */
@@ -79,7 +89,12 @@ export const updateAdminFlashcardStatus = async (
     endpoints.flashcardAdmin.updateStatusById(id),
     input
   );
-  return response.data;
+
+  // Handle both wrapped and unwrapped (direct) responses
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+  return response as unknown as UpdateAdminFlashcardStatusResponse;
 };
 
 /* ---- Delete Flashcard ---- */
@@ -90,6 +105,12 @@ export const deleteAdminFlashcard = async (id: string): Promise<void> => {
 /* ---- Get Flashcard Status Stats ---- */
 export const getAdminFlashcardStatusStats = async (): Promise<AdminFlashcardStatusStatsResponse> => {
   /* ---- API returns data directly, not wrapped in envelope ---- */
-  const response = await apiClient.get<AdminFlashcardStatusStatsResponse>(endpoints.flashcardAdmin.getStatsStatus);
-  return response;
+  const response = await apiClient.get<
+    AdminFlashcardStatusStatsResponse | ApiResponseEnvelope<AdminFlashcardStatusStatsResponse>
+  >(endpoints.flashcardAdmin.getStatsStatus);
+
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+  return response as AdminFlashcardStatusStatsResponse;
 };

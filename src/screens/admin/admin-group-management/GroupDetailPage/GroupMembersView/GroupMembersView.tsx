@@ -84,7 +84,7 @@ export function GroupMembersView() {
       ) : (
         <>
           {/* View Switcher (Desktop only) */}
-          <div className="hidden md:flex items-center gap-3 mb-2">
+          <div className="hidden md:flex items-center gap-5">
             <div className="inline-flex p-1 bg-[#F1F5F9] rounded-lg">
               <Button
                 variant="ghost"

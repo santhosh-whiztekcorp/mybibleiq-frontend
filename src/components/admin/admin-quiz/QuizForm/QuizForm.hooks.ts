@@ -67,22 +67,28 @@ export const useQuizForm = ({ item, onSuccess, onClose }: QuizFormProps) => {
     name: "randomization",
   });
 
-  // Initialize swordDrillConfig when enabled
+  // Initialize or fix swordDrillConfig when enabled
   useEffect(() => {
-    if (isSwordDrillEnabled && !form.getValues("swordDrillConfig")) {
-      form.setValue("swordDrillConfig", {
-        timeLimitType: "TotalQuizTime",
-        timeLimitValue: 60,
-        randomization: "ShuffleAll",
-        allowSolo: true,
-        allowMultiplayer: false,
-        allowQuick: false,
-        firstRankPoints: 50,
-        secondRankPoints: 30,
-        thirdRankPoints: 10,
-        pointsForWinner: 20,
-        pointsForLoser: 5,
-      });
+    if (isSwordDrillEnabled) {
+      const currentConfig = form.getValues("swordDrillConfig");
+
+      // Populate completely if missing, or ensure required fields are present
+      if (!currentConfig || !currentConfig.randomization || currentConfig.allowSolo === undefined) {
+        form.setValue("swordDrillConfig", {
+          timeLimitType: currentConfig?.timeLimitType || "TotalQuizTime",
+          timeLimitValue: currentConfig?.timeLimitValue || 60,
+          randomization: currentConfig?.randomization || "ShuffleAll",
+          subsetCount: currentConfig?.subsetCount || 10,
+          allowSolo: currentConfig?.allowSolo ?? true,
+          allowMultiplayer: currentConfig?.allowMultiplayer ?? false,
+          allowQuick: currentConfig?.allowQuick ?? false,
+          firstRankPoints: currentConfig?.firstRankPoints || 50,
+          secondRankPoints: currentConfig?.secondRankPoints || 30,
+          thirdRankPoints: currentConfig?.thirdRankPoints || 10,
+          pointsForWinner: currentConfig?.pointsForWinner || 20,
+          pointsForLoser: currentConfig?.pointsForLoser || 5,
+        });
+      }
     }
   }, [isSwordDrillEnabled, form]);
 

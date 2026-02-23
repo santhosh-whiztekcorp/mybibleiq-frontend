@@ -160,7 +160,7 @@ export function GroupManagerPage() {
 
       <div className="space-y-4">
         {/* View Switcher (Desktop only) */}
-        <div className="hidden md:flex justify-between items-center mb-2">
+        <div className="hidden md:flex items-center mb-2 gap-5">
           <div className="inline-flex p-1 bg-[#F1F5F9] rounded-lg">
             <Button
               variant="ghost"

@@ -25,13 +25,35 @@ export const getAdminQuestionList = async (input: AdminQuestionListInput): Promi
     endpoints.questionsAdmin.getAll,
     { params: input }
   );
-  return response.data;
+
+  // Handle both wrapped and unwrapped responses
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+
+  // If response is already the list response (not wrapped)
+  if (response && "items" in response) {
+    return response as unknown as AdminQuestionListResponse;
+  }
+
+  throw new Error("Unexpected API response structure");
 };
 
 /* ---- Get Question Detail ---- */
 export const getAdminQuestionDetail = async (id: string): Promise<AdminQuestionDetail> => {
   const response = await apiClient.get<ApiResponseEnvelope<AdminQuestionDetail>>(endpoints.questionsAdmin.getById(id));
-  return response.data;
+
+  // Handle both wrapped and unwrapped responses
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+
+  // If response is already the detail (not wrapped)
+  if (response && "id" in response) {
+    return response as unknown as AdminQuestionDetail;
+  }
+
+  throw new Error("Unexpected API response structure");
 };
 
 /* ---- Create Question ---- */
@@ -40,7 +62,12 @@ export const createAdminQuestion = async (input: CreateAdminQuestionInput): Prom
     endpoints.questionsAdmin.create,
     input
   );
-  return response.data;
+
+  // Handle both wrapped and unwrapped (direct) responses
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+  return response as unknown as AdminQuestionDetail;
 };
 
 /* ---- Update Question ---- */
@@ -52,7 +79,12 @@ export const updateAdminQuestion = async (
     endpoints.questionsAdmin.updateById(id),
     input
   );
-  return response.data;
+
+  // Handle both wrapped and unwrapped (direct) responses
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+  return response as unknown as AdminQuestionDetail;
 };
 
 /* ---- Update Question Status ---- */
@@ -64,7 +96,12 @@ export const updateAdminQuestionStatus = async (
     endpoints.questionsAdmin.updateStatusById(id),
     input
   );
-  return response.data;
+
+  // Handle both wrapped and unwrapped (direct) responses
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+  return response as unknown as UpdateAdminQuestionStatusResponse;
 };
 
 /* ---- Delete Question ---- */
@@ -77,7 +114,11 @@ export const getAdminQuestionTypeStats = async (): Promise<AdminQuestionTypeStat
   const response = await apiClient.get<ApiResponseEnvelope<AdminQuestionTypeStatsResponse>>(
     endpoints.questionsAdmin.getStats
   );
-  return response.data;
+
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+  return response as unknown as AdminQuestionTypeStatsResponse;
 };
 
 /* ---- Get Question Status Stats ---- */
@@ -85,7 +126,11 @@ export const getAdminQuestionStatusStats = async (): Promise<AdminQuestionStatus
   const response = await apiClient.get<ApiResponseEnvelope<AdminQuestionStatusStatsResponse>>(
     endpoints.questionsAdmin.getStatsByStatus
   );
-  return response.data;
+
+  if (response && "data" in response && response.data) {
+    return response.data;
+  }
+  return response as unknown as AdminQuestionStatusStatsResponse;
 };
 
 /* ---- Import Preview ---- */

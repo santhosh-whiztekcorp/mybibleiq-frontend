@@ -1,6 +1,7 @@
 import { apiClient } from "@/config/apiClient";
 import { endpoints } from "@/constants/endpoints";
 import { ApiResponseEnvelope } from "@/types/resource";
+import { unwrapApiResponse } from "@/utils/network";
 import type {
   AdminUserListInput,
   AdminUserListResponse,
@@ -27,7 +28,7 @@ export const getAdminUserList = async (input: AdminUserListInput): Promise<Admin
     endpoints.userManagementAdmin.getAll,
     { params: input }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Get User Stats ---- */
@@ -35,7 +36,7 @@ export const getAdminUserStats = async (): Promise<AdminUserStatsResponse> => {
   const response = await apiClient.get<ApiResponseEnvelope<AdminUserStatsResponse>>(
     endpoints.userManagementAdmin.getStats
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Get User Profile ---- */
@@ -43,7 +44,7 @@ export const getAdminUserProfile = async (userId: string): Promise<AdminUserProf
   const response = await apiClient.get<ApiResponseEnvelope<AdminUserProfileResponse>>(
     endpoints.userManagementAdmin.getProfile(userId)
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Get User Activity ---- */
@@ -51,7 +52,7 @@ export const getAdminUserActivity = async (userId: string): Promise<AdminUserAct
   const response = await apiClient.get<ApiResponseEnvelope<AdminUserActivityResponse>>(
     endpoints.userManagementAdmin.getActivity(userId)
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Get User Settings ---- */
@@ -59,7 +60,7 @@ export const getAdminUserSettings = async (userId: string): Promise<AdminUserSet
   const response = await apiClient.get<ApiResponseEnvelope<AdminUserSettingsResponse>>(
     endpoints.userManagementAdmin.getSettings(userId)
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Get User Spirit Food ---- */
@@ -67,7 +68,7 @@ export const getAdminUserSpiritFood = async (userId: string): Promise<AdminUserS
   const response = await apiClient.get<ApiResponseEnvelope<AdminUserSpiritFoodResponse>>(
     endpoints.userManagementAdmin.getSpiritFood(userId)
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Get User Badges ---- */
@@ -79,7 +80,7 @@ export const getAdminUserBadges = async (
     endpoints.userManagementAdmin.getBadges(userId),
     { params: input }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Get User Feedback ---- */
@@ -91,7 +92,7 @@ export const getAdminUserFeedback = async (
     endpoints.userManagementAdmin.getFeedback(userId),
     { params: input }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Get User Saved Verses ---- */
@@ -103,7 +104,7 @@ export const getAdminUserSavedVerses = async (
     endpoints.userManagementAdmin.getSavedVerses(userId),
     { params: input }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Suspend User ---- */
@@ -115,7 +116,7 @@ export const suspendAdminUser = async (
     endpoints.userManagementAdmin.suspend(userId),
     input
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Activate User ---- */
@@ -123,7 +124,7 @@ export const activateAdminUser = async (userId: string): Promise<AdminUserActiva
   const response = await apiClient.patch<ApiResponseEnvelope<AdminUserActivateResponse>>(
     endpoints.userManagementAdmin.activate(userId)
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Delete User ---- */

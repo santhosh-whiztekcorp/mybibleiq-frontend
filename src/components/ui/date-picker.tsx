@@ -24,7 +24,7 @@ function DatePicker({
   minDate,
   showTime = false,
   ...props
-}: Omit<React.ComponentProps<"div">, "ref"> &
+}: Omit<React.ComponentProps<"div">, "ref" | "onChange"> &
   VariantProps<typeof datePickerVariants> & {
     value?: Date;
     onChange?: (date: Date | undefined) => void;
@@ -76,8 +76,19 @@ function DatePicker({
             readOnly
             value={value ? format(value, showTime ? "PPP p" : "PPP") : ""}
             placeholder={placeholder}
-            className={cn("cursor-pointer pr-10", className)}
+            className={cn(
+              "cursor-pointer pr-10 caret-transparent selection:bg-transparent selection:text-inherit",
+              className
+            )}
             onClick={() => setOpen(true)}
+            onFocus={(e) => {
+              if (e.target.setSelectionRange) {
+                e.target.setSelectionRange(e.target.value.length, e.target.value.length);
+              }
+              if (props.onFocus) {
+                props.onFocus(e as unknown as React.FocusEvent<HTMLDivElement>);
+              }
+            }}
             {...props}
           />
           <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 size-4 opacity-50 pointer-events-none" />

@@ -1,6 +1,7 @@
 import { apiClient } from "@/config/apiClient";
 import { endpoints } from "@/constants/endpoints";
 import { ApiResponseEnvelope } from "@/types/resource";
+import { unwrapApiResponse } from "@/utils/network";
 import type {
   AdminMediaListInput,
   AdminMediaListResponse,
@@ -14,38 +15,23 @@ import type {
 
 /* ---- List Media ---- */
 export const getAdminMediaList = async (input: AdminMediaListInput): Promise<AdminMediaListResponse> => {
-  const response = await apiClient.get<ApiResponseEnvelope<AdminMediaListResponse>>(endpoints.mediaAdmin.getAll, {
-    params: input,
-  });
+  const response = await apiClient.get<ApiResponseEnvelope<AdminMediaListResponse> | AdminMediaListResponse>(
+    endpoints.mediaAdmin.getAll,
+    {
+      params: input,
+    }
+  );
 
-  // Handle both wrapped and unwrapped responses
-  if (response && "data" in response && response.data) {
-    return response.data;
-  }
-
-  // If response is already the list response (not wrapped)
-  if (response && "items" in response) {
-    return response as unknown as AdminMediaListResponse;
-  }
-
-  throw new Error("Unexpected API response structure");
+  return unwrapApiResponse(response);
 };
 
 /* ---- Get Media Detail ---- */
 export const getAdminMediaDetail = async (id: string): Promise<AdminMediaDetail> => {
-  const response = await apiClient.get<ApiResponseEnvelope<AdminMediaDetail>>(endpoints.mediaAdmin.getById(id));
+  const response = await apiClient.get<ApiResponseEnvelope<AdminMediaDetail> | AdminMediaDetail>(
+    endpoints.mediaAdmin.getById(id)
+  );
 
-  // Handle both wrapped and unwrapped responses
-  if (response && "data" in response && response.data) {
-    return response.data;
-  }
-
-  // If response is already the detail (not wrapped)
-  if (response && "id" in response) {
-    return response as unknown as AdminMediaDetail;
-  }
-
-  throw new Error("Unexpected API response structure");
+  return unwrapApiResponse(response);
 };
 
 /* ---- Create Media ---- */
@@ -80,17 +66,17 @@ export const createAdminMedia = async (input: CreateAdminMediaInput): Promise<Ad
     }
   }
 
-  const response = await apiClient.post<ApiResponseEnvelope<AdminMediaDetail>>(endpoints.mediaAdmin.create, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  const response = await apiClient.post<ApiResponseEnvelope<AdminMediaDetail> | AdminMediaDetail>(
+    endpoints.mediaAdmin.create,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
 
-  // Handle both wrapped and unwrapped (direct) responses
-  if (response && "data" in response && response.data) {
-    return response.data;
-  }
-  return response as unknown as AdminMediaDetail;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Update Media ---- */
@@ -124,7 +110,7 @@ export const updateAdminMedia = async (id: string, input: UpdateAdminMediaInput)
     }
   }
 
-  const response = await apiClient.put<ApiResponseEnvelope<AdminMediaDetail>>(
+  const response = await apiClient.put<ApiResponseEnvelope<AdminMediaDetail> | AdminMediaDetail>(
     endpoints.mediaAdmin.updateById(id),
     formData,
     {
@@ -134,11 +120,7 @@ export const updateAdminMedia = async (id: string, input: UpdateAdminMediaInput)
     }
   );
 
-  // Handle both wrapped and unwrapped (direct) responses
-  if (response && "data" in response && response.data) {
-    return response.data;
-  }
-  return response as unknown as AdminMediaDetail;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Update Media Status ---- */
@@ -146,16 +128,11 @@ export const updateAdminMediaStatus = async (
   id: string,
   input: UpdateAdminMediaStatusInput
 ): Promise<UpdateAdminMediaStatusResponse> => {
-  const response = await apiClient.patch<ApiResponseEnvelope<UpdateAdminMediaStatusResponse>>(
-    endpoints.mediaAdmin.updateStatusById(id),
-    input
-  );
+  const response = await apiClient.patch<
+    ApiResponseEnvelope<UpdateAdminMediaStatusResponse> | UpdateAdminMediaStatusResponse
+  >(endpoints.mediaAdmin.updateStatusById(id), input);
 
-  // Handle both wrapped and unwrapped (direct) responses
-  if (response && "data" in response && response.data) {
-    return response.data;
-  }
-  return response as unknown as UpdateAdminMediaStatusResponse;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Delete Media ---- */
@@ -165,10 +142,9 @@ export const deleteAdminMedia = async (id: string): Promise<void> => {
 
 /* ---- Get Media Type Stats ---- */
 export const getAdminMediaTypeStats = async (): Promise<AdminMediaTypeStatsResponse> => {
-  const response = await apiClient.get<ApiResponseEnvelope<AdminMediaTypeStatsResponse>>(endpoints.mediaAdmin.getStats);
+  const response = await apiClient.get<ApiResponseEnvelope<AdminMediaTypeStatsResponse> | AdminMediaTypeStatsResponse>(
+    endpoints.mediaAdmin.getStats
+  );
 
-  if (response && "data" in response && response.data) {
-    return response.data;
-  }
-  return response as unknown as AdminMediaTypeStatsResponse;
+  return unwrapApiResponse(response);
 };

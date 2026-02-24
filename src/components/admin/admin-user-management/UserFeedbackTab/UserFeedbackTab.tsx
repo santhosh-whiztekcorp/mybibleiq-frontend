@@ -81,9 +81,11 @@ export function UserFeedbackTab({ userId }: UserFeedbackTabProps) {
               return (
                 <div key={item.id} className="rounded-lg border p-4 space-y-2">
                   <div className="flex flex-wrap gap-2">
-                    <Badge variant={statusVariant} size="sm">
-                      {statusLabel}
-                    </Badge>
+                    {item.status && (
+                      <Badge variant={statusVariant} size="sm">
+                        {statusLabel}
+                      </Badge>
+                    )}
                     <Badge variant={categoryVariant} size="sm">
                       {categoryLabel}
                     </Badge>

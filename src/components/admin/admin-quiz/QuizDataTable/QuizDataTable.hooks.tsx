@@ -6,7 +6,7 @@ import { AdminQuizSummary } from "@/resources/admin-quiz/admin-quiz.types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, Send, Archive, Copy, Calendar } from "lucide-react";
-import { formatDateString } from "@/utils/formatting/formatting";
+import { formatDate, formatDateString } from "@/utils/formatting/formatting";
 import { QUIZ_STATUS_LABELS, QUIZ_DIFFICULTY_LABELS } from "@/resources/admin-quiz/admin-quiz.constants";
 
 export const useQuizDataTableColumns = (
@@ -88,6 +88,19 @@ export const useQuizDataTableColumns = (
         cell: ({ row }) => (
           <span className="text-xs text-[#656A73]">{formatDateString(row.getValue("createdAt"))}</span>
         ),
+      },
+      {
+        id: "publishDate",
+        header: "Schedule/Publish Date",
+        cell: ({ row }) => {
+          const item = row.original;
+          const date = item.status === "Published" ? item.publishedAt : item.publishAt;
+          return date ? (
+            <span className="text-xs text-[#656A73]">{formatDate(new Date(date), "DD/MM/YYYY – h:mm A")}</span>
+          ) : (
+            <span className="text-xs text-[#94A3B8]">-</span>
+          );
+        },
       },
       {
         id: "actions",

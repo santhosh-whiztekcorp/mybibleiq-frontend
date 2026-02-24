@@ -1,6 +1,7 @@
 import { apiClient } from "@/config/apiClient";
 import { endpoints } from "@/constants/endpoints";
 import { ApiResponseEnvelope } from "@/types/resource";
+import { unwrapApiResponse } from "@/utils/network";
 import type {
   ChatbotConfigDetail,
   UpdateChatbotConfigInput,
@@ -27,7 +28,7 @@ export const getChatbotConfig = async (): Promise<ChatbotConfigDetail> => {
   const response = await apiClient.get<ApiResponseEnvelope<ChatbotConfigDetail | { config: ChatbotConfigDetail }>>(
     endpoints.adminChatbot.getConfig
   );
-  const data = response.data;
+  const data = unwrapApiResponse<ChatbotConfigDetail | { config: ChatbotConfigDetail }>(response);
 
   if (typeof data === "object" && data !== null && "config" in data) {
     return (data as { config: ChatbotConfigDetail }).config;
@@ -57,7 +58,8 @@ export const updateChatbotConfig = async (input: UpdateChatbotConfigInput): Prom
       headers: { "Content-Type": "multipart/form-data" },
     }
   );
-  return response.data.config;
+  const data = unwrapApiResponse<{ config: ChatbotConfigDetail }>(response);
+  return data.config;
 };
 
 /* ---- Quick Actions ---- */
@@ -66,7 +68,8 @@ export const getChatbotQuickActions = async (enabledOnly = false): Promise<Chatb
     endpoints.adminChatbot.getQuickActions,
     { params: { enabled: enabledOnly } }
   );
-  return response.data.quickActions;
+  const data = unwrapApiResponse<ChatbotQuickActionListResponse>(response);
+  return data.quickActions;
 };
 
 export const updateChatbotQuickActions = async (
@@ -76,7 +79,7 @@ export const updateChatbotQuickActions = async (
     endpoints.adminChatbot.getQuickActions,
     { quickActions }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Responses (FAQs) ---- */
@@ -85,7 +88,7 @@ export const getChatbotResponseList = async (input: ChatbotResponseListInput): P
     endpoints.adminChatbot.getResponses,
     { params: input }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const createChatbotResponse = async (input: CreateChatbotResponseInput): Promise<ChatbotResponseDetail> => {
@@ -93,7 +96,7 @@ export const createChatbotResponse = async (input: CreateChatbotResponseInput): 
     endpoints.adminChatbot.createResponse,
     input
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const updateChatbotResponse = async (
@@ -104,7 +107,7 @@ export const updateChatbotResponse = async (
     endpoints.adminChatbot.updateResponse(id),
     input
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const deleteChatbotResponse = async (id: string): Promise<void> => {
@@ -114,28 +117,28 @@ export const deleteChatbotResponse = async (id: string): Promise<void> => {
 /* ---- Analytics & Logs ---- */
 export const getChatbotStats = async (): Promise<ChatbotStatsResponse> => {
   const response = await apiClient.get<ApiResponseEnvelope<ChatbotStatsResponse>>(endpoints.adminChatbot.getStats);
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const getChatbotTotalConversations = async (): Promise<ChatbotTotalConversationsResponse> => {
   const response = await apiClient.get<ApiResponseEnvelope<ChatbotTotalConversationsResponse>>(
     endpoints.adminChatbot.getTotalConversations
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const getChatbotAvgResponseTime = async (): Promise<ChatbotAvgResponseTimeResponse> => {
   const response = await apiClient.get<ApiResponseEnvelope<ChatbotAvgResponseTimeResponse>>(
     endpoints.adminChatbot.getAvgResponseTime
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const getChatbotMostAskedQuestions = async (): Promise<ChatbotMostAskedQuestionsResponse> => {
   const response = await apiClient.get<ApiResponseEnvelope<ChatbotMostAskedQuestionsResponse>>(
     endpoints.adminChatbot.getMostAskedQuestions
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const getChatbotConversationList = async (
@@ -145,7 +148,7 @@ export const getChatbotConversationList = async (
     endpoints.adminChatbot.getConversations,
     { params: input }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const getChatbotConversationDetail = async (
@@ -157,12 +160,12 @@ export const getChatbotConversationDetail = async (
     endpoints.adminChatbot.getConversationDetails(id),
     { params: { page, pageSize } }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const getChatbotConversationStats = async (): Promise<ChatbotConversationStatsResponse> => {
   const response = await apiClient.get<ApiResponseEnvelope<ChatbotConversationStatsResponse>>(
     endpoints.adminChatbot.getConversationStats
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };

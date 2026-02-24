@@ -1,6 +1,7 @@
 import { apiClient } from "@/config/apiClient";
 import { endpoints } from "@/constants/endpoints";
 import { ApiResponseEnvelope } from "@/types/resource";
+import { unwrapApiResponse } from "@/utils/network";
 import type {
   AdminSpiritFoodListInput,
   AdminSpiritFoodListResponse,
@@ -39,20 +40,7 @@ export const getAdminSpiritFoodList = async (input: AdminSpiritFoodListInput): P
     { params: input }
   );
 
-  // Handle both wrapped and direct response formats
-  if (response && typeof response === "object" && "data" in response && "success" in response) {
-    // Wrapped in envelope: { success: true, data: { items: [...], total: 10, ... } }
-    return (response as ApiResponseEnvelope<AdminSpiritFoodListResponse>).data;
-  }
-
-  // Direct response: { items: [...], total: 10, page: 1, pageSize: 20 }
-  // Check if response has the expected structure
-  if (response && typeof response === "object" && "items" in response) {
-    return response as AdminSpiritFoodListResponse;
-  }
-
-  // Fallback: assume direct response format
-  return response as unknown as AdminSpiritFoodListResponse;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Get Entry Detail ---- */
@@ -60,7 +48,7 @@ export const getAdminSpiritFoodDetail = async (id: string): Promise<AdminSpiritF
   const response = await apiClient.get<ApiResponseEnvelope<AdminSpiritFoodDetail>>(
     endpoints.spiritFoodAdmin.getById(id)
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Create Entry ---- */
@@ -71,7 +59,7 @@ export const createAdminSpiritFood = async (
     endpoints.spiritFoodAdmin.create,
     input
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Update Entry ---- */
@@ -83,7 +71,7 @@ export const updateAdminSpiritFood = async (
     endpoints.spiritFoodAdmin.updateById(id),
     input
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Submit Entry ---- */
@@ -95,7 +83,7 @@ export const submitAdminSpiritFood = async (
     endpoints.spiritFoodAdmin.submitById(id),
     input
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Create and Submit Entry ---- */
@@ -106,7 +94,7 @@ export const createAndSubmitAdminSpiritFood = async (
     endpoints.spiritFoodAdmin.submitAndCreate,
     input
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Approve Entry ---- */
@@ -118,7 +106,7 @@ export const approveAdminSpiritFood = async (
     endpoints.spiritFoodAdmin.approveById(id),
     input
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Cancel Entry ---- */
@@ -130,7 +118,7 @@ export const cancelAdminSpiritFood = async (
     endpoints.spiritFoodAdmin.cancelById(id),
     input
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Request Delete Entry ---- */
@@ -142,7 +130,7 @@ export const requestDeleteAdminSpiritFood = async (
     endpoints.spiritFoodAdmin.requestDeleteById(id),
     input
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Approve Delete Entry ---- */
@@ -154,7 +142,7 @@ export const approveDeleteAdminSpiritFood = async (
     endpoints.spiritFoodAdmin.approveDeleteById(id),
     input
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Cancel Delete Request ---- */
@@ -166,7 +154,7 @@ export const cancelDeleteAdminSpiritFood = async (
     endpoints.spiritFoodAdmin.cancelDeleteById(id),
     input
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Force Delete Entry ---- */

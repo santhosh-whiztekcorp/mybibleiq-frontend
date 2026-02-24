@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Edit, Check, X, Trash2, Send } from "lucide-react";
-import { formatDateString, isToday } from "@/utils/formatting";
+import { formatDate, formatDateString, isToday } from "@/utils/formatting";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -70,7 +70,12 @@ export const SpiritFoodCard = React.memo(function SpiritFoodCard({
         <div className="flex flex-col gap-1">
           {item.scheduledDate && (
             <p className="text-[10px] font-semibold text-[#B4B4B4]">
-              Scheduled: {formatDateString(item.scheduledDate)}
+              Scheduled: {formatDate(new Date(item.scheduledDate), "DD/MM/YYYY – h:mm A")}
+            </p>
+          )}
+          {item.deliveredAt && (
+            <p className="text-[10px] font-semibold text-[#B4B4B4]">
+              Delivered: {formatDate(new Date(item.deliveredAt), "DD/MM/YYYY – h:mm A")}
             </p>
           )}
           {item.createdAt && (

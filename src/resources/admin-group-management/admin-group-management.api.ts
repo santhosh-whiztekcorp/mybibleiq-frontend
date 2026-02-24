@@ -1,6 +1,7 @@
 import { apiClient } from "@/config/apiClient";
 import { endpoints } from "@/constants/endpoints";
 import { ApiResponseEnvelope } from "@/types/resource";
+import { unwrapApiResponse } from "@/utils/network";
 import type {
   AdminGroupStats,
   AdminGroupListInput,
@@ -36,13 +37,13 @@ export const getAdminGroupList = async (input: AdminGroupListInput): Promise<Adm
     endpoints.groupManagementAdmin.getAll,
     { params: input }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Get Group Stats ---- */
 export const getAdminGroupStats = async (): Promise<AdminGroupStats> => {
   const response = await apiClient.get<ApiResponseEnvelope<AdminGroupStats>>(endpoints.groupManagementAdmin.getStats);
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Get Group Detail ---- */
@@ -50,7 +51,7 @@ export const getAdminGroupDetail = async (groupId: string): Promise<AdminGroupDe
   const response = await apiClient.get<ApiResponseEnvelope<AdminGroupDetail>>(
     endpoints.groupManagementAdmin.getById(groupId)
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- List Reports ---- */
@@ -62,7 +63,7 @@ export const getAdminGroupReports = async (
     endpoints.groupManagementAdmin.getReports(groupId),
     { params: input }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- List Announcements ---- */
@@ -74,7 +75,7 @@ export const getAdminGroupAnnouncements = async (
     endpoints.groupManagementAdmin.getAnnouncements(groupId),
     { params: input }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Get Announcement Detail ---- */
@@ -85,7 +86,7 @@ export const getAdminGroupAnnouncementDetail = async (
   const response = await apiClient.get<ApiResponseEnvelope<AdminGroupAnnouncement>>(
     endpoints.groupManagementAdmin.getAnnouncementById(groupId, announcementId)
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Get Announcement Reports ---- */
@@ -98,7 +99,7 @@ export const getAdminGroupAnnouncementReports = async (
     endpoints.groupManagementAdmin.getAnnouncementReports(groupId, announcementId),
     { params: input }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- List Activity Log ---- */
@@ -110,7 +111,7 @@ export const getAdminGroupActivityLog = async (
     endpoints.groupManagementAdmin.getActivityLog(groupId),
     { params: input }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- List Members ---- */
@@ -122,7 +123,7 @@ export const getAdminGroupMembers = async (
     endpoints.groupManagementAdmin.getMembers(groupId),
     { params: input }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Get Member Detail ---- */
@@ -130,7 +131,7 @@ export const getAdminGroupMemberDetail = async (groupId: string, memberId: strin
   const response = await apiClient.get<ApiResponseEnvelope<AdminGroupMember>>(
     endpoints.groupManagementAdmin.getMemberById(groupId, memberId)
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- List Assignments ---- */
@@ -142,7 +143,7 @@ export const getAdminGroupAssignments = async (
     endpoints.groupManagementAdmin.getAssignments(groupId),
     { params: input }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- List Leaderboard ---- */
@@ -154,7 +155,7 @@ export const getAdminGroupLeaderboard = async (
     endpoints.groupManagementAdmin.getLeaderboard(groupId),
     { params: input }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Actions ---- */
@@ -167,14 +168,14 @@ export const warnLeader = async (
     endpoints.groupManagementAdmin.warnLeader(groupId),
     input
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const dismissReport = async (groupId: string, reportId: string): Promise<AdminGroupActionResponse> => {
   const response = await apiClient.post<ApiResponseEnvelope<AdminGroupActionResponse>>(
     endpoints.groupManagementAdmin.dismissReport(groupId, reportId)
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const rejectAnnouncement = async (
@@ -184,7 +185,7 @@ export const rejectAnnouncement = async (
   const response = await apiClient.post<ApiResponseEnvelope<AdminGroupActionResponse>>(
     endpoints.groupManagementAdmin.rejectAnnouncement(groupId, announcementId)
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const exportActivityLog = async (groupId: string, params: AdminGroupActivityLogListInput): Promise<string> => {
@@ -199,14 +200,14 @@ export const removeGroupMember = async (groupId: string, memberId: string): Prom
   const response = await apiClient.delete<ApiResponseEnvelope<AdminGroupActionResponse>>(
     endpoints.groupManagementAdmin.removeMember(groupId, memberId)
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const banGroupMember = async (groupId: string, memberId: string): Promise<AdminGroupActionResponse> => {
   const response = await apiClient.delete<ApiResponseEnvelope<AdminGroupActionResponse>>(
     endpoints.groupManagementAdmin.banMember(groupId, memberId)
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const banGroup = async (groupId: string, input: AdminGroupBanInput): Promise<AdminGroupActionResponse> => {
@@ -214,7 +215,7 @@ export const banGroup = async (groupId: string, input: AdminGroupBanInput): Prom
     endpoints.groupManagementAdmin.banGroup(groupId),
     input
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const unbanGroup = async (groupId: string, input: AdminGroupUnbanInput): Promise<AdminGroupActionResponse> => {
@@ -222,14 +223,14 @@ export const unbanGroup = async (groupId: string, input: AdminGroupUnbanInput): 
     endpoints.groupManagementAdmin.unbanGroup(groupId),
     input
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const deleteGroup = async (groupId: string): Promise<AdminGroupActionResponse> => {
   const response = await apiClient.delete<ApiResponseEnvelope<AdminGroupActionResponse>>(
     endpoints.groupManagementAdmin.deleteGroup(groupId)
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const updateGroupSettings = async (
@@ -240,7 +241,7 @@ export const updateGroupSettings = async (
     endpoints.groupManagementAdmin.updateSettings(groupId),
     input
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const changeGroupMemberRole = async (

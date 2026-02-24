@@ -1,6 +1,7 @@
 import { apiClient } from "@/config/apiClient";
 import { endpoints } from "@/constants/endpoints";
 import { ApiResponseEnvelope } from "@/types/resource";
+import { unwrapApiResponse } from "@/utils/network";
 import type {
   AdminTagListInput,
   AdminTagListResponse,
@@ -25,25 +26,25 @@ export const getAdminTagList = async (input: AdminTagListInput): Promise<AdminTa
   const response = await apiClient.get<ApiResponseEnvelope<AdminTagListResponse>>(endpoints.tagsAdmin.getAll, {
     params: cleanInput,
   });
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Get Tag Detail ---- */
 export const getAdminTagDetail = async (id: string): Promise<AdminTagDetail> => {
   const response = await apiClient.get<ApiResponseEnvelope<AdminTagDetail>>(endpoints.tagsAdmin.getById(id));
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Create Tag ---- */
 export const createAdminTag = async (input: CreateAdminTagInput): Promise<AdminTagDetail> => {
   const response = await apiClient.post<ApiResponseEnvelope<AdminTagDetail>>(endpoints.tagsAdmin.create, input);
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Update Tag ---- */
 export const updateAdminTag = async (id: string, input: UpdateAdminTagInput): Promise<AdminTagDetail> => {
   const response = await apiClient.put<ApiResponseEnvelope<AdminTagDetail>>(endpoints.tagsAdmin.updateById(id), input);
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Delete Tag ---- */
@@ -54,14 +55,14 @@ export const deleteAdminTag = async (id: string): Promise<void> => {
 /* ---- Get Stats ---- */
 export const getAdminTagStats = async (): Promise<AdminTagStats> => {
   const response = await apiClient.get<ApiResponseEnvelope<AdminTagStats>>(endpoints.tagsAdmin.getStats);
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Categories ---- */
 /* ---- List Categories ---- */
 export const getAdminTagCategories = async (): Promise<AdminTagCategory[]> => {
   const response = await apiClient.get<ApiResponseEnvelope<AdminTagCategory[]>>(endpoints.tagsAdmin.categories.getAll);
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Create Category ---- */
@@ -70,7 +71,7 @@ export const createAdminTagCategory = async (input: CreateCategoryInput): Promis
     endpoints.tagsAdmin.categories.create,
     input
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Update Category ---- */

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Edit, Check, X, Trash2, Send } from "lucide-react";
-import { formatDateString, isToday } from "@/utils/formatting";
+import { formatDate, formatDateString, isToday } from "@/utils/formatting";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SPIRIT_FOOD_STATUS_LABELS } from "@/resources/admin-spirit-food";
@@ -68,7 +68,7 @@ export const useSpiritFoodDataTableColumns = (
         header: "Scheduled Date",
         cell: ({ row }) => {
           const item = row.original;
-          return item.scheduledDate ? formatDateString(item.scheduledDate) : "-";
+          return item.scheduledDate ? formatDate(new Date(item.scheduledDate), "DD/MM/YYYY – h:mm A") : "-";
         },
       },
       {
@@ -142,7 +142,7 @@ export const useSpiritFoodDataTableColumns = (
         header: "Delivered",
         cell: ({ row }) => {
           const item = row.original;
-          return item.deliveredAt ? formatDateString(item.deliveredAt) : "-";
+          return item.deliveredAt ? formatDate(new Date(item.deliveredAt), "DD/MM/YYYY – h:mm A") : "-";
         },
       },
       {

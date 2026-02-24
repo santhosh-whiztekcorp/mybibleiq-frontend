@@ -45,7 +45,7 @@ function OAuthCallbackContent() {
       {
         onSuccess: () => {
           console.log("finalizeOAuth success");
-          router.replace(ROUTES.SPIRIT_FOOD);
+          router.replace(ROUTES.HOME);
         },
         onError: (err: unknown) => {
           console.error("finalizeOAuth error", err);

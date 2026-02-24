@@ -9,26 +9,26 @@ import { PageLoader } from "@/components/shared/PageLoader/PageLoader";
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { isLoading, hydrate, setLoading } = useAuthStore();
 
-  useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        const [userInfo, accessToken, refreshToken] = await Promise.all([
-          storageService.getUserInfo(),
-          storageService.getAccessToken(),
-          storageService.getRefreshToken(),
-        ]);
+  const initializeAuth = async () => {
+    try {
+      const [userInfo, accessToken, refreshToken] = await Promise.all([
+        storageService.getUserInfo(),
+        storageService.getAccessToken(),
+        storageService.getRefreshToken(),
+      ]);
 
-        if (userInfo && accessToken && refreshToken) {
-          hydrate(userInfo, accessToken, refreshToken);
-        } else {
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error("Failed to initialize auth:", error);
+      if (userInfo && accessToken && refreshToken) {
+        hydrate(userInfo, accessToken, refreshToken);
+      } else {
         setLoading(false);
       }
-    };
+    } catch (error) {
+      console.error("Failed to initialize auth:", error);
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     initializeAuth();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

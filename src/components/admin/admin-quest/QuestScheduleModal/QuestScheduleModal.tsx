@@ -1,8 +1,8 @@
 "use client";
 
+import { startOfToday } from "date-fns";
 import React from "react";
-import { Loader2, Calendar as CalendarIcon } from "lucide-react";
-import { format, startOfToday } from "date-fns";
+import { Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -12,9 +12,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { DatePicker } from "@/components/ui/date-picker";
 import { useQuestScheduleModal } from "./QuestScheduleModal.hooks";
 import type { QuestScheduleModalProps } from "./QuestScheduleModal.types";
 
@@ -40,29 +38,14 @@ export function QuestScheduleModal(props: QuestScheduleModalProps) {
         <div className="p-6 py-0">
           <div className="space-y-2">
             <label className="text-[10px] font-bold text-[#656A73] uppercase tracking-wider">Publish Date</label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full h-11 justify-start text-left font-bold rounded-xl border-[#E2E8F0]",
-                    !date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4 text-[#656A73]" />
-                  {date ? format(date, "PPP") : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  disabled={{ before: startOfToday() }}
-                  startMonth={startOfToday()}
-                />
-              </PopoverContent>
-            </Popover>
+            <DatePicker
+              value={date}
+              onChange={setDate}
+              showTime={true}
+              disablePast={true}
+              minDate={startOfToday()}
+              placeholder="Pick a date and time"
+            />
           </div>
         </div>
 

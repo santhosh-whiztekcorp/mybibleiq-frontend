@@ -1,6 +1,7 @@
 import { apiClient } from "@/config/apiClient";
 import { endpoints } from "@/constants/endpoints";
 import { ApiResponseEnvelope } from "@/types/resource";
+import { unwrapApiResponse } from "@/utils/network";
 import type {
   UserActivitySummaryInput,
   UserActivitySummaryResponse,
@@ -33,7 +34,7 @@ export const getUserActivitySummary = async (input: UserActivitySummaryInput): P
       params: { timePeriod: input.timePeriod },
     }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const getRegistrationsAndGrowth = async (
@@ -45,14 +46,14 @@ export const getRegistrationsAndGrowth = async (
       params: { timePeriod: input.timePeriod },
     }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const getTopScorers = async (): Promise<TopScorersResponse> => {
   const response = await apiClient.get<ApiResponseEnvelope<TopScorersResponse>>(
     endpoints.adminAnalytics.userActivity.topScorers
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const getUsersByLocation = async (input: UsersByLocationInput): Promise<UsersByLocationResponse> => {
@@ -62,7 +63,7 @@ export const getUsersByLocation = async (input: UsersByLocationInput): Promise<U
       params: { timePeriod: input.timePeriod },
     }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Group Engagement ---- */
@@ -77,7 +78,7 @@ export const getMostActiveGroups = async (input: MostActiveGroupsInput): Promise
       },
     }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Content Performance ---- */
@@ -92,7 +93,7 @@ export const getMostPopularQuizzes = async (input: MostPopularQuizzesInput): Pro
       },
     }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const getMostPopularQuests = async (input: MostPopularQuestsInput): Promise<MostPopularQuestsResponse> => {
@@ -106,7 +107,7 @@ export const getMostPopularQuests = async (input: MostPopularQuestsInput): Promi
       },
     }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const getHighAbandonRateQuests = async (
@@ -122,7 +123,7 @@ export const getHighAbandonRateQuests = async (
       },
     }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Feedback ---- */
@@ -133,7 +134,7 @@ export const getFeedbackSummary = async (input: FeedbackSummaryInput): Promise<F
       params: { timePeriod: input.timePeriod },
     }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const getFeedbackCategoryBreakdown = async (
@@ -145,7 +146,7 @@ export const getFeedbackCategoryBreakdown = async (
       params: { timePeriod: input.timePeriod },
     }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 export const getRecentFeedback = async (input: RecentFeedbackInput): Promise<RecentFeedbackResponse> => {
@@ -158,5 +159,5 @@ export const getRecentFeedback = async (input: RecentFeedbackInput): Promise<Rec
       },
     }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };

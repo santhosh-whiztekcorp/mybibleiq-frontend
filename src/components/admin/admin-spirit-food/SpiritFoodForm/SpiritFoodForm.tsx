@@ -53,6 +53,7 @@ export function SpiritFoodForm(props: SpiritFoodFormProps) {
                       label="Scheduled Date"
                       placeholder="Select scheduled date"
                       minDate={minDate}
+                      showTime={true}
                       error={errors.scheduledDate?.message}
                     />
                   </div>

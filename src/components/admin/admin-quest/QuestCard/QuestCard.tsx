@@ -5,7 +5,7 @@ import { Pencil, Trash2, Send, Archive, Copy, Calendar, List } from "lucide-reac
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { formatDateString } from "@/utils/formatting/formatting";
+import { formatDate, formatDateString } from "@/utils/formatting/formatting";
 import type { QuestCardProps } from "./QuestCard.types";
 import { useQuestCard } from "./QuestCard.hooks";
 import { QUEST_STATUS_LABELS } from "@/resources/admin-quest/admin-quest.constants";
@@ -60,11 +60,11 @@ const QuestCardComponent = (props: QuestCardProps) => {
       <div className="flex flex-col gap-1 text-[10px] text-[#94A3B8] font-medium pt-3 border-t border-[#F1F5F9] mt-auto">
         {item.createdAt && <span>Created: {formatDateString(item.createdAt)}</span>}
         {item.status === "Published" && item.publishedAt && (
-          <span>Published: {formatDateString(item.publishedAt)}</span>
+          <span>Published: {formatDate(new Date(item.publishedAt), "DD/MM/YYYY – h:mm A")}</span>
         )}
         {item.status === "Draft" && item.publishAt && (
           <span className="text-blue-500 flex items-center gap-1">
-            <Calendar className="h-2 w-2" /> Scheduled: {formatDateString(item.publishAt)}
+            <Calendar className="h-2 w-2" /> Scheduled: {formatDate(new Date(item.publishAt), "DD/MM/YYYY – h:mm A")}
           </span>
         )}
       </div>

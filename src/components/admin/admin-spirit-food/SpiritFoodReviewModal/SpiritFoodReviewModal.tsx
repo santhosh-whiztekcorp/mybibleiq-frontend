@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { TextareaController } from "@/components/form-controllers/TextareaController";
 import { Loader2 } from "lucide-react";
-import { formatDateString } from "@/utils/formatting";
+import { formatDate } from "@/utils/formatting";
 import { SpiritFoodReviewModalProps } from "./SpiritFoodReviewModal.types";
 import { useSpiritFoodReviewModal } from "./SpiritFoodReviewModal.hooks";
 
@@ -50,7 +50,9 @@ export function SpiritFoodReviewModal({
             <div className="mb-4 rounded-lg bg-[#F3F3F5] p-3 border border-[#E9EAEC] space-y-1">
               <div className="flex justify-between items-start">
                 <span className="text-sm font-bold text-black">{item.verseReference}</span>
-                <span className="text-[10px] font-bold text-[#656A73]">{formatDateString(item.scheduledDate)}</span>
+                <span className="text-[10px] font-bold text-[#656A73]">
+                  {formatDate(new Date(item.scheduledDate), "DD/MM/YYYY – h:mm A")}
+                </span>
               </div>
               <p className="text-[11px] font-bold text-[#656A73] uppercase">{item.bibleVersion}</p>
               {item.concatenatedText && (

@@ -6,7 +6,7 @@ import { AdminQuestSummary } from "@/resources/admin-quest/admin-quest.types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, Send, Archive, Copy, Calendar, List } from "lucide-react";
-import { formatDateString } from "@/utils/formatting/formatting";
+import { formatDate, formatDateString } from "@/utils/formatting/formatting";
 import { QUEST_STATUS_LABELS } from "@/resources/admin-quest/admin-quest.constants";
 
 export const useQuestDataTableColumns = (
@@ -77,6 +77,19 @@ export const useQuestDataTableColumns = (
         cell: ({ row }) => (
           <span className="text-xs text-[#656A73]">{formatDateString(row.getValue("createdAt"))}</span>
         ),
+      },
+      {
+        id: "publishDate",
+        header: "Schedule/Publish Date",
+        cell: ({ row }) => {
+          const item = row.original;
+          const date = item.status === "Published" ? item.publishedAt : item.publishAt;
+          return date ? (
+            <span className="text-xs text-[#656A73]">{formatDate(new Date(date), "DD/MM/YYYY – h:mm A")}</span>
+          ) : (
+            <span className="text-xs text-[#94A3B8] font-medium">-</span>
+          );
+        },
       },
       {
         id: "actions",

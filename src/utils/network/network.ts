@@ -28,8 +28,13 @@ export const parseQueryString = (queryString: string): Record<string, string> =>
 };
 
 /* ---- API Helpers ---- */
-export const unwrapApiResponse = <TData>(payload: { data: TData } | TData): TData => {
-  if (payload && typeof payload === "object" && "data" in (payload as Record<string, unknown>)) {
+export const unwrapApiResponse = <TData>(payload: unknown): TData => {
+  if (
+    payload &&
+    typeof payload === "object" &&
+    "data" in (payload as Record<string, unknown>) &&
+    "success" in (payload as Record<string, unknown>)
+  ) {
     return (payload as { data: TData }).data;
   }
   return payload as TData;

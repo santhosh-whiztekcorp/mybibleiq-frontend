@@ -1,6 +1,7 @@
 import { apiClient } from "@/config/apiClient";
 import { endpoints } from "@/constants/endpoints";
 import { ApiResponseEnvelope } from "@/types/resource";
+import { unwrapApiResponse } from "@/utils/network";
 import type {
   AdminQuestListInput,
   AdminQuestListResponse,
@@ -24,19 +25,19 @@ export const getAdminQuestList = async (input: AdminQuestListInput): Promise<Adm
   const response = await apiClient.get<ApiResponseEnvelope<AdminQuestListResponse>>(endpoints.questsAdmin.getAll, {
     params: input,
   });
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Get Quest Detail ---- */
 export const getAdminQuestDetail = async (id: string): Promise<AdminQuestDetail> => {
   const response = await apiClient.get<ApiResponseEnvelope<AdminQuestDetail>>(endpoints.questsAdmin.getById(id));
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Create Quest ---- */
 export const createAdminQuest = async (input: CreateAdminQuestInput): Promise<AdminQuestDetail> => {
   const response = await apiClient.post<ApiResponseEnvelope<AdminQuestDetail>>(endpoints.questsAdmin.create, input);
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Update Quest ---- */
@@ -45,7 +46,7 @@ export const updateAdminQuest = async (id: string, input: UpdateAdminQuestInput)
     endpoints.questsAdmin.updateById(id),
     input
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Update Quest Status ---- */
@@ -57,7 +58,7 @@ export const updateAdminQuestStatus = async (
     endpoints.questsAdmin.updateStatusById(id),
     input
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Delete Quest ---- */
@@ -70,7 +71,7 @@ export const getAdminQuestStatusStats = async (): Promise<AdminQuestStatusStatsR
   const response = await apiClient.get<ApiResponseEnvelope<AdminQuestStatusStatsResponse>>(
     endpoints.questsAdmin.getStatsByStatus
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Stage Management ---- */
@@ -86,7 +87,7 @@ export const getAdminQuestStageList = async (
       params: input,
     }
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Create Stage ---- */
@@ -98,7 +99,7 @@ export const createAdminQuestStage = async (
     endpoints.questsAdmin.stages.create(questId),
     input
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Get Stage Detail ---- */
@@ -106,7 +107,7 @@ export const getAdminQuestStageDetail = async (questId: string, stageId: string)
   const response = await apiClient.get<ApiResponseEnvelope<StageDetail>>(
     endpoints.questsAdmin.stages.getById(questId, stageId)
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Update Stage ---- */

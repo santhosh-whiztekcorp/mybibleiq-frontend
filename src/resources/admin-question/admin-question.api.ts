@@ -1,6 +1,7 @@
 import { apiClient } from "@/config/apiClient";
 import { endpoints } from "@/constants/endpoints";
 import { ApiResponseEnvelope } from "@/types/resource";
+import { unwrapApiResponse } from "@/utils/network";
 import type {
   AdminQuestionListInput,
   AdminQuestionListResponse,
@@ -26,34 +27,14 @@ export const getAdminQuestionList = async (input: AdminQuestionListInput): Promi
     { params: input }
   );
 
-  // Handle both wrapped and unwrapped responses
-  if (response && "data" in response && response.data) {
-    return response.data;
-  }
-
-  // If response is already the list response (not wrapped)
-  if (response && "items" in response) {
-    return response as unknown as AdminQuestionListResponse;
-  }
-
-  throw new Error("Unexpected API response structure");
+  return unwrapApiResponse(response);
 };
 
 /* ---- Get Question Detail ---- */
 export const getAdminQuestionDetail = async (id: string): Promise<AdminQuestionDetail> => {
   const response = await apiClient.get<ApiResponseEnvelope<AdminQuestionDetail>>(endpoints.questionsAdmin.getById(id));
 
-  // Handle both wrapped and unwrapped responses
-  if (response && "data" in response && response.data) {
-    return response.data;
-  }
-
-  // If response is already the detail (not wrapped)
-  if (response && "id" in response) {
-    return response as unknown as AdminQuestionDetail;
-  }
-
-  throw new Error("Unexpected API response structure");
+  return unwrapApiResponse(response);
 };
 
 /* ---- Create Question ---- */
@@ -63,11 +44,7 @@ export const createAdminQuestion = async (input: CreateAdminQuestionInput): Prom
     input
   );
 
-  // Handle both wrapped and unwrapped (direct) responses
-  if (response && "data" in response && response.data) {
-    return response.data;
-  }
-  return response as unknown as AdminQuestionDetail;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Update Question ---- */
@@ -80,11 +57,7 @@ export const updateAdminQuestion = async (
     input
   );
 
-  // Handle both wrapped and unwrapped (direct) responses
-  if (response && "data" in response && response.data) {
-    return response.data;
-  }
-  return response as unknown as AdminQuestionDetail;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Update Question Status ---- */
@@ -97,11 +70,7 @@ export const updateAdminQuestionStatus = async (
     input
   );
 
-  // Handle both wrapped and unwrapped (direct) responses
-  if (response && "data" in response && response.data) {
-    return response.data;
-  }
-  return response as unknown as UpdateAdminQuestionStatusResponse;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Delete Question ---- */
@@ -115,10 +84,7 @@ export const getAdminQuestionTypeStats = async (): Promise<AdminQuestionTypeStat
     endpoints.questionsAdmin.getStats
   );
 
-  if (response && "data" in response && response.data) {
-    return response.data;
-  }
-  return response as unknown as AdminQuestionTypeStatsResponse;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Get Question Status Stats ---- */
@@ -127,10 +93,7 @@ export const getAdminQuestionStatusStats = async (): Promise<AdminQuestionStatus
     endpoints.questionsAdmin.getStatsByStatus
   );
 
-  if (response && "data" in response && response.data) {
-    return response.data;
-  }
-  return response as unknown as AdminQuestionStatusStatsResponse;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Import Preview ---- */

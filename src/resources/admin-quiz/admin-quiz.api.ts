@@ -1,6 +1,7 @@
 import { apiClient } from "@/config/apiClient";
 import { endpoints } from "@/constants/endpoints";
 import { ApiResponseEnvelope } from "@/types/resource";
+import { unwrapApiResponse } from "@/utils/network";
 import type {
   AdminQuizListInput,
   AdminQuizListResponse,
@@ -17,19 +18,19 @@ export const getAdminQuizList = async (input: AdminQuizListInput): Promise<Admin
   const response = await apiClient.get<ApiResponseEnvelope<AdminQuizListResponse>>(endpoints.quizzesAdmin.getAll, {
     params: input,
   });
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Get Quiz Detail ---- */
 export const getAdminQuizDetail = async (id: string): Promise<AdminQuizDetail> => {
   const response = await apiClient.get<ApiResponseEnvelope<AdminQuizDetail>>(endpoints.quizzesAdmin.getById(id));
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Create Quiz ---- */
 export const createAdminQuiz = async (input: CreateAdminQuizInput): Promise<AdminQuizDetail> => {
   const response = await apiClient.post<ApiResponseEnvelope<AdminQuizDetail>>(endpoints.quizzesAdmin.create, input);
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Update Quiz ---- */
@@ -38,7 +39,7 @@ export const updateAdminQuiz = async (id: string, input: UpdateAdminQuizInput): 
     endpoints.quizzesAdmin.updateById(id),
     input
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Update Quiz Status ---- */
@@ -50,7 +51,7 @@ export const updateAdminQuizStatus = async (
     endpoints.quizzesAdmin.updateStatusById(id),
     input
   );
-  return response.data;
+  return unwrapApiResponse(response);
 };
 
 /* ---- Delete Quiz ---- */

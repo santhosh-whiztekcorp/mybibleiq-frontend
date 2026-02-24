@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 /* ---- String Formatting ---- */
 export const capitalize = (str: string): string => {
   switch (!!str) {
@@ -62,17 +64,7 @@ export const formatPhoneNumber = (phone: string): string => {
 };
 
 /* ---- Date Formatting ---- */
-export const formatDate = (date: Date, format: string = "MM/DD/YYYY"): string => {
-  const day = date.getDate().toString().padStart(2, "0");
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const year = date.getFullYear();
-
-  return format
-    .replace("DD", day)
-    .replace("MM", month)
-    .replace("YYYY", year.toString())
-    .replace("YY", year.toString().slice(-2));
-};
+export const formatDate = (date: Date, format: string = "MM/DD/YYYY"): string => dayjs(date).format(format);
 
 /* ---- Format Date String ---- */
 export const formatDateString = (dateString?: string | null, locale: string = "en-US"): string => {
@@ -263,4 +255,30 @@ export const formatDateOfBirth = (dateString?: string | null, locale: string = "
   } catch {
     return null;
   }
+};
+
+/* ---- Format Smart Date Time (Relative < 6h, Absolute otherwise/future) ---- */
+export const formatSmartDateTime = (dateString: string): string => {
+  try {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = now.getTime() - date.getTime(); // Positive if past
+
+    // If future date (< 0) OR older than 6 hours (> 21600000 ms)
+    if (diffTime < 0 || diffTime > 21600000) {
+      return formatDate(date, "MMM D, YYYY  h:mm A");
+    }
+
+    // Within 6 hours past -> Use Time Ago
+    return formatTimeAgo(dateString);
+  } catch {
+    return "";
+  }
+};
+
+/* ---- User Formatting ---- */
+export const getUserInitial = (username?: string | null, name?: string | null): string => {
+  if (username && username.length > 0) return username.charAt(0).toUpperCase();
+  if (name && name.length > 0) return name.charAt(0).toUpperCase();
+  return "U";
 };

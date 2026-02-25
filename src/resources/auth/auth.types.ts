@@ -4,9 +4,15 @@ import {
   AuthLoginInputSchema,
   AuthProviderEnum,
   AuthRegisterInputSchema,
+  ForgotPasswordInputSchema,
+  VerifyOTPInputSchema,
   OAuthFinalizeInputSchema,
   UserRoleEnum,
 } from "./auth.schemas";
+
+/* ---- Forgot Password Types ---- */
+export type ForgotPasswordInput = z.infer<typeof ForgotPasswordInputSchema>;
+export type VerifyOTPInput = z.infer<typeof VerifyOTPInputSchema>;
 
 /* ---- Base Types ---- */
 export type UserRole = z.infer<typeof UserRoleEnum>;
@@ -105,3 +111,15 @@ export type AuthActions = {
 };
 
 export type AuthStore = AuthState & AuthActions;
+
+/* ---- Forgot Password Store ---- */
+export type ForgotPasswordState = {
+  email: string | null;
+};
+
+export type ForgotPasswordActions = {
+  setEmail: (email: string | null) => void;
+  clearEmail: () => void;
+};
+
+export type ForgotPasswordStore = ForgotPasswordState & ForgotPasswordActions;

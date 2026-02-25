@@ -1,5 +1,4 @@
-"use client";
-
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { pngIcons } from "@/assets";
@@ -7,11 +6,20 @@ import { FacebookIcon, GoogleIcon, AppleIcon, XIcon, LinkedinIcon, TiktokIcon } 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { InputController, PasswordInputController, CheckboxController } from "@/components/form-controllers";
+import { LegalModal } from "@/components/legal";
 import { useRegisterPage } from "./RegisterPage.hooks";
 import { ROUTES } from "@/constants/routes";
 
 export function RegisterPage() {
   const { control, handleSubmit, formState, onSubmit, handleSocialLogin, isPending } = useRegisterPage();
+  const [legalModal, setLegalModal] = useState<{ isOpen: boolean; type: "privacy" | "terms" }>({
+    isOpen: false,
+    type: "privacy",
+  });
+
+  const openLegalModal = (type: "privacy" | "terms") => {
+    setLegalModal({ isOpen: true, type });
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-white px-5 py-10 font-plus-jakarta-sans">
@@ -195,13 +203,13 @@ export function RegisterPage() {
             <CheckboxController control={control} name="terms" error={formState.errors.terms?.message} />
             <label htmlFor="terms" className="text-xs text-[#6b7280] font-medium leading-tight">
               I agree to MyBibleIQ{" "}
-              <Link href="/terms" className="text-[#1877F2] hover:underline">
+              <span onClick={() => openLegalModal("terms")} className="text-[#1877F2] hover:underline cursor-pointer">
                 terms & condition
-              </Link>{" "}
+              </span>{" "}
               and{" "}
-              <Link href="/privacy" className="text-[#1877F2] hover:underline">
+              <span onClick={() => openLegalModal("privacy")} className="text-[#1877F2] hover:underline cursor-pointer">
                 privacy policy
-              </Link>
+              </span>
             </label>
           </div>
 
@@ -224,6 +232,12 @@ export function RegisterPage() {
           </Link>
         </p>
       </div>
+
+      <LegalModal
+        isOpen={legalModal.isOpen}
+        type={legalModal.type}
+        onClose={() => setLegalModal({ ...legalModal, isOpen: false })}
+      />
     </div>
   );
 }

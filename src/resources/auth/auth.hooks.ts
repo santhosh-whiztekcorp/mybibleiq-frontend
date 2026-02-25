@@ -5,11 +5,64 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { create } from "zustand";
 import { useRouter } from "next/navigation";
 import { storageService } from "@/services/storageService/storageService";
-import { checkUsername, finalizeOAuth, initiateOAuth, loginUser, logoutUser, registerUser } from "./auth.api";
+import {
+  checkUsername,
+  finalizeOAuth,
+  forgotPassword,
+  initiateOAuth,
+  loginUser,
+  logoutUser,
+  registerUser,
+  verifyOTP,
+} from "./auth.api";
 import { defaultLoginInput, defaultRegisterInput } from "./auth.data";
-import { AuthLoginInputSchema, AuthRegisterInputSchema } from "./auth.schemas";
+import {
+  AuthLoginInputSchema,
+  AuthRegisterInputSchema,
+  ForgotPasswordInputSchema,
+  VerifyOTPInputSchema,
+} from "./auth.schemas";
 import { ROUTES } from "@/constants/routes";
-import type { AuthLoginInput, AuthRegisterInput, OAuthFinalizeInput, AuthStore, User } from "./auth.types";
+import type {
+  AuthLoginInput,
+  AuthRegisterInput,
+  ForgotPasswordInput,
+  OAuthFinalizeInput,
+  VerifyOTPInput,
+  AuthStore,
+  ForgotPasswordStore,
+  User,
+} from "./auth.types";
+
+/* ---- Forgot Password ---- */
+export const useForgotPassword = () =>
+  useMutation({
+    mutationFn: (input: ForgotPasswordInput) => forgotPassword(input),
+  });
+
+export const useForgotPasswordForm = () =>
+  useForm<ForgotPasswordInput>({
+    resolver: zodResolver(ForgotPasswordInputSchema),
+    defaultValues: { email: "" },
+    mode: "onChange",
+  });
+
+/* ---- Verify OTP & Reset Password ---- */
+export const useVerifyOTP = () =>
+  useMutation({
+    mutationFn: (input: VerifyOTPInput) => verifyOTP(input),
+  });
+
+export const useVerifyOTPForm = () =>
+  useForm<VerifyOTPInput>({
+    resolver: zodResolver(VerifyOTPInputSchema),
+    defaultValues: {
+      token: "",
+      newPassword: "",
+      confirmPassword: "",
+    },
+    mode: "onChange",
+  });
 
 /* ---- Check Username ---- */
 export const useCheckUsername = (username: string, options?: { enabled?: boolean }) =>
@@ -203,4 +256,11 @@ export const useAuthStore = create<AuthStore>((set) => ({
   setDeviceToken: (token) => {
     set({ deviceToken: token });
   },
+}));
+
+/* ---- Forgot Password Store ---- */
+export const useForgotPasswordStore = create<ForgotPasswordStore>((set) => ({
+  email: null,
+  setEmail: (email) => set({ email }),
+  clearEmail: () => set({ email: null }),
 }));

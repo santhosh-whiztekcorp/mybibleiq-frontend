@@ -1,5 +1,4 @@
-"use client";
-
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { pngIcons } from "@/assets";
@@ -7,11 +6,20 @@ import { FacebookIcon, GoogleIcon, AppleIcon, XIcon, LinkedinIcon, TiktokIcon } 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { InputController, PasswordInputController } from "@/components/form-controllers";
+import { LegalModal } from "@/components/legal";
 import { useLoginPage } from "./LoginPage.hooks";
 import { ROUTES } from "@/constants/routes";
 
 export function LoginPage() {
   const { control, handleSubmit, formState, onSubmit, handleSocialLogin, isPending } = useLoginPage();
+  const [legalModal, setLegalModal] = useState<{ isOpen: boolean; type: "privacy" | "terms" }>({
+    isOpen: false,
+    type: "privacy",
+  });
+
+  const openLegalModal = (type: "privacy" | "terms") => {
+    setLegalModal({ isOpen: true, type });
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-white px-5 py-5 font-plus-jakarta-sans">
@@ -149,12 +157,12 @@ export function LoginPage() {
               <label htmlFor="password" className="text-sm font-medium text-black font-plus-jakarta-sans">
                 Password
               </label>
-              {/* <Link
+              <Link
                 href={ROUTES.FORGOT_PASSWORD}
                 className="text-xs text-black hover:underline font-plus-jakarta-sans font-medium"
               >
                 Forgot Password?
-              </Link> */}
+              </Link>
             </div>
             <PasswordInputController
               control={control}
@@ -180,13 +188,19 @@ export function LoginPage() {
         {/* Terms and Privacy */}
         <p className="text-xs text-[#6b7280] text-center leading-relaxed font-medium font-plus-jakarta-sans m-0">
           By clicking Sign in, Sign in with Apple, Google, Facebook, Twitter, Linkedin & Tiktok, you agree to MyBibleIQ{" "}
-          <Link href="/terms" className="text-[#1877F2] underline hover:text-[#1877F2]/90">
+          <span
+            onClick={() => openLegalModal("terms")}
+            className="text-[#1877F2] underline hover:text-[#1877F2]/90 cursor-pointer"
+          >
             terms & condition
-          </Link>{" "}
+          </span>{" "}
           and{" "}
-          <Link href="/privacy" className="text-[#1877F2] underline hover:text-[#1877F2]/90">
+          <span
+            onClick={() => openLegalModal("privacy")}
+            className="text-[#1877F2] underline hover:text-[#1877F2]/90 cursor-pointer"
+          >
             privacy policy
-          </Link>
+          </span>
         </p>
 
         {/* Register Link */}
@@ -197,6 +211,12 @@ export function LoginPage() {
           </Link>
         </p>
       </div>
+
+      <LegalModal
+        isOpen={legalModal.isOpen}
+        type={legalModal.type}
+        onClose={() => setLegalModal({ ...legalModal, isOpen: false })}
+      />
     </div>
   );
 }

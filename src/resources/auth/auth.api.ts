@@ -1,8 +1,8 @@
 import { apiClient } from "@/config/apiClient";
 import { endpoints } from "@/constants/endpoints";
-import type { ApiResponseEnvelope } from "@/types/resource";
+import { ApiResponseEnvelope } from "@/types/resource";
 import { storageService } from "@/services/storageService";
-import type {
+import {
   AuthLoginInput,
   AuthLoginResponse,
   AuthLoginRawResponse,
@@ -14,19 +14,7 @@ import type {
   OAuthFinalizeResponse,
   OAuthFinalizeRawResponse,
   OAuthInitiateResponse,
-  ForgotPasswordInput,
-  VerifyOTPInput,
 } from "./auth.types";
-
-/* ---- Forgot Password ---- */
-export const forgotPassword = async (input: ForgotPasswordInput): Promise<void> => {
-  await apiClient.post(endpoints.auth.passwordResetRequest, input);
-};
-
-/* ---- Verify OTP & Reset Password ---- */
-export const verifyOTP = async (input: VerifyOTPInput): Promise<void> => {
-  await apiClient.post(endpoints.auth.passwordResetConfirm, input);
-};
 
 /* ---- Check Username ---- */
 export const checkUsername = async (username: string): Promise<CheckUsernameResponse> => {

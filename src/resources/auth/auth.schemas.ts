@@ -8,50 +8,12 @@ export const AuthProviderEnum = z.enum(["google", "facebook", "apple", "linkedin
 /* ---- Reusable Validation Rules ---- */
 const UsernameSchema = z
   .string()
-  .trim()
-  .min(3, { error: "Username must be at least 3 characters" })
-  .max(50, { error: "Username must be less than 50 characters" })
-  .regex(/^[a-zA-Z0-9._]+$/, {
-    error: "Username can only contain letters, numbers, dots and underscores",
-  });
+  .min(3, "Username must be at least 3 characters")
+  .max(50, "Username must be less than 50 characters");
 
-const FullNameSchema = z
-  .string()
-  .trim()
-  .min(1, { error: "Full name is required" })
-  .max(100, { error: "Full name must be under 100 characters" });
-
-const EmailSchema = z.email({ error: "Please enter a valid email address" }).trim().toLowerCase();
-
-const PasswordSchema = z
-  .string()
-  .min(8, { error: "Password must be at least 8 characters long" })
-  .max(128, { error: "Password must be less than 128 characters" })
-  .regex(/[A-Z]/, { error: "Password must contain at least one uppercase letter" })
-  .regex(/[a-z]/, { error: "Password must contain at least one lowercase letter" })
-  .regex(/[0-9]/, { error: "Password must contain at least one number" })
-  .regex(/[^A-Za-z0-9]/, { error: "Password must contain at least one special character" })
-  .trim();
-
-/* ---- Forgot Password Schema ---- */
-export const ForgotPasswordInputSchema = z
-  .object({
-    email: EmailSchema,
-  })
-  .strict();
-
-/* ---- Verify OTP & Reset Password Schema ---- */
-export const VerifyOTPInputSchema = z
-  .object({
-    token: z.string().length(6, "OTP must be 6 digits"),
-    newPassword: PasswordSchema,
-    confirmPassword: z.string().min(1, "Confirm password is required"),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  })
-  .strict();
+const FullNameSchema = z.string().min(1, "Full Full is required").max(100, "Full Name must be under 100 characters");
+const EmailSchema = z.email("Please enter a valid email address").min(1, "Email address is required");
+const PasswordSchema = z.string().min(8, "Password must be at least 8 characters").max(128, "Password is too long");
 
 /* ---- Register Schema ---- */
 export const AuthRegisterInputSchema = z

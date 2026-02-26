@@ -2,13 +2,25 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { pngIcons } from "@/assets";
 import { InputController } from "@/components/form-controllers";
 import { ROUTES } from "@/constants/routes";
-import { useForgotPasswordPage } from "./ForgotPasswordPage.hooks";
+import { forgotPasswordSchema, type ForgotPasswordInput } from "./ForgotPasswordPage.types";
 
 export function ForgotPasswordPage() {
-  const { control, handleSubmit, formState, onSubmit, isPending } = useForgotPasswordPage();
+  const { control, handleSubmit, formState } = useForm<ForgotPasswordInput>({
+    resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
+
+  const onSubmit = (data: ForgotPasswordInput) => {
+    // TODO: Implement forgot password API call
+    console.log("Forgot password:", data);
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-white px-5 py-5 font-plus-jakarta-sans">
@@ -51,10 +63,9 @@ export function ForgotPasswordPage() {
           {/* Send Reset Link Button */}
           <button
             type="submit"
-            disabled={isPending}
-            className="w-full py-3 text-sm font-semibold font-plus-jakarta-sans bg-black text-white hover:opacity-70 rounded-lg border-0 transition-opacity cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3 text-sm font-semibold font-plus-jakarta-sans bg-black text-white hover:opacity-70 rounded-lg border-0 transition-opacity cursor-pointer"
           >
-            {isPending ? "Sending..." : "Send Reset Link"}
+            Send Reset Link
           </button>
         </form>
 

@@ -1,7 +1,9 @@
-"use client"
-
 import { ForgotPasswordPage } from "@/screens/auth/ForgotPasswordPage";
 
 export default function ForgotPassword() {
-  return <ForgotPasswordPage />;
+  return (
+    <div>
+      <ForgotPasswordPage />
+    </div>
+  );
 }

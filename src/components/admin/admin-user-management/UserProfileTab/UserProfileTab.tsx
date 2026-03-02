@@ -1,12 +1,13 @@
 "use client";
 
-import { Trophy, Globe, Flame, Ban, Trash2, CheckCircle } from "lucide-react";
+import { Trophy, Globe, Flame, Ban, Trash2, CheckCircle, Shield } from "lucide-react";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AdminUserActionModal, AdminConfirmationModal } from "@/components/admin/admin-shared";
+import { AdminUserRolesModal } from "@/components/admin/admin-user-management";
 import { formatDateString, formatTimeAgo } from "@/utils/formatting/formatting";
 import { USER_STATUS_LABELS } from "@/resources/admin-user-management";
 import { useUserProfileTab } from "./UserProfileTab.hooks";
@@ -27,16 +28,24 @@ export function UserProfileTab({ userId }: UserProfileTabProps) {
     modalAction,
     isConfirmationModalOpen,
     confirmationAction,
+    isRolesModalOpen,
     showSuspendModal,
     showActivateConfirmation,
     showDeleteModal,
+    showRolesModal,
     handleConfirmAction,
     handleConfirmActivation,
     handleActionModalOpenChange,
     handleConfirmationModalOpenChange,
+    handleRolesModalOpenChange,
+    handleToggleRole,
     isSuspending,
     isActivating,
     isDeleting,
+    isAssigningRole,
+    isRevokingRole,
+    userRoles,
+    isRolesLoading,
   } = useUserProfileTab(userId);
 
   // Check if viewing own profile
@@ -87,7 +96,7 @@ export function UserProfileTab({ userId }: UserProfileTabProps) {
             {profile.avatarUrl ? (
               <Image
                 src={profile.avatarUrl}
-                alt={profile.name}
+                alt={profile.name || profile.username}
                 width={64}
                 height={64}
                 className="w-16 h-16 rounded-full object-cover border-2 border-[#E2E8F0]"
@@ -106,7 +115,7 @@ export function UserProfileTab({ userId }: UserProfileTabProps) {
             )}
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-lg font-bold text-black">{profile.name}</h2>
+                <h2 className="text-lg font-bold text-black">{profile.name || profile.username}</h2>
                 <Badge variant={statusVariant} size="sm">
                   {USER_STATUS_LABELS[profile.status]}
                 </Badge>
@@ -132,6 +141,25 @@ export function UserProfileTab({ userId }: UserProfileTabProps) {
                 <p className="text-sm font-medium">{profile.location}</p>
               </div>
             )}
+            <div>
+              <p className="text-xs font-medium text-[#656A73]">Roles</p>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {userRoles.length > 0 ? (
+                  userRoles.map((ur) => (
+                    <Badge
+                      key={ur.id}
+                      variant="secondary"
+                      size="sm"
+                      className="bg-slate-100 text-slate-700 hover:bg-slate-100"
+                    >
+                      {ur.roleName}
+                    </Badge>
+                  ))
+                ) : (
+                  <p className="text-sm font-medium text-slate-400 italic">No roles assigned</p>
+                )}
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -175,32 +203,42 @@ export function UserProfileTab({ userId }: UserProfileTabProps) {
           {profile.status === "suspended" ? (
             <Button
               variant="outline"
-              className="border-green-500 text-green-600 hover:bg-green-50"
+              className="flex-1 sm:flex-initial bg-[#D1FAE5] border-[#3E995F] text-[#125440] hover:bg-[#D1FAE5]/80 font-bold h-auto py-2 px-4 rounded-[10px]"
               onClick={showActivateConfirmation}
               disabled={isActivating || isDeleting}
             >
-              <CheckCircle className="mr-2 h-4 w-4" />
+              <CheckCircle className="h-4 w-4 text-[#125440]" />
               Activate User
             </Button>
           ) : (
             <Button
               variant="outline"
-              className="border-destructive text-destructive hover:bg-destructive/10"
+              className="flex-1 sm:flex-initial bg-[#FEE2E2] border-[#EF4444] text-[#EF4444] hover:bg-[#FEE2E2]/80 font-bold h-auto py-2 px-4 rounded-[10px]"
               onClick={showSuspendModal}
               disabled={isSuspending || isDeleting}
             >
-              <Ban className="mr-2 h-4 w-4" />
+              <Ban className="h-4 w-4 text-[#EF4444]" />
               Suspend User
             </Button>
           )}
           <Button
             variant="outline"
-            className="border-destructive text-destructive hover:bg-destructive/10"
+            className="flex-1 sm:flex-initial bg-[#FEE2E2] border-[#EF4444] text-[#EF4444] hover:bg-[#FEE2E2]/80 font-bold h-auto py-2 px-4 rounded-[10px]"
             onClick={showDeleteModal}
             disabled={isSuspending || isActivating || isDeleting}
           >
-            <Trash2 className="mr-2 h-4 w-4" />
+            <Trash2 className="h-4 w-4 text-[#EF4444]" />
             Delete User
+          </Button>
+
+          <Button
+            variant="outline"
+            className="w-full md:w-auto bg-[#E0F2FE] border-[#0369A1] text-[#0369A1] hover:bg-[#E0F2FE]/80 font-bold h-auto py-2 px-4 rounded-[10px]"
+            onClick={showRolesModal}
+            disabled={isSuspending || isActivating || isDeleting || isRolesLoading}
+          >
+            <Shield className="h-4 w-4 text-[#0369A1]" />
+            Manage Roles
           </Button>
         </div>
       )}
@@ -211,7 +249,7 @@ export function UserProfileTab({ userId }: UserProfileTabProps) {
           open={isActionModalOpen}
           onOpenChange={handleActionModalOpenChange}
           action={modalAction}
-          userName={profile.name}
+          userName={profile.name || profile.username}
           onConfirm={handleConfirmAction}
           isLoading={isSuspending || isDeleting}
         />
@@ -226,6 +264,15 @@ export function UserProfileTab({ userId }: UserProfileTabProps) {
           isLoading={isActivating}
         />
       )}
+
+      <AdminUserRolesModal
+        open={isRolesModalOpen}
+        onOpenChange={handleRolesModalOpenChange}
+        userName={profile.name || profile.username}
+        userRoles={userRoles}
+        isProcessing={isAssigningRole || isRevokingRole}
+        onToggleRole={handleToggleRole}
+      />
     </div>
   );
 }

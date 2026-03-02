@@ -6,6 +6,11 @@ import {
   useActivateAdminUserManagement,
   useDeleteAdminUserManagement,
 } from "@/resources/admin-user-management";
+import {
+  useAdminUserRolesList,
+  useAssignAdminUserRole,
+  useRevokeAdminUserRole,
+} from "@/resources/admin-role-management";
 import { ADMIN_ROUTES } from "@/constants/routes/admin.routes";
 import type { UserAction } from "@/components/admin/admin-shared/AdminUserActionModal/AdminUserActionModal.types";
 import type { ConfirmationAction } from "@/components/admin/admin-shared/AdminConfirmationModal/AdminConfirmationModal.types";
@@ -16,11 +21,19 @@ export const useUserProfileTab = (userId: string) => {
   const suspendMutation = useSuspendAdminUserManagement();
   const activateMutation = useActivateAdminUserManagement();
   const deleteMutation = useDeleteAdminUserManagement();
+  const assignRoleMutation = useAssignAdminUserRole();
+  const revokeRoleMutation = useRevokeAdminUserRole();
+
+  const { data: userRoles, isLoading: isUserRolesLoading } = useAdminUserRolesList({
+    userId,
+    isActive: true,
+  });
 
   const [isActionModalOpen, setIsActionModalOpen] = useState(false);
   const [modalAction, setModalAction] = useState<UserAction | null>(null);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [confirmationAction, setConfirmationAction] = useState<ConfirmationAction | null>(null);
+  const [isRolesModalOpen, setIsRolesModalOpen] = useState(false);
 
   const showSuspendModal = () => {
     setModalAction("suspend");
@@ -37,6 +50,10 @@ export const useUserProfileTab = (userId: string) => {
     setIsActionModalOpen(true);
   };
 
+  const showRolesModal = () => {
+    setIsRolesModalOpen(true);
+  };
+
   const handleCloseActionModal = () => {
     setIsActionModalOpen(false);
     setModalAction(null);
@@ -45,6 +62,10 @@ export const useUserProfileTab = (userId: string) => {
   const handleCloseConfirmationModal = () => {
     setIsConfirmationModalOpen(false);
     setConfirmationAction(null);
+  };
+
+  const handleRolesModalOpenChange = (open: boolean) => {
+    setIsRolesModalOpen(open);
   };
 
   const handleConfirmAction = (reason: string, deleteData?: boolean, suspendUntil?: string) => {
@@ -78,6 +99,16 @@ export const useUserProfileTab = (userId: string) => {
     handleCloseConfirmationModal();
   };
 
+  const handleToggleRole = (roleId: string, isAssigned: boolean) => {
+    if (!userId) return;
+
+    if (isAssigned) {
+      revokeRoleMutation.mutate({ userId, roleId });
+    } else {
+      assignRoleMutation.mutate({ userId, roleId, isActive: true });
+    }
+  };
+
   const handleActionModalOpenChange = (open: boolean) => {
     if (!open) {
       handleCloseActionModal();
@@ -103,17 +134,25 @@ export const useUserProfileTab = (userId: string) => {
     modalAction,
     isConfirmationModalOpen,
     confirmationAction,
+    isRolesModalOpen,
     showSuspendModal,
     showActivateConfirmation,
     showDeleteModal,
+    showRolesModal,
     handleCloseActionModal,
     handleCloseConfirmationModal,
     handleConfirmAction,
     handleConfirmActivation,
     handleActionModalOpenChange,
     handleConfirmationModalOpenChange,
+    handleRolesModalOpenChange,
+    handleToggleRole,
     isSuspending: suspendMutation.isPending,
     isActivating: activateMutation.isPending,
     isDeleting: deleteMutation.isPending,
+    isAssigningRole: assignRoleMutation.isPending,
+    isRevokingRole: revokeRoleMutation.isPending,
+    userRoles: userRoles || [],
+    isRolesLoading: isUserRolesLoading,
   };
 };

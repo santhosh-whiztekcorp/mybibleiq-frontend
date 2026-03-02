@@ -70,8 +70,8 @@ export function GroupManagerPage() {
         </div>
 
         {/* Filters Section */}
-        <div className="flex-1 flex flex-wrap items-end content-between gap-4 bg-white p-2 rounded-xl border border-[#E2E8F0]">
-          <div className="w-full space-y-1.5 order-first">
+        <div className="flex-1 flex flex-col gap-2 bg-white p-2 rounded-lg border border-[#E2E8F0]">
+          <div className="w-full space-y-1.5">
             <label className="text-xs font-bold text-[#656A73] uppercase text-nowrap">Search</label>
             <div className="relative">
               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#656A73] pointer-events-none" />
@@ -85,76 +85,78 @@ export function GroupManagerPage() {
             </div>
           </div>
 
-          <div className="flex-1 min-w-[140px] space-y-1.5">
-            <label className="text-xs font-bold text-[#656A73] uppercase">Type</label>
-            <Select
-              value={filterStore.type ?? "all"}
-              onValueChange={(value) => handleTypeFilterChange(value === "all" ? undefined : value)}
-            >
-              <SelectTrigger variant="adminFilter">
-                <SelectValue placeholder="All Types" />
-              </SelectTrigger>
-              <SelectContent>
-                {ADMIN_GROUP_TYPE_SELECT_OPTIONS.map((opt) => (
-                  <SelectItem key={String(opt.value)} value={String(opt.value)}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <div className="mt-auto grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] md:grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-2 items-end">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-[#656A73] uppercase">Type</label>
+              <Select
+                value={filterStore.type ?? "all"}
+                onValueChange={(value) => handleTypeFilterChange(value === "all" ? undefined : value)}
+              >
+                <SelectTrigger variant="adminFilter">
+                  <SelectValue placeholder="All Types" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ADMIN_GROUP_TYPE_SELECT_OPTIONS.map((opt) => (
+                    <SelectItem key={String(opt.value)} value={String(opt.value)}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="flex-1 min-w-[140px] space-y-1.5">
-            <label className="text-xs font-bold text-[#656A73] uppercase">Status</label>
-            <Select
-              value={filterStore.status ?? "all"}
-              onValueChange={(value) => handleStatusFilterChange(value === "all" ? undefined : value)}
-            >
-              <SelectTrigger variant="adminFilter">
-                <SelectValue placeholder="All Statuses" />
-              </SelectTrigger>
-              <SelectContent>
-                {ADMIN_GROUP_STATUS_SELECT_OPTIONS.map((opt) => (
-                  <SelectItem key={String(opt.value)} value={String(opt.value)}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-[#656A73] uppercase">Status</label>
+              <Select
+                value={filterStore.status ?? "all"}
+                onValueChange={(value) => handleStatusFilterChange(value === "all" ? undefined : value)}
+              >
+                <SelectTrigger variant="adminFilter">
+                  <SelectValue placeholder="All Statuses" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ADMIN_GROUP_STATUS_SELECT_OPTIONS.map((opt) => (
+                    <SelectItem key={String(opt.value)} value={String(opt.value)}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="flex-1 min-w-[140px] space-y-1.5">
-            <label className="text-xs font-bold text-[#656A73] uppercase">Sort By</label>
-            <Select
-              value={filterStore.sort}
-              onValueChange={(value) => handleSortChange(value as AdminGroupListInput["sort"])}
-            >
-              <SelectTrigger variant="adminFilter">
-                <SelectValue placeholder="Newest First" />
-              </SelectTrigger>
-              <SelectContent>
-                {sortOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-[#656A73] uppercase">Sort By</label>
+              <Select
+                value={filterStore.sort}
+                onValueChange={(value) => handleSortChange(value as AdminGroupListInput["sort"])}
+              >
+                <SelectTrigger variant="adminFilter">
+                  <SelectValue placeholder="Newest First" />
+                </SelectTrigger>
+                <SelectContent>
+                  {sortOptions.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              handleStatusFilterChange(undefined);
-              handleTypeFilterChange(undefined);
-              handleSortChange("-createdAt");
-              handleSearchChange("");
-            }}
-            className="h-11 px-4 border-[#E2E8F0] text-xs font-bold uppercase text-[#656A73] rounded-lg hidden md:flex"
-          >
-            Clear Filters
-          </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                handleStatusFilterChange(undefined);
+                handleTypeFilterChange(undefined);
+                handleSortChange("-createdAt");
+                handleSearchChange("");
+              }}
+              className="h-11 px-4 border-[#E2E8F0] text-xs font-bold uppercase text-[#656A73] rounded-lg hidden lg:flex w-full"
+            >
+              Clear Filters
+            </Button>
+          </div>
         </div>
       </div>
 

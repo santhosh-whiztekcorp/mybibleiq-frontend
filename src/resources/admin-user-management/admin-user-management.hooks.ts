@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { useQuery, useMutation, useInfiniteQuery, InfiniteData } from "@tanstack/react-query";
-import Toast from "@/lib/toast";
 import { queryClient } from "@/config/queryClient";
+import Toast from "@/lib/toast";
 import { getErrorMessage } from "@/utils/error";
 import {
   getAdminUserList,
@@ -16,6 +16,8 @@ import {
   suspendAdminUser,
   activateAdminUser,
   deleteAdminUser,
+  updateAdminUserSettings,
+  updateAdminUserSpiritFood,
 } from "./admin-user-management.api";
 import { adminUserManagementQueryKeys } from "./admin-user-management.constants";
 import {
@@ -31,11 +33,15 @@ import type {
   AdminUserSavedVersesListInput,
   AdminUserSuspendInput,
   AdminUserDeleteInput,
+  AdminUserSettingsUpdateInput,
+  AdminUserSpiritFoodUpdateInput,
   AdminUserFilterStore,
   AdminUserBadgesFilterStore,
   AdminUserFeedbackFilterStore,
   AdminUserSavedVersesFilterStore,
   AdminUserListResponse,
+  AdminUserSettingsResponse,
+  AdminUserSpiritFoodResponse,
 } from "./admin-user-management.types";
 
 /* ---- List Users (Infinite Query for Pagination) ---- */
@@ -292,6 +298,89 @@ export const useDeleteAdminUserManagement = () =>
       Toast.show({
         type: "error",
         text1: "Failed to delete user",
+        text2: errorMessage || "Please try again later",
+      });
+    },
+  });
+
+/* ---- Update User Settings ---- */
+export const useUpdateAdminUserSettings = () =>
+  useMutation({
+    mutationFn: ({ userId, input }: { userId: string; input: AdminUserSettingsUpdateInput }) =>
+      updateAdminUserSettings(userId, input),
+    onMutate: async ({ userId, input }) => {
+      await queryClient.cancelQueries({ queryKey: adminUserManagementQueryKeys.settings(userId) });
+      const previousSettings = queryClient.getQueryData<AdminUserSettingsResponse>(
+        adminUserManagementQueryKeys.settings(userId)
+      );
+
+      if (previousSettings) {
+        queryClient.setQueryData<AdminUserSettingsResponse>(adminUserManagementQueryKeys.settings(userId), {
+          ...previousSettings,
+          ...input,
+        });
+      }
+
+      return { previousSettings };
+    },
+    onSuccess: () => {
+      Toast.show({
+        type: "success",
+        text1: "Settings updated",
+        text2: "Settings have been updated successfully",
+      });
+    },
+    onError: (error, { userId }, context) => {
+      if (context?.previousSettings) {
+        queryClient.setQueryData(adminUserManagementQueryKeys.settings(userId), context.previousSettings);
+      }
+      const errorMessage = getErrorMessage(error);
+      Toast.show({
+        type: "error",
+        text1: "Failed to update settings",
+        text2: errorMessage || "Please try again later",
+      });
+    },
+  });
+
+/* ---- Update User Spirit Food ---- */
+export const useUpdateAdminUserSpiritFood = () =>
+  useMutation({
+    mutationFn: ({ userId, input }: { userId: string; input: AdminUserSpiritFoodUpdateInput }) =>
+      updateAdminUserSpiritFood(userId, input),
+    onMutate: async ({ userId, input }) => {
+      await queryClient.cancelQueries({ queryKey: adminUserManagementQueryKeys.spiritFood(userId) });
+      const previousData = queryClient.getQueryData<AdminUserSpiritFoodResponse>(
+        adminUserManagementQueryKeys.spiritFood(userId)
+      );
+
+      if (previousData) {
+        queryClient.setQueryData<AdminUserSpiritFoodResponse>(adminUserManagementQueryKeys.spiritFood(userId), {
+          ...previousData,
+          deliveryTime: input.deliveryTime ?? previousData.deliveryTime,
+          deliveryMethods: input.deliveryMethods ?? previousData.deliveryMethods,
+          timezone: input.timezone ?? previousData.timezone,
+          isEnabled: input.isEnabled ?? previousData.isEnabled,
+        });
+      }
+
+      return { previousData };
+    },
+    onSuccess: () => {
+      Toast.show({
+        type: "success",
+        text1: "Spirit Food preferences updated",
+        text2: "Preferences have been successfully updated",
+      });
+    },
+    onError: (error, { userId }, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(adminUserManagementQueryKeys.spiritFood(userId), context.previousData);
+      }
+      const errorMessage = getErrorMessage(error);
+      Toast.show({
+        type: "error",
+        text1: "Failed to update Spirit Food preferences",
         text2: errorMessage || "Please try again later",
       });
     },

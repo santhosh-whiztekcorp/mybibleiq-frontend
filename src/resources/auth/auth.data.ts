@@ -12,7 +12,7 @@ export const defaultRegisterInput: AuthRegisterInput = {
   email: "",
   password: "",
   confirmPassword: "",
-  client: "mobile",
+  client: "web",
   terms: false,
 };
 

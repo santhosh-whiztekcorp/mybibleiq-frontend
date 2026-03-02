@@ -264,6 +264,8 @@ export const endpoints = {
     /* ---- PATCH ---- */
     suspend: (userId: string) => `/admin/users/${userId}/suspend`,
     activate: (userId: string) => `/admin/users/${userId}/activate`,
+    updateSettings: (userId: string) => `/admin/users/${userId}/settings`,
+    updateSpiritFood: (userId: string) => `/admin/users/${userId}/spirit-food/delivery-preferences`,
 
     /* ---- DELETE ---- */
     delete: (userId: string) => `/admin/users/${userId}`,

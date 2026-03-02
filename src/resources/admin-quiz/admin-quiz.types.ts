@@ -118,6 +118,7 @@ export type AdminQuizListInput = {
   status?: AdminQuizStatus;
   difficulty?: QuizDifficulty;
   tags?: string[];
+  isSwordDrillEnabled?: boolean;
   q?: string;
   page?: number;
   pageSize?: number;

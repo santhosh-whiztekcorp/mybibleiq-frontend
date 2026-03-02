@@ -1,9 +1,5 @@
 import { ForgotPasswordPage } from "@/screens/auth/ForgotPasswordPage";
 
 export default function ForgotPassword() {
-  return (
-    <div>
-      <ForgotPasswordPage />
-    </div>
-  );
+  return <ForgotPasswordPage />;
 }

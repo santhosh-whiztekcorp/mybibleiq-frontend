@@ -16,7 +16,8 @@ import type {
 } from "@/resources/admin-quiz/admin-quiz.types";
 
 export const useQuizManagerPage = () => {
-  const { status, difficulty, tags, q, page, pageSize, sort, setFilters } = useAdminQuizFilterStore();
+  const { status, difficulty, tags, q, page, pageSize, sort, isSwordDrillEnabled, setFilters } =
+    useAdminQuizFilterStore();
 
   const debouncedQ = useDebounce(q ?? "", 500);
 
@@ -25,11 +26,12 @@ export const useQuizManagerPage = () => {
       status,
       difficulty,
       tags,
+      isSwordDrillEnabled,
       q: debouncedQ || undefined,
       pageSize,
       sort,
     }),
-    [status, difficulty, tags, debouncedQ, pageSize, sort]
+    [status, difficulty, tags, isSwordDrillEnabled, debouncedQ, pageSize, sort]
   );
 
   const {
@@ -85,6 +87,13 @@ export const useQuizManagerPage = () => {
   const handleDifficultyFilterChange = useCallback(
     (value: string | undefined) => {
       setFilters({ difficulty: value as QuizDifficulty });
+    },
+    [setFilters]
+  );
+
+  const handleSwordDrillFilterChange = useCallback(
+    (value: boolean | undefined) => {
+      setFilters({ isSwordDrillEnabled: value });
     },
     [setFilters]
   );
@@ -201,7 +210,7 @@ export const useQuizManagerPage = () => {
     total,
     statusStats,
     isStatusStatsLoading,
-    filterStore: { status, difficulty, tags, q, page, pageSize, sort },
+    filterStore: { status, difficulty, tags, q, page, pageSize, sort, isSwordDrillEnabled },
     isLoading: isListLoading,
     hasNextPage,
     isFetchingNextPage,
@@ -217,6 +226,7 @@ export const useQuizManagerPage = () => {
     handleSearchChange,
     handleStatusFilterChange,
     handleDifficultyFilterChange,
+    handleSwordDrillFilterChange,
     handlePaginationChange,
     handleSortChange,
     sortOptions,

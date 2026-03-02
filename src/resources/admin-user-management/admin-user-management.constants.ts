@@ -1,3 +1,4 @@
+import type { SelectOption } from "@/components/shared/ui";
 import { UserStatusEnum, BadgeRarityEnum, FeedbackStatusEnum } from "./admin-user-management.schemas";
 import type {
   UserStatus,
@@ -8,11 +9,6 @@ import type {
   AdminUserFeedbackListInput,
   AdminUserSavedVersesListInput,
 } from "./admin-user-management.types";
-
-export type SelectOption = {
-  label: string;
-  value: string;
-};
 
 /* ---- User Status Options ---- */
 export const USER_STATUS_OPTIONS = UserStatusEnum.options;
@@ -90,3 +86,6 @@ export const adminUserManagementQueryKeys = {
   savedVersesList: (userId: string, params?: AdminUserSavedVersesListInput) =>
     [...adminUserManagementQueryKeys.savedVerses(userId), params] as const,
 };
+
+/* ---- Mock Flag ---- */
+export const USE_MOCK_DATA = false;

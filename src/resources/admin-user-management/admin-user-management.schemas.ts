@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { DeliveryChannelEnum } from "@/resources/user-spirit-food";
 
 /* ---- Enums ---- */
 export const UserStatusEnum = z.enum(["active", "suspended"]);
@@ -38,12 +39,26 @@ export const AdminUserSavedVersesListInputSchema = z.object({
 
 /* ---- Admin User Suspend Input Schema ---- */
 export const AdminUserSuspendInputSchema = z.object({
-  reason: z.string().min(1, "Reason is required"),
-  suspendUntil: z.string().optional(),
+  reason: z.string().min(1, "Reason is required").min(10, "Reason must be at least 10 characters long"),
+  suspendUntil: z.union([z.string(), z.date()]).optional(),
 });
 
 /* ---- Admin User Delete Input Schema ---- */
 export const AdminUserDeleteInputSchema = z.object({
-  reason: z.string().optional(),
+  reason: z.string().min(1, "Reason is required").min(10, "Reason must be at least 10 characters long"),
   deleteData: z.boolean().optional(),
+});
+
+/* ---- Admin User Settings Update Input Schema ---- */
+export const AdminUserSettingsUpdateInputSchema = z.object({
+  notifications: z.boolean().optional(),
+  soundEffects: z.boolean().optional(),
+});
+
+/* ---- Admin User Spirit Food Update Input Schema ---- */
+export const AdminUserSpiritFoodUpdateInputSchema = z.object({
+  deliveryMethods: z.array(DeliveryChannelEnum).optional(),
+  deliveryTime: z.string().optional(),
+  timezone: z.string().optional(),
+  isEnabled: z.boolean().optional(),
 });

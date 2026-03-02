@@ -23,7 +23,7 @@ export const useUserDataTableColumns = (onView?: (item: AdminUserListItem) => vo
               {item.avatarUrl ? (
                 <Image
                   src={item.avatarUrl}
-                  alt={item.name}
+                  alt={item.name || item.username}
                   width={40}
                   height={40}
                   className="w-10 h-10 rounded-full object-cover border-2 border-[#E2E8F0] shrink-0"
@@ -38,7 +38,6 @@ export const useUserDataTableColumns = (onView?: (item: AdminUserListItem) => vo
               <div className="flex flex-col min-w-0">
                 <span className="text-sm font-medium text-[#202020] truncate">{item.name}</span>
                 <span className="text-xs text-[#656A73] truncate">@{item.username}</span>
-                {item.email && <span className="text-xs text-[#656A73] truncate">{item.email}</span>}
               </div>
             </div>
           );

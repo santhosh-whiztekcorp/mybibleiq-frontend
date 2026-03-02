@@ -81,9 +81,9 @@ export function BadgeManagerPage() {
         </div>
 
         {/* Filters Section */}
-        <div className="flex-1 flex flex-wrap items-end gap-2 bg-white p-2 rounded-lg border border-[#E2E8F0]">
+        <div className="flex-1 flex flex-col gap-2 bg-white p-2 rounded-lg border border-[#E2E8F0]">
           {/* Search Bar */}
-          <div className="w-full space-y-1.5 order-first mb-2">
+          <div className="w-full space-y-1.5">
             <label className="text-xs font-bold text-[#656A73] uppercase text-nowrap">Search</label>
             <div className="relative">
               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#656A73] pointer-events-none" />
@@ -98,83 +98,85 @@ export function BadgeManagerPage() {
           </div>
 
           {/* Filters */}
-          <div className="flex-1 min-w-[140px] space-y-1.5">
-            <label className="text-xs font-bold text-[#656A73] uppercase">Status</label>
-            <Select
-              value={filters.status || "all"}
-              onValueChange={(value) =>
-                filters.setFilters({ status: value === "all" ? undefined : (value as AdminBadgeStatus) })
-              }
-            >
-              <SelectTrigger variant="adminFilter">
-                <SelectValue placeholder="All Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                {BADGE_STATUS_OPTIONS.map((opt) => (
-                  <SelectItem key={opt} value={opt}>
-                    {BADGE_STATUS_LABELS[opt as keyof typeof BADGE_STATUS_LABELS]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] md:grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-2 items-end">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-[#656A73] uppercase">Status</label>
+              <Select
+                value={filters.status || "all"}
+                onValueChange={(value) =>
+                  filters.setFilters({ status: value === "all" ? undefined : (value as AdminBadgeStatus) })
+                }
+              >
+                <SelectTrigger variant="adminFilter">
+                  <SelectValue placeholder="All Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  {BADGE_STATUS_OPTIONS.map((opt) => (
+                    <SelectItem key={opt} value={opt}>
+                      {BADGE_STATUS_LABELS[opt as keyof typeof BADGE_STATUS_LABELS]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="flex-1 min-w-[140px] space-y-1.5">
-            <label className="text-xs font-bold text-[#656A73] uppercase">Rarity</label>
-            <Select
-              value={filters.rarity || "all"}
-              onValueChange={(value) =>
-                filters.setFilters({ rarity: value === "all" ? undefined : (value as BadgeRarity) })
-              }
-            >
-              <SelectTrigger variant="adminFilter">
-                <SelectValue placeholder="All Rarity" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Rarity</SelectItem>
-                {BADGE_RARITY_OPTIONS.map((opt) => (
-                  <SelectItem key={opt} value={opt}>
-                    {BADGE_RARITY_LABELS[opt as keyof typeof BADGE_RARITY_LABELS]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-[#656A73] uppercase">Rarity</label>
+              <Select
+                value={filters.rarity || "all"}
+                onValueChange={(value) =>
+                  filters.setFilters({ rarity: value === "all" ? undefined : (value as BadgeRarity) })
+                }
+              >
+                <SelectTrigger variant="adminFilter">
+                  <SelectValue placeholder="All Rarity" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Rarity</SelectItem>
+                  {BADGE_RARITY_OPTIONS.map((opt) => (
+                    <SelectItem key={opt} value={opt}>
+                      {BADGE_RARITY_LABELS[opt as keyof typeof BADGE_RARITY_LABELS]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="flex-1 min-w-[140px] space-y-1.5">
-            <label className="text-xs font-bold text-[#656A73] uppercase">Category</label>
-            <Select
-              value={filters.category || "all"}
-              onValueChange={(value) =>
-                filters.setFilters({ category: value === "all" ? undefined : (value as BadgeCategory) })
-              }
-            >
-              <SelectTrigger variant="adminFilter">
-                <SelectValue placeholder="All Categories" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                {BADGE_CATEGORY_OPTIONS.map((opt) => (
-                  <SelectItem key={opt} value={opt}>
-                    {BADGE_CATEGORY_LABELS[opt as keyof typeof BADGE_CATEGORY_LABELS]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-[#656A73] uppercase">Category</label>
+              <Select
+                value={filters.category || "all"}
+                onValueChange={(value) =>
+                  filters.setFilters({ category: value === "all" ? undefined : (value as BadgeCategory) })
+                }
+              >
+                <SelectTrigger variant="adminFilter">
+                  <SelectValue placeholder="All Categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {BADGE_CATEGORY_OPTIONS.map((opt) => (
+                    <SelectItem key={opt} value={opt}>
+                      {BADGE_CATEGORY_LABELS[opt as keyof typeof BADGE_CATEGORY_LABELS]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              filters.resetFilters();
-            }}
-            className="h-11 px-4 border-[#E2E8F0] text-xs font-bold uppercase text-[#656A73] rounded-lg hidden md:flex"
-            title="Clear Filters"
-          >
-            Clear
-          </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                filters.resetFilters();
+              }}
+              className="h-11 px-4 border-[#E2E8F0] text-xs font-bold uppercase text-[#656A73] rounded-lg hidden lg:flex w-full"
+              title="Clear Filters"
+            >
+              Clear
+            </Button>
+          </div>
         </div>
       </div>
 

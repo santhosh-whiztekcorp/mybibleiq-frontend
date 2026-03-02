@@ -24,7 +24,7 @@ const UserCardComponent = (props: UserCardProps) => {
         {item.avatarUrl ? (
           <Image
             src={item.avatarUrl}
-            alt={item.name}
+            alt={item.name || item.username}
             width={64}
             height={64}
             className="h-16 w-16 rounded-full object-cover border border-[#E9EAEC]"

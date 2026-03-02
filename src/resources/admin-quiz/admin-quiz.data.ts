@@ -22,6 +22,7 @@ export const defaultAdminQuizFilters: Pick<AdminQuizFilterStore, "page" | "pageS
   status: undefined,
   difficulty: undefined,
   tags: undefined,
+  isSwordDrillEnabled: undefined,
   q: undefined,
   page: 1,
   pageSize: 20,

@@ -289,7 +289,7 @@ export const useAdminQuizFilterStore = create<AdminQuizFilterStore>((set) => ({
     set((state) => {
       const updates: Partial<AdminQuizFilterStore> = {};
       const filterKeys = Object.keys(filters);
-      const filterFields = ["status", "difficulty", "tags", "q"] as const;
+      const filterFields = ["status", "difficulty", "tags", "q", "isSwordDrillEnabled"] as const;
       const hasFilterChanges = filterKeys.some((key) => filterFields.includes(key as (typeof filterFields)[number]));
 
       if (hasFilterChanges && !("page" in filters)) {

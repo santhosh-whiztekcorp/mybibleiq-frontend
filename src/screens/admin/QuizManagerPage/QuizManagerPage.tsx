@@ -48,6 +48,7 @@ export function QuizManagerPage() {
     handleSearchChange,
     handleStatusFilterChange,
     handleDifficultyFilterChange,
+    handleSwordDrillFilterChange,
     handlePaginationChange,
     handleSortChange,
     sortOptions,
@@ -114,9 +115,9 @@ export function QuizManagerPage() {
         </div>
 
         {/* Filters Section */}
-        <div className="flex-1 flex flex-wrap items-end gap-2 bg-white p-2 rounded-lg border border-[#E2E8F0]">
+        <div className="flex-1 flex flex-col gap-2 bg-white p-2 rounded-lg border border-[#E2E8F0]">
           {/* Search Bar */}
-          <div className="w-full space-y-1.5 order-first mb-2">
+          <div className="w-full space-y-1.5">
             <label className="text-xs font-bold text-[#656A73] uppercase text-nowrap">Search</label>
             <div className="relative">
               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#656A73] pointer-events-none" />
@@ -130,74 +131,100 @@ export function QuizManagerPage() {
             </div>
           </div>
 
-          <div className="flex-1 min-w-[200px] space-y-1.5">
-            <label className="text-xs font-bold text-[#656A73] uppercase">Status</label>
-            <Select
-              value={filterStore.status ?? "all"}
-              onValueChange={(value) => handleStatusFilterChange(value === "all" ? undefined : value)}
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] md:grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-2 items-end">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-[#656A73] uppercase">Status</label>
+              <Select
+                value={filterStore.status ?? "all"}
+                onValueChange={(value) => handleStatusFilterChange(value === "all" ? undefined : value)}
+              >
+                <SelectTrigger variant="adminFilter">
+                  <SelectValue placeholder="All Statuses" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  {QUIZ_STATUS_OPTIONS.map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {QUIZ_STATUS_LABELS[status]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-[#656A73] uppercase">Difficulty</label>
+              <Select
+                value={filterStore.difficulty ?? "all"}
+                onValueChange={(value) => handleDifficultyFilterChange(value === "all" ? undefined : value)}
+              >
+                <SelectTrigger variant="adminFilter">
+                  <SelectValue placeholder="All Difficulties" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Difficulties</SelectItem>
+                  {QUIZ_DIFFICULTY_OPTIONS.map((diff) => (
+                    <SelectItem key={diff} value={diff}>
+                      {QUIZ_DIFFICULTY_LABELS[diff]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-[#656A73] uppercase">Sort By</label>
+              <Select value={filterStore.sort} onValueChange={(value) => handleSortChange(value)}>
+                <SelectTrigger variant="adminFilter">
+                  <SelectValue placeholder="Newest First" />
+                </SelectTrigger>
+                <SelectContent>
+                  {sortOptions.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-[#656A73] uppercase text-nowrap">Sword Drill</label>
+              <Select
+                value={
+                  filterStore.isSwordDrillEnabled === undefined
+                    ? "all"
+                    : filterStore.isSwordDrillEnabled
+                      ? "true"
+                      : "false"
+                }
+                onValueChange={(value) => handleSwordDrillFilterChange(value === "all" ? undefined : value === "true")}
+              >
+                <SelectTrigger variant="adminFilter">
+                  <SelectValue placeholder="All" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="true">Enabled</SelectItem>
+                  <SelectItem value="false">Disabled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                handleStatusFilterChange(undefined);
+                handleDifficultyFilterChange(undefined);
+                handleSwordDrillFilterChange(undefined);
+                handleSortChange("-createdAt");
+              }}
+              className="h-11 px-4 border-[#E2E8F0] text-xs font-bold uppercase text-[#656A73] rounded-lg hidden lg:flex w-full"
             >
-              <SelectTrigger variant="adminFilter">
-                <SelectValue placeholder="All Statuses" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                {QUIZ_STATUS_OPTIONS.map((status) => (
-                  <SelectItem key={status} value={status}>
-                    {QUIZ_STATUS_LABELS[status]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              Clear Filters
+            </Button>
           </div>
-
-          <div className="flex-1 min-w-[200px] space-y-1.5">
-            <label className="text-xs font-bold text-[#656A73] uppercase">Difficulty</label>
-            <Select
-              value={filterStore.difficulty ?? "all"}
-              onValueChange={(value) => handleDifficultyFilterChange(value === "all" ? undefined : value)}
-            >
-              <SelectTrigger variant="adminFilter">
-                <SelectValue placeholder="All Difficulties" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Difficulties</SelectItem>
-                {QUIZ_DIFFICULTY_OPTIONS.map((diff) => (
-                  <SelectItem key={diff} value={diff}>
-                    {QUIZ_DIFFICULTY_LABELS[diff]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex-1 min-w-[200px] space-y-1.5">
-            <label className="text-xs font-bold text-[#656A73] uppercase">Sort By</label>
-            <Select value={filterStore.sort} onValueChange={(value) => handleSortChange(value)}>
-              <SelectTrigger variant="adminFilter">
-                <SelectValue placeholder="Newest First" />
-              </SelectTrigger>
-              <SelectContent>
-                {sortOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              handleStatusFilterChange(undefined);
-              handleDifficultyFilterChange(undefined);
-              handleSortChange("-createdAt");
-            }}
-            className="h-11 px-4 border-[#E2E8F0] text-xs font-bold uppercase text-[#656A73] rounded-lg hidden md:flex"
-          >
-            Clear Filters
-          </Button>
         </div>
       </div>
 

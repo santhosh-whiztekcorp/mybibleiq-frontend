@@ -1,4 +1,5 @@
 import z from "zod";
+import { FeedbackCategory } from "@/resources/user-feedback";
 import {
   UserStatusEnum,
   BadgeRarityEnum,
@@ -9,12 +10,16 @@ import {
   AdminUserSavedVersesListInputSchema,
   AdminUserSuspendInputSchema,
   AdminUserDeleteInputSchema,
+  AdminUserSettingsUpdateInputSchema,
+  AdminUserSpiritFoodUpdateInputSchema,
 } from "./admin-user-management.schemas";
+import { DeliveryChannelEnum } from "@/resources/user-spirit-food";
 
 /* ---- Enum Types ---- */
 export type UserStatus = z.infer<typeof UserStatusEnum>;
 export type BadgeRarity = z.infer<typeof BadgeRarityEnum>;
 export type FeedbackStatus = z.infer<typeof FeedbackStatusEnum>;
+export type DeliveryChannel = z.infer<typeof DeliveryChannelEnum>;
 
 /* ---- Input Types ---- */
 export type AdminUserListInput = z.infer<typeof AdminUserListInputSchema>;
@@ -23,19 +28,19 @@ export type AdminUserFeedbackListInput = z.infer<typeof AdminUserFeedbackListInp
 export type AdminUserSavedVersesListInput = z.infer<typeof AdminUserSavedVersesListInputSchema>;
 export type AdminUserSuspendInput = z.infer<typeof AdminUserSuspendInputSchema>;
 export type AdminUserDeleteInput = z.infer<typeof AdminUserDeleteInputSchema>;
+export type AdminUserSettingsUpdateInput = z.infer<typeof AdminUserSettingsUpdateInputSchema>;
+export type AdminUserSpiritFoodUpdateInput = z.infer<typeof AdminUserSpiritFoodUpdateInputSchema>;
 
 /* ---- Response Types ---- */
 export type AdminUserProfile = {
   id: string;
   username: string;
-  name: string;
+  name?: string;
   avatarUrl?: string | null;
   status: UserStatus;
   joinedAt: string;
   lastActive: string;
   location?: string | null;
-  email?: string | null;
-  phone?: string | null;
 };
 
 export type AdminUserStats = {
@@ -53,18 +58,14 @@ export type AdminUserActivity = {
 export type AdminUserSettings = {
   notifications: boolean;
   soundEffects: boolean;
-  showEmail?: boolean;
-  language?: string;
 };
 
 export type AdminUserSpiritFood = {
   savedVerses: number;
   deliveryTime: string;
-  deliveryPreferences: {
-    smsNotifications: boolean;
-    emailDevotion: boolean;
-    pushNotifications: boolean;
-  };
+  deliveryMethods: DeliveryChannel[];
+  timezone: string;
+  isEnabled: boolean;
 };
 
 export type AdminUserProfileResponse = {
@@ -92,7 +93,7 @@ export type AdminUserBadge = {
 export type AdminUserFeedback = {
   id: string;
   message: string;
-  category: string;
+  category: FeedbackCategory;
   status: FeedbackStatus;
   createdAt: string;
   updatedAt: string;
@@ -109,12 +110,11 @@ export type AdminUserSavedVerse = {
 export type AdminUserListItem = {
   id: string;
   username: string;
-  name: string;
+  name?: string;
   avatarUrl?: string | null;
   status: UserStatus;
   joinedAt: string;
   location?: string | null;
-  email?: string | null;
 };
 
 export type AdminUserListResponse = {

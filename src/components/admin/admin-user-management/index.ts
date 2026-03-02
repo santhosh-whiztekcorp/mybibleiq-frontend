@@ -7,3 +7,4 @@ export * from "./UserActivityTab";
 export * from "./UserSpiritFoodTab";
 export * from "./UserSettingsTab";
 export * from "./UserFeedbackTab";
+export * from "./AdminUserRolesModal";

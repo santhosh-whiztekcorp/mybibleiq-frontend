@@ -123,8 +123,8 @@ export function QuestManagerPage() {
         </div>
 
         {/* Filters Section */}
-        <div className="flex-1 flex flex-wrap items-end gap-2 bg-white p-2 rounded-lg border border-[#E2E8F0]">
-          <div className="w-full space-y-1.5 order-first mb-2">
+        <div className="flex-1 flex flex-col gap-2 bg-white p-2 rounded-lg border border-[#E2E8F0]">
+          <div className="w-full space-y-1.5">
             <label className="text-xs font-bold text-[#656A73] uppercase text-nowrap">Search</label>
             <div className="relative">
               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#656A73] pointer-events-none" />
@@ -138,56 +138,58 @@ export function QuestManagerPage() {
             </div>
           </div>
 
-          <div className="flex-1 min-w-[200px] space-y-1.5">
-            <label className="text-xs font-bold text-[#656A73] uppercase">Status</label>
-            <Select
-              value={filterStore.status ?? "all"}
-              onValueChange={(value) => handleStatusFilterChange(value === "all" ? undefined : value)}
-            >
-              <SelectTrigger variant="adminFilter">
-                <SelectValue placeholder="All Statuses" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                {QUEST_STATUS_OPTIONS.map((status) => (
-                  <SelectItem key={status} value={status}>
-                    {QUEST_STATUS_LABELS[status]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] md:grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-2 items-end">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-[#656A73] uppercase">Status</label>
+              <Select
+                value={filterStore.status ?? "all"}
+                onValueChange={(value) => handleStatusFilterChange(value === "all" ? undefined : value)}
+              >
+                <SelectTrigger variant="adminFilter">
+                  <SelectValue placeholder="All Statuses" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  {QUEST_STATUS_OPTIONS.map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {QUEST_STATUS_LABELS[status]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="flex-1 min-w-[200px] space-y-1.5">
-            <label className="text-xs font-bold text-[#656A73] uppercase">Sort By</label>
-            <Select
-              value={filterStore.sort}
-              onValueChange={(value) => handleSortChange(value as AdminQuestListInput["sort"])}
-            >
-              <SelectTrigger variant="adminFilter">
-                <SelectValue placeholder="Newest First" />
-              </SelectTrigger>
-              <SelectContent>
-                {sortOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-[#656A73] uppercase">Sort By</label>
+              <Select
+                value={filterStore.sort}
+                onValueChange={(value) => handleSortChange(value as AdminQuestListInput["sort"])}
+              >
+                <SelectTrigger variant="adminFilter">
+                  <SelectValue placeholder="Newest First" />
+                </SelectTrigger>
+                <SelectContent>
+                  {sortOptions.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              handleStatusFilterChange(undefined);
-              handleSortChange("-createdAt");
-            }}
-            className="h-11 px-4 border-[#E2E8F0] text-xs font-bold uppercase text-[#656A73] rounded-lg hidden md:flex"
-          >
-            Clear Filters
-          </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                handleStatusFilterChange(undefined);
+                handleSortChange("-createdAt");
+              }}
+              className="h-11 px-4 border-[#E2E8F0] text-xs font-bold uppercase text-[#656A73] rounded-lg hidden lg:flex w-full"
+            >
+              Clear Filters
+            </Button>
+          </div>
         </div>
       </div>
 

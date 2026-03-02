@@ -1,10 +1,10 @@
 "use client";
 
-import React from "react";
-import { Bell, Volume2, Mail, Globe } from "lucide-react";
+import { Bell, Volume2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useGetAdminUserManagementSettings } from "@/resources/admin-user-management";
+import { Switch } from "@/components/ui/switch";
+import { useGetAdminUserManagementSettings, useUpdateAdminUserSettings } from "@/resources/admin-user-management";
 
 type UserSettingsTabProps = {
   userId: string;
@@ -12,6 +12,14 @@ type UserSettingsTabProps = {
 
 export function UserSettingsTab({ userId }: UserSettingsTabProps) {
   const { data: settings, isLoading, error } = useGetAdminUserManagementSettings(userId);
+  const { mutate: updateSettings, isPending: isUpdating } = useUpdateAdminUserSettings();
+
+  const handleToggle = (field: "notifications" | "soundEffects", currentValue: boolean) => {
+    updateSettings({
+      userId,
+      input: { [field]: !currentValue },
+    });
+  };
 
   if (!userId) {
     return (
@@ -47,7 +55,7 @@ export function UserSettingsTab({ userId }: UserSettingsTabProps) {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="pb-2">
         <CardTitle className="text-base">Preferences</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -59,9 +67,12 @@ export function UserSettingsTab({ userId }: UserSettingsTabProps) {
               <p className="text-xs text-[#656A73]">Receive app notifications</p>
             </div>
           </div>
-          <span className={settings.notifications ? "text-green-600 font-medium" : "text-[#656A73]"}>
-            {settings.notifications ? "Enabled" : "Disabled"}
-          </span>
+          <Switch
+            checked={settings.notifications}
+            onCheckedChange={() => handleToggle("notifications", !!settings.notifications)}
+            disabled={isUpdating}
+            className="data-[state=checked]:bg-green-500"
+          />
         </div>
         <div className="flex items-center justify-between rounded-lg border p-4">
           <div className="flex items-center gap-3">
@@ -71,35 +82,13 @@ export function UserSettingsTab({ userId }: UserSettingsTabProps) {
               <p className="text-xs text-[#656A73]">Play sound in games</p>
             </div>
           </div>
-          <span className={settings.soundEffects ? "text-green-600 font-medium" : "text-[#656A73]"}>
-            {settings.soundEffects ? "Enabled" : "Disabled"}
-          </span>
+          <Switch
+            checked={settings.soundEffects}
+            onCheckedChange={() => handleToggle("soundEffects", !!settings.soundEffects)}
+            disabled={isUpdating}
+            className="data-[state=checked]:bg-green-500"
+          />
         </div>
-        {settings.showEmail !== undefined && (
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="flex items-center gap-3">
-              <Mail className="h-5 w-5 text-[#656A73]" />
-              <div>
-                <p className="text-sm font-medium">Show Email</p>
-                <p className="text-xs text-[#656A73]">Display email on profile</p>
-              </div>
-            </div>
-            <span className={settings.showEmail ? "text-green-600 font-medium" : "text-[#656A73]"}>
-              {settings.showEmail ? "Enabled" : "Disabled"}
-            </span>
-          </div>
-        )}
-        {settings.language && (
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="flex items-center gap-3">
-              <Globe className="h-5 w-5 text-[#656A73]" />
-              <div>
-                <p className="text-sm font-medium">Language</p>
-              </div>
-            </div>
-            <span className="font-medium">{settings.language}</span>
-          </div>
-        )}
       </CardContent>
     </Card>
   );

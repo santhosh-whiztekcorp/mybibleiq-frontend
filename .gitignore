@@ -112,3 +112,4 @@ temp/
 *.key
 *.cert
 .cache/
+.DS_Store

@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check": "npm run lint && npm run typecheck && npm run format"
+    "check": "npm run format && npm run lint && npm run typecheck"
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",
@@ -30,6 +30,7 @@
     "@radix-ui/react-switch": "^1.2.6",
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "@tailwindcss/typography": "^0.5.19",
     "@tanstack/react-query": "^5.90.20",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.18",
@@ -47,6 +48,7 @@
     "react-dom": "19.2.3",
     "react-hook-form": "^7.71.1",
     "react-intersection-observer": "^10.0.2",
+    "react-markdown": "^10.1.0",
     "recharts": "^2.15.4",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",

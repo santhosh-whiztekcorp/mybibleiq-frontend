@@ -5,18 +5,24 @@ import type { AboutResponse, TermsResponse, PrivacyResponse } from "./user-setti
 
 /* ---- Get About Information ---- */
 export const getAboutInformation = async (): Promise<AboutResponse> => {
-  const response = await apiClient.get<ApiResponseEnvelope<AboutResponse>>(endpoints.settingsUser.getAbout);
+  const response = await apiClient.get<ApiResponseEnvelope<AboutResponse>>(endpoints.settingsUser.getAbout, {
+    timeout: 3000,
+  });
   return response.data;
 };
 
 /* ---- Get Terms & Conditions ---- */
 export const getTermsAndConditions = async (): Promise<TermsResponse> => {
-  const response = await apiClient.get<ApiResponseEnvelope<TermsResponse>>(endpoints.settingsUser.getTerms);
+  const response = await apiClient.get<ApiResponseEnvelope<TermsResponse>>(endpoints.settingsUser.getTerms, {
+    timeout: 3000,
+  });
   return response.data;
 };
 
 /* ---- Get Privacy Policy ---- */
 export const getPrivacyPolicy = async (): Promise<PrivacyResponse> => {
-  const response = await apiClient.get<ApiResponseEnvelope<PrivacyResponse>>(endpoints.settingsUser.getPrivacy);
+  const response = await apiClient.get<ApiResponseEnvelope<PrivacyResponse>>(endpoints.settingsUser.getPrivacy, {
+    timeout: 3000,
+  });
   return response.data;
 };

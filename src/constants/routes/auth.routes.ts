@@ -4,4 +4,6 @@ export const AUTH_ROUTES = {
   REGISTER: "/auth/register",
   FORGOT_PASSWORD: "/auth/forgot-password",
   RESET_PASSWORD: "/auth/reset-password",
+  PRIVACY_POLICY: "/privacy-policy",
+  TERMS_CONDITIONS: "/terms-conditions",
 } as const;

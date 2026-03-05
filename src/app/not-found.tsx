@@ -39,14 +39,6 @@ export default function NotFound() {
               Back to Home
             </Link>
           </Button>
-
-          <Button
-            variant="ghost"
-            size="lg"
-            className="rounded-full px-8 h-12 text-base font-semibold hover:bg-white/50 backdrop-blur-sm"
-          >
-            Contact Support
-          </Button>
         </div>
       </div>
 

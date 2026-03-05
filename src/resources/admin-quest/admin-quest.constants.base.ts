@@ -1,6 +1,5 @@
+import { images } from "@/assets";
 import type { StaticImageData } from "next/image";
-import questStagesForest from "@/assets/images/png/quest-stages-forest.png";
-import questStagesDesert from "@/assets/images/png/quest-stages-desert.png";
 
 export const QUEST_THEME_KEYS = ["forest", "desert"] as const;
 
@@ -18,11 +17,11 @@ const getFinalHeight = (containerWidth: number) =>
 
 export const QUEST_THEME_CONFIG = {
   forest: {
-    stagesBackgroundImage: questStagesForest,
+    stagesBackgroundImage: images.questStagesForest,
     finalHeight: getFinalHeight,
   },
   desert: {
-    stagesBackgroundImage: questStagesDesert,
+    stagesBackgroundImage: images.questStagesDesert,
     finalHeight: getFinalHeight,
   },
 } as const;

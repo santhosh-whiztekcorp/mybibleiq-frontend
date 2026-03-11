@@ -236,8 +236,8 @@ export const icons = {
 import bgQa from "@/assets/images/jpg/bg-qa.jpg";
 import questWelcomeBackground from "@/assets/images/png/quest-welcome-bg.png";
 import questIntroductionBackground from "@/assets/images/png/quest-introduction-bg.png";
-import questStagesDesert from "@/assets/images/png/quest-stages-desert.png";
-import questStagesForest from "@/assets/images/png/quest-stages-forest.png";
+import questStagesDesert from "@/assets/images/png/quest-milestones/desert-theme.png";
+import questStagesForest from "@/assets/images/png/quest-milestones/forest-theme.png";
 
 export const jpgImages = {
   bgQa,

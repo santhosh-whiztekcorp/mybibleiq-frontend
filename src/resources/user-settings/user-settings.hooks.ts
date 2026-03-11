@@ -15,6 +15,7 @@ export const useGetAboutInformation = () =>
   useQuery({
     queryKey: userSettingsKeys.about(),
     queryFn: () => getAboutInformation(),
+    retry: false,
   });
 
 /* ---- Get Terms & Conditions ---- */
@@ -22,6 +23,7 @@ export const useGetTermsAndConditions = () =>
   useQuery({
     queryKey: userSettingsKeys.terms(),
     queryFn: () => getTermsAndConditions(),
+    retry: false,
   });
 
 /* ---- Get Privacy Policy ---- */
@@ -29,4 +31,5 @@ export const useGetPrivacyPolicy = () =>
   useQuery({
     queryKey: userSettingsKeys.privacy(),
     queryFn: () => getPrivacyPolicy(),
+    retry: false,
   });
